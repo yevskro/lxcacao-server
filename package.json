@@ -5,5 +5,12 @@
   "main": "server/server.js",
   "repository": "https://github.com/yevskro/lxcacao-server.git",
   "author": "Yevgeniy Skroznikov <yevskro@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "ci:test": "cross-env NODE_ENV=test jest --ci --runInBand --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "jest": "^26.1.0",
+    "pg": "^8.3.0"
+  }
 }
