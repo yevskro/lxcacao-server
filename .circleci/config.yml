@@ -7,7 +7,7 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: example12
+          POSTGRES_DB: testdb
 
     working_directory: ~/repo
 
