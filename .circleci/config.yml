@@ -1,18 +1,18 @@
-version: 2.1
+version: 2
 jobs:
   build:
     docker:
       - image: circleci/postgres:11-alpine-ram
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: testdb
-    
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: example12
+
     working_directory: ~/repo
 
     steps:
       - checkout
-      
+
       - run:
         name: Waiting for Postgres to be ready
         command: |
