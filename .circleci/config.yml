@@ -13,7 +13,6 @@ jobs:
 
     steps:
       - checkout
-      - run: yum install nmap-ncat -y
       # Download and cache dependencies
       - restore_cache:
           keys:
