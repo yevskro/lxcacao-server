@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -33,9 +33,9 @@ jobs:
           command: |
             for i in `seq 1 10`;
             do
-              which nc -z localhost 5432 && echo Success && exit 0
+              nc -z localhost 5432 && echo Success && exit 0
               echo -n .
-              sleep 2
+              sleep 1
             done
             echo Failed waiting for Postgres && exit 1
       - run: yarn ci:test
