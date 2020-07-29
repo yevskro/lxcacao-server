@@ -7,7 +7,7 @@
   "author": "Yevgeniy Skroznikov <yevskro@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "ci:test": "cross-env NODE_ENV=test jest --ci --runInBand --detectOpenHandles --forceExit"
+    "ci:test": "cross-env NODE_ENV=test jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "cross-env": "^7.0.2",
