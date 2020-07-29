@@ -12,7 +12,7 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - run: sudo apt install netcat
+      - run: apt install netcat
       - checkout
 
       # Download and cache dependencies
