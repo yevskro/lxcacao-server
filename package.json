@@ -1,0 +1,9 @@
+{
+  "name": "LxCacao-Server",
+  "version": "0.0.0",
+  "description": "The backend for the LxCacao React Native application.",
+  "main": "server/server.js",
+  "repository": "https://github.com/yevskro/lxcacao-server.git",
+  "author": "Yevgeniy Skroznikov <yevskro@gmail.com>",
+  "license": "MIT"
+}
