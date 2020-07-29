@@ -36,7 +36,7 @@ jobs:
             do
               nc -z localhost 5432 && echo Success && exit 0
               echo -n .
-              sleep 1
+              sleep 10
             done
             echo Failed waiting for Postgres && exit 1
       - run: yarn ci:test
