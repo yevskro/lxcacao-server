@@ -1,12 +1,12 @@
 import { Pool, QueryResult } from "pg";
 
-describe("database tests", () => {
+describe("database tests", (): void => {
   const conString: string =
     "postgres://postgres:postgres@127.0.0.1:5432/testdb";
 
   let pool: Pool;
 
-  beforeAll(() => {
+  beforeAll((): void => {
     pool = new Pool({
       connectionString: conString,
     });
@@ -14,7 +14,7 @@ describe("database tests", () => {
 
   afterAll(
     async (): Promise<void> => {
-      await pool.end();
+      return await pool.end();
     }
   );
 
