@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, QueryResult } from "pg";
 
 describe("database tests", () => {
   const conString: string =
@@ -12,12 +12,15 @@ describe("database tests", () => {
     });
   });
 
-  afterAll(async () => {
-    await pool.end();
-  });
+  afterAll(
+    async (): Promise<void> => {
+      await pool.end();
+    }
+  );
 
-  it("can query database", async () => {
+  it("can query database", async (): Promise<QueryResult<any>> => {
     const time = await pool.query("SELECT NOW()");
     expect(time).not.toBe(undefined);
+    return time;
   });
 });
