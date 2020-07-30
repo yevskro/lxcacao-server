@@ -28,6 +28,7 @@ describe("database tests", (): void => {
   it("is an empty table", async (): Promise<QueryResult<any>> => {
     const result = await pool.query("SELECT * FROM users;");
     console.log(result);
+    return result;
   });
 
   it("can add a user", async () => {
