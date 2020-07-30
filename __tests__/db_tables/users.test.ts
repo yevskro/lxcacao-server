@@ -31,7 +31,7 @@ describe("database tests", (): void => {
     return result;
   });
 
-  it("can add a user", async () => {
+  it("can add a user", async (): Promise<void> => {
     query = `
         INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
             VALUES
@@ -41,6 +41,19 @@ describe("database tests", (): void => {
       await pool.query(query);
     } catch (err) {
       expect(err).toBe(undefined);
+    }
+  });
+
+  it("cannot create a duplicate user", async (): Promise<void> => {
+    query = `
+        INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+            VALUES
+        ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
+
+    try {
+      await pool.query(query);
+    } catch (err) {
+      expect(err).not.toBe(undefined);
     }
   });
 });
