@@ -5,6 +5,7 @@ describe("database tests", (): void => {
     "postgres://postgres:postgres@127.0.0.1:5432/testdb";
 
   let pool: Pool;
+  let query: string;
 
   beforeAll((): void => {
     pool = new Pool({
@@ -25,10 +26,12 @@ describe("database tests", (): void => {
   });
 
   it("can add a user", async () => {
-    const query = `
+    query = `
         INSERT INTO users (gmail, firstName, lastName, loginIP, secureKey) 
             VALUES
         ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
+    await pool.query(query);
+    query = `SELECT * FROM users`;
     console.log(await pool.query(query));
   });
 });
