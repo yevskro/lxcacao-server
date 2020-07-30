@@ -27,7 +27,7 @@ describe("database tests", (): void => {
 
   it("can add a user", async () => {
     query = `
-        INSERT INTO users (gmail, firstName, lastName, loginIP, secureKey) 
+        INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
             VALUES
         ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
     await pool.query(query);
