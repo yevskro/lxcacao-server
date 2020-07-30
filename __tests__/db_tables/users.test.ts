@@ -1,6 +1,6 @@
 import { Pool, QueryResult } from "pg";
 
-describe("database tests", (): void => {
+describe("users table", (): void => {
   const conString: string =
     "postgres://postgres:postgres@127.0.0.1:5432/testdb";
 
@@ -57,8 +57,8 @@ describe("database tests", (): void => {
     }
   });
 
-  describe("user can't be created without mandatory fields", (): void => {
-    it("can't create without secure_key", async (): Promise<void> => {
+  describe("user can't be created without mandatory field", (): void => {
+    it("secure_key", async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, login_ip) 
           VALUES
@@ -67,7 +67,59 @@ describe("database tests", (): void => {
       try {
         await pool.query(query);
       } catch (err) {
-        expect(err).toBe(undefined);
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("login_ip", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, first_name, last_name, secure_key) 
+          VALUES
+      ('test@gmail.com', 'test', 'test', '0000');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("last_name", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, first_name, login_ip, secure_key) 
+          VALUES
+      ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("first_name", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, last_name, login_ip, secure_key) 
+          VALUES
+      ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("gmail", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (first_name, last_name, login_ip, secure_key) 
+          VALUES
+      ('test', 'test', '127.0.0.1', '0000');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
       }
     });
   });
