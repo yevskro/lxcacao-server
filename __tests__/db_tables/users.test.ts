@@ -19,16 +19,14 @@ describe("users table", (): void => {
     }
   );
 
-  it("can query database", async (): Promise<QueryResult<any>> => {
+  it("can query database", async (): Promise<void> => {
     const time = await pool.query("SELECT NOW();");
     expect(time).not.toBe(undefined);
-    return time;
   });
 
-  it("is an empty table", async (): Promise<QueryResult<any>> => {
+  it("is an empty table", async (): Promise<void> => {
     const result = await pool.query("SELECT * FROM users;");
-    console.log(result);
-    return result;
+    expect(result.rows.length).toBe(0);
   });
 
   it("can add a user", async (): Promise<void> => {
