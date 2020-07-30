@@ -55,7 +55,7 @@ describe("users table", (): void => {
     }
   });
 
-  describe("user can't be created without mandatory field", (): void => {
+  describe("can't create user without mandatory fields", (): void => {
     it("secure_key", async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, login_ip) 
