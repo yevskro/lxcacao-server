@@ -9,7 +9,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: testdb
 
-    working_directory: ~/repo
+    working_directory: ~/lxcacao-server
 
     steps:
       - checkout
