@@ -55,8 +55,8 @@ describe("users table", (): void => {
     }
   });
 
-  it("", async (): Promise<void> => {
-    const user = pool.query("SELECT * FROM users WHERE users.id = 1;");
+  it("last_update, create_update are timestamps", async (): Promise<void> => {
+    const user = await pool.query("SELECT * FROM users WHERE users.id = 1;");
     console.log(user);
   });
 
