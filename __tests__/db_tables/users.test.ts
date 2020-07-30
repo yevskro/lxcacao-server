@@ -66,6 +66,18 @@ describe("users table", (): void => {
     expect(last_update).toStrictEqual(create_date);
   });
 
+  it("secure_key is a unique key", async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0000');`;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      expect(err).not.toBe(undefined);
+    }
+  });
+
   describe("can't create user without mandatory fields", (): void => {
     it("secure_key", async (): Promise<void> => {
       query = `
