@@ -123,4 +123,71 @@ describe("users table", (): void => {
       }
     });
   });
+
+  describe("can't create user with empty string fields", (): void => {
+    it("secure_key", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+          VALUES
+      ('test@gmail.com', 'test', 'test', '127.0.0.1', '');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("login_ip", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, first_name, last_name, secure_key, login_ip) 
+          VALUES
+      ('test@gmail.com', 'test', 'test', '0000', '');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("last_name", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, first_name, login_ip, secure_key, last_name) 
+          VALUES
+      ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("first_name", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, last_name, login_ip, secure_key, first_name) 
+          VALUES
+      ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+
+    it("gmail", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (first_name, last_name, login_ip, secure_key, gmail) 
+          VALUES
+      ('test', 'test', '127.0.0.1', '0000', '');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).not.toBe(undefined);
+      }
+    });
+  });
 });
