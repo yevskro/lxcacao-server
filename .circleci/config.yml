@@ -41,11 +41,11 @@ jobs:
             echo Failed waiting for Postgres && exit 1
 
       - run:
-          name: Creating database
+          name: Create tables
           command: psql -h localhost -U postgres -d testdb -f src/db/create.sql
 
       - run:
-          name: Seeding database
+          name: Seed database
           command: psql -h localhost -U postgres -d testdb -f src/db/seed.sql
 
       - run:
