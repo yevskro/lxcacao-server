@@ -20,7 +20,9 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: yarn install
+      - run:
+          name: Installing dependencies
+          command: yarn install
 
       - save_cache:
           paths:
@@ -28,9 +30,10 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       # run tests!
       - run:
-        name: Create database
-        command: |
-          psql -h localhost -U postgres -f src/db/create.sql
+          name: Create database
+          command: |
+            psql -h localhost -U postgres -f src/db/create.sql
+
       - run:
           name: Running tests
           command: |
