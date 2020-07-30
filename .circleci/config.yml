@@ -27,7 +27,6 @@ jobs:
             - node_modules
           key: v2-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
       - run:
           name: Waiting for Postgres to be ready
           command: |
@@ -38,4 +37,5 @@ jobs:
               sleep 1
             done
             echo Failed waiting for Postgres && exit 1
+      # run tests!
       - run: yarn ci:test

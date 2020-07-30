@@ -10,8 +10,10 @@
     "ci:test": "cross-env NODE_ENV=test jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "cross-env": "^7.0.2",
-    "jest": "^26.1.0",
     "pg": "^8.3.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "jest": "^26.1.0"
   }
 }
