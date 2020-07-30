@@ -27,5 +27,5 @@ jobs:
             - node_modules
           key: v2-dependencies-{{ checksum "package.json" }}
       # run tests!
-      - run: pwd
+      - run: psql -U postgres
       - run: yarn ci:test
