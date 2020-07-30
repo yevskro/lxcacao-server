@@ -29,6 +29,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - run: apt-get update && apt-get install -y netcat
       - run:
           name: Waiting for Postgres to be ready
           command: |
