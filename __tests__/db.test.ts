@@ -23,4 +23,12 @@ describe("database tests", (): void => {
     expect(time).not.toBe(undefined);
     return time;
   });
+
+  it("can add a user", async () => {
+    const query = `
+        INSERT INTO users (gmail, firstName, lastName, loginIP, secureKey) 
+            VALUES
+        ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
+    console.log(await pool.query(query));
+  });
 });
