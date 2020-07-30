@@ -20,9 +20,14 @@ describe("database tests", (): void => {
   );
 
   it("can query database", async (): Promise<QueryResult<any>> => {
-    const time = await pool.query("SELECT NOW()");
+    const time = await pool.query("SELECT NOW();");
     expect(time).not.toBe(undefined);
     return time;
+  });
+
+  it("is an empty table", async (): Promise<QueryResult<any>> => {
+    const result = await pool.query("SELECT * FROM users;");
+    console.log(result);
   });
 
   it("can add a user", async () => {
@@ -30,7 +35,7 @@ describe("database tests", (): void => {
         INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
             VALUES
         ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
-    await pool.query(query);
+
     try {
       await pool.query(query);
     } catch (err) {
