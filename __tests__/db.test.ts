@@ -31,7 +31,10 @@ describe("database tests", (): void => {
             VALUES
         ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
     await pool.query(query);
-    query = `SELECT * FROM users`;
-    console.log(await pool.query(query));
+    try {
+      await pool.query(query);
+    } catch (err) {
+      expect(err).toBe(undefined);
+    }
   });
 });

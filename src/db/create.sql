@@ -2,12 +2,12 @@ CREATE TABLE users
 (
     id SERIAL PRIMARY KEY,
     gmail TEXT UNIQUE NOT NULL,
-    firstName TEXT NOT NULL,
-    lastName TEXT NOT NULL,
-    loginIP TEXT NOT NULL,
-    secureKey TEXT NOT NULL,
-    profileIMG TEXT DEFAULT NULL,
-    lastUpdate TIMESTAMP DEFAULT NOW(),
-    createDate TIMESTAMP DEFAULT NOW()
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    login_ip TEXT NOT NULL,
+    secure_key TEXT NOT NULL,
+    profile_img TEXT DEFAULT NULL,
+    last_update TIMESTAMP DEFAULT NOW(),
+    create_date TIMESTAMP DEFAULT NOW()
 );
 
