@@ -55,6 +55,11 @@ describe("users table", (): void => {
     }
   });
 
+  it("", async (): Promise<void> => {
+    const user = pool.query("SELECT * FROM user WHERE user.id = 1;");
+    console.log(user);
+  });
+
   describe("can't create user without mandatory fields", (): void => {
     it("secure_key", async (): Promise<void> => {
       query = `
