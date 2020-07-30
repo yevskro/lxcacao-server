@@ -33,9 +33,9 @@ describe("database tests", (): void => {
 
   it("can add a user", async (): Promise<void> => {
     query = `
-        INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
-            VALUES
-        ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
 
     try {
       await pool.query(query);
@@ -46,14 +46,29 @@ describe("database tests", (): void => {
 
   it("cannot create a duplicate user", async (): Promise<void> => {
     query = `
-        INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
-            VALUES
-        ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
 
     try {
       await pool.query(query);
     } catch (err) {
       expect(err).not.toBe(undefined);
     }
+  });
+
+  describe("user can't be created without mandatory fields", (): void => {
+    it("can't create without secure_key", async (): Promise<void> => {
+      query = `
+      INSERT INTO users (gmail, first_name, last_name, login_ip) 
+          VALUES
+      ('test@gmail.com', 'test', 'test', '127.0.0.1');`;
+
+      try {
+        await pool.query(query);
+      } catch (err) {
+        expect(err).toBe(undefined);
+      }
+    });
   });
 });
