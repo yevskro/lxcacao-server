@@ -42,7 +42,11 @@ jobs:
 
       - run:
           name: Creating database
-          command: psql -h localhost -U postgres -f src/db/create.sql
+          command: psql -h localhost -U postgres -d testdb -f src/db/create.sql
+
+      - run:
+          name: Seeding database
+          command: psql -h localhost -U postgres -d testdb -f src/db/seed.sql
 
       - run:
           name: Running tests
