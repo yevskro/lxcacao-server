@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: node:12
+      - image: yevskro/cci-lxcacaoserver-docker-primary
       - image: circleci/postgres:11-alpine-ram
         environment:
           POSTGRES_USER: postgres
