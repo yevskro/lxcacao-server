@@ -16,7 +16,7 @@ describe("database tests", () => {
     await pool.end();
   });
 
-  it("can qquery database", async () => {
+  it("can query database", async () => {
     const time = await pool.query("SELECT NOW()");
     expect(time).not.toBe(undefined);
   });

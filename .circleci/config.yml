@@ -28,4 +28,6 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       # run tests!
       - run: psql -h localhost -U postgres -f src/db/create.sql
-      - run: yarn ci:test
+      - run:
+        name: Running tests
+        command: yarn ci:test
