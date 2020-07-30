@@ -27,7 +27,10 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       # run tests!
-      - run: psql -h localhost -U postgres -f src/db/create.sql
+      - run:
+        name: Create database
+        command: |
+          psql -h localhost -U postgres -f src/db/create.sql
       - run:
           name: Running tests
           command: |
