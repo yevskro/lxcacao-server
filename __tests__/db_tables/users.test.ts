@@ -63,7 +63,7 @@ describe("users table", (): void => {
     ).rows[0];
     expect(last_update.length).not.toBe(0);
     expect(create_date.length).not.toBe(0);
-    expect(last_update).toBe(create_date);
+    expect(last_update).toStrictEqual(create_date);
   });
 
   describe("can't create user without mandatory fields", (): void => {
