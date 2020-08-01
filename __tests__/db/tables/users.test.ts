@@ -8,9 +8,7 @@ describe("users table", (): void => {
   let query: string;
 
   beforeAll((): void => {
-    pool = new Pool({
-      connectionString: conString,
-    });
+    pool = new Pool({ connectionString: conString });
   });
 
   afterAll(
