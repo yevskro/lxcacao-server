@@ -43,7 +43,7 @@ CREATE TABLE recipes
     private BOOLEAN,
     img TEXT,
     ingredients TEXT[],
-    how_to_prepare TEXT[],
+    how_to_prepare TEXT[]
 );
 
 CREATE TABLE users_recipes
