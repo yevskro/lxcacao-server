@@ -9,7 +9,7 @@ CREATE TABLE users
     last_name TEXT NOT NULL CHECK (last_name <> ''),
     login_ip TEXT NOT NULL CHECK (login_ip <> ''),
     secure_key TEXT UNIQUE NOT NULL CHECK (secure_key <> ''),
-    profile_img TEXT DEFAULT '',
+    img_file_name TEXT DEFAULT '',
     last_update TIMESTAMP DEFAULT NOW(),
     create_date TIMESTAMP DEFAULT NOW()
 );
@@ -17,22 +17,22 @@ CREATE TABLE users
 CREATE TABLE users_friends
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER,
-    friend_id INTEGER
+    user_id INTEGER REFERENCES users(id),
+    friend_id INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE users_blocked
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER,
-    blocked_id INTEGER
+    user_id INTEGER REFERENCES users(id),
+    blocked_id INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE users_requests
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER,
-    request_id INTEGER
+    user_id INTEGER REFERENCES users(id),
+    request_id INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE recipes
@@ -42,7 +42,7 @@ CREATE TABLE recipes
     time TEXT,
     type TEXT,
     private BOOLEAN,
-    img TEXT,
+    img_file_name TEXT,
     ingredients TEXT[],
     how_to_prepare TEXT[]
 );
@@ -50,14 +50,14 @@ CREATE TABLE recipes
 CREATE TABLE users_recipes
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER,
-    recipe_id INTEGER
+    user_id INTEGER REFERENCES users(id),
+    recipe_id INTEGER REFERENCES recipes(id)
 );
 
-CREATE TABLE users_chat
+CREATE TABLE users_chats
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER,
+    user_id INTEGER REFERENCES users(id),
     friend_id INTEGER,
     msgs TEXT[]
 );
