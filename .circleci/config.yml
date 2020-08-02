@@ -20,11 +20,6 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - pkg-dependencies
 
-      - restore_cache:
-          keys:
-            - yarn-dependencies-{{ checksum "yarn.lock" }}
-            - yarn-dependencies
-
       - run:
           name: Installing dependencies
           command: yarn install
@@ -34,12 +29,6 @@ jobs:
             - node_modules
           key: 
             - pkg-dependencies-{{ checksum "package.json" }}
-
-      - save_cache:
-          paths:
-            - yarn.lock
-          key: 
-            - yarn-dependencies-{{ checksum "yarn.lock" }}
 
       - run:
           name: Waiting for Postgres to be ready
