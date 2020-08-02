@@ -1,3 +1,2 @@
-FROM node:12.0.0
-RUN apt-get update && apt-get install -y netcat
+FROM circleci/node:12
 RUN apt-get install -y postgresql-client
