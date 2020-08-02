@@ -24,21 +24,24 @@ CREATE TABLE users_friends
 (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    friend_id INTEGER REFERENCES users(id)
+    friend_id INTEGER REFERENCES users(id),
+    create_date TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE users_blocked
 (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    blocked_id INTEGER REFERENCES users(id)
+    blocked_id INTEGER REFERENCES users(id),
+    create_date TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE users_requests
 (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    request_id INTEGER REFERENCES users(id)
+    request_id INTEGER REFERENCES users(id),
+    create_date TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE recipes
@@ -50,7 +53,8 @@ CREATE TABLE recipes
     private BOOLEAN,
     img_file_name TEXT,
     ingredients TEXT[],
-    how_to_prepare TEXT[]
+    how_to_prepare TEXT[],
+    create_date TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE users_recipes
