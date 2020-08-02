@@ -2,7 +2,7 @@
 import { Pool } from 'pg';
 
 export default (): void => {
-  const conString: string = 'postgres://postgres@127.0.0.1:5432/testdb';
+  const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
 
   let pool: Pool;
   let query: string;
@@ -21,8 +21,7 @@ export default (): void => {
     let error;
     try {
       await pool.query(query);
-    }
-    catch (err) {
+    } catch (err) {
       error = err;
     }
     expect(error).toBe(undefined);
@@ -37,8 +36,7 @@ export default (): void => {
     let error;
     try {
       await pool.query(query);
-    }
-    catch (err) {
+    } catch (err) {
       error = err;
     }
     expect(error).not.toBe(undefined);
@@ -53,8 +51,7 @@ export default (): void => {
     let error;
     try {
       await pool.query(query);
-    }
-    catch (err) {
+    } catch (err) {
       error = err;
     }
     expect(error).not.toBe(undefined);
@@ -69,8 +66,7 @@ export default (): void => {
     let error;
     try {
       await pool.query(query);
-    }
-    catch (err) {
+    } catch (err) {
       error = err;
     }
     expect(error).not.toBe(undefined);
@@ -85,8 +81,7 @@ export default (): void => {
     let error;
     try {
       await pool.query(query);
-    }
-    catch (err) {
+    } catch (err) {
       error = err;
     }
     expect(error).not.toBe(undefined);
@@ -99,8 +94,7 @@ export default (): void => {
     let error;
     try {
       await pool.query(query);
-    }
-    catch (err) {
+    } catch (err) {
       error = err;
     }
     expect(error).toBe(undefined);
