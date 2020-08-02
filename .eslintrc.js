@@ -1,15 +1,21 @@
 module.exports = {
-  extends: 'airbnb',
+  extends: ['airbnb', 'plugin:@typescript-eslint/recommended'],
   parser: '@typescript-eslint/parser',
-  env: {
-    node: true,
-    es6: true,
-    jest: true
+  plugins: ['@typescript-eslint', 'prettier'],
+  settings: {
+    'import/parsers': { '@typescript-eslint/parser': ['.ts', '.tsx'] },
+    'import/resolver': { typescript: {} },
   },
   rules: {
-    'implicit-arrow-linebreak': 'off',
-    'comma-dangle': 'off',
-    'no-trailing-spaces': 'off',
+    'react/jsx-filename-extension': [
+      2,
+      { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
+    ],
+    'import/no-extraneous-dependencies': [
+      2,
+      { devDependencies: ['**/test.tsx', '**/test.ts'] },
+    ],
+    '@typescript-eslint/indent': [2, 2],
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -18,20 +24,8 @@ module.exports = {
         jsx: 'never',
         ts: 'never',
         tsx: 'never',
-        mjs: 'never'
-      }
-    ]
+        mjs: 'never',
+      },
+    ],
   },
-  settings: {
-    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
-    },
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx']
-      }
-    }
-  },
-  plugins: ['@typescript-eslint']
 };

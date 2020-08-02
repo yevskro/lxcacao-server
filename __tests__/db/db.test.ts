@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import users from './tables/users.test';
 import users_friends from './tables/users_friends.test';
 import users_blocks from './tables/users_blocks.test';

@@ -11,7 +11,8 @@
     "create-tables": "psql -h localhost -U postgres -d testdb -f src/db/create.sql",
     "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
     "setup-testdb": "yarn create-tables && yarn seed-database",
-    "test": "yarn setup-testdb & jest"
+    "test": "yarn setup-testdb & jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "pg": "^8.3.0"
@@ -28,13 +29,19 @@
     "eslint": "^7.6.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-airbnb-typescript": "^9.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-import-resolver-typescript": "^2.2.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.20.0",
+    "eslint-plugin-json": "^2.1.2",
     "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.5",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "lint-staged": "^10.2.11",
     "nodemon": "^2.0.4",
+    "prettier": "^2.0.5",
     "ts-jest": "^26.1.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
