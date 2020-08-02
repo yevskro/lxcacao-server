@@ -1,8 +1,8 @@
-import { Pool, QueryResult } from "pg";
+/* eslint-disable camelcase */
+import { Pool } from 'pg';
 
-describe("users table", (): void => {
-  const conString: string =
-    "postgres://postgres:postgres@127.0.0.1:5432/testdb";
+describe('users table', (): void => {
+  const conString: string = 'postgres://postgres:postgres@127.0.0.1:5432/testdb';
 
   let pool: Pool;
   let query: string;
@@ -11,23 +11,19 @@ describe("users table", (): void => {
     pool = new Pool({ connectionString: conString });
   });
 
-  afterAll(
-    async (): Promise<void> => {
-      return await pool.end();
-    }
-  );
+  afterAll(async (): Promise<void> => pool.end());
 
-  it("can query database", async (): Promise<void> => {
-    const time = await pool.query("SELECT NOW();");
+  it('can query database', async (): Promise<void> => {
+    const time = await pool.query('SELECT NOW();');
     expect(time).not.toBe(undefined);
   });
 
-  it("is an empty table", async (): Promise<void> => {
-    const result = await pool.query("SELECT * FROM users;");
+  it('is an empty table', async (): Promise<void> => {
+    const result = await pool.query('SELECT * FROM users;');
     expect(result.rows.length).toBe(0);
   });
 
-  it("can add a user", async (): Promise<void> => {
+  it('can add a user', async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -40,7 +36,7 @@ describe("users table", (): void => {
     }
   });
 
-  it("cannot create a duplicate user", async (): Promise<void> => {
+  it('cannot create a duplicate user', async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -53,18 +49,18 @@ describe("users table", (): void => {
     }
   });
 
-  it("last_update, create_update are identical timestamps", async (): Promise<
+  it('last_update, create_update are identical timestamps', async (): Promise<
     void
   > => {
     const { last_update, create_date } = (
-      await pool.query("SELECT * FROM users WHERE users.id = 1;")
+      await pool.query('SELECT * FROM users WHERE users.id = 1;')
     ).rows[0];
     expect(last_update.length).not.toBe(0);
     expect(create_date.length).not.toBe(0);
     expect(last_update).toStrictEqual(create_date);
   });
 
-  it("secure_key is a unique key", async (): Promise<void> => {
+  it('secure_key is a unique key', async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -76,17 +72,17 @@ describe("users table", (): void => {
     }
   });
 
-  it("profile_img has a default value of an empty string", async (): Promise<
+  it('profile_img has a default value of an empty string', async (): Promise<
     void
   > => {
     const { profile_img } = (
-      await pool.query("SELECT * FROM users WHERE users.id = 1;")
+      await pool.query('SELECT * FROM users WHERE users.id = 1;')
     ).rows[0];
-    expect(profile_img).toBe("");
+    expect(profile_img).toBe('');
   });
 
   describe("can't create user without mandatory fields", (): void => {
-    it("secure_key", async (): Promise<void> => {
+    it('secure_key', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, login_ip) 
           VALUES
@@ -99,7 +95,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("login_ip", async (): Promise<void> => {
+    it('login_ip', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, secure_key) 
           VALUES
@@ -112,7 +108,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("last_name", async (): Promise<void> => {
+    it('last_name', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, login_ip, secure_key) 
           VALUES
@@ -125,7 +121,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("first_name", async (): Promise<void> => {
+    it('first_name', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, last_name, login_ip, secure_key) 
           VALUES
@@ -138,7 +134,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("gmail", async (): Promise<void> => {
+    it('gmail', async (): Promise<void> => {
       query = `
       INSERT INTO users (first_name, last_name, login_ip, secure_key) 
           VALUES
@@ -153,7 +149,7 @@ describe("users table", (): void => {
   });
 
   describe("can't create user with empty string fields", (): void => {
-    it("secure_key", async (): Promise<void> => {
+    it('secure_key', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
           VALUES
@@ -166,7 +162,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("login_ip", async (): Promise<void> => {
+    it('login_ip', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, secure_key, login_ip) 
           VALUES
@@ -179,7 +175,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("last_name", async (): Promise<void> => {
+    it('last_name', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, login_ip, secure_key, last_name) 
           VALUES
@@ -192,7 +188,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("first_name", async (): Promise<void> => {
+    it('first_name', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, last_name, login_ip, secure_key, first_name) 
           VALUES
@@ -205,7 +201,7 @@ describe("users table", (): void => {
       }
     });
 
-    it("gmail", async (): Promise<void> => {
+    it('gmail', async (): Promise<void> => {
       query = `
       INSERT INTO users (first_name, last_name, login_ip, secure_key, gmail) 
           VALUES
