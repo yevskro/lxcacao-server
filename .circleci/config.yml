@@ -16,7 +16,8 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v3-dependencies-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+            - v3-dependencies-{{ checksum "package.json" }}
+            - v3-dependencies-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v3-dependencies
 
@@ -29,7 +30,7 @@ jobs:
             - node_modules
             - yarn.lock
           key: 
-            - v3-dependencies-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+            - v3-dependencies
 
       - run:
           name: Waiting for Postgres to be ready
