@@ -20,7 +20,9 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - pkg-dependencies-
 
-      - restore_cache:
+      - run:
+        name: duuran
+        command: restore_cache
           keys:
             - yarn-lock-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
