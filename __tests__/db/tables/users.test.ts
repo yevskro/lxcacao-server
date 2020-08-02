@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-// eslint-disable-next-line no-unused-vars
 import { Pool } from 'pg';
 
 export default (): void => {
