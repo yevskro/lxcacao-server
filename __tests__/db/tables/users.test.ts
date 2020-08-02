@@ -72,13 +72,13 @@ describe('users table', (): void => {
     }
   });
 
-  it('profile_img has a default value of an empty string', async (): Promise<
+  it('img_file_name has a default value of an empty string', async (): Promise<
     void
   > => {
-    const { profile_img } = (
+    const { img_file_name } = (
       await pool.query('SELECT * FROM users WHERE users.id = 1;')
     ).rows[0];
-    expect(profile_img).toBe('');
+    expect(img_file_name).toBe('');
   });
 
   describe("can't create user without mandatory fields", (): void => {
