@@ -22,7 +22,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - yarn-lock-{{ checksum "yarn.json" }}
+            - yarn-lock-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - yarn-lock-
 
@@ -34,6 +34,11 @@ jobs:
           paths:
             - node_modules
           key: v3-dependencies-{{ checksum "package.json" }}
+
+      - save_cache:
+          paths:
+            - yarn.lock
+          key: yarn-lock-{{ checksum "yarn.lock" }}
 
       - run:
           name: Waiting for Postgres to be ready
