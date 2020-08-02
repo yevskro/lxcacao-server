@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 export default (): void => {
-  const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
+  const conString = "postgres://postgres@127.0.0.1:5432/testdb";
 
   let pool: Pool;
   let query: string;
@@ -12,7 +12,7 @@ export default (): void => {
 
   afterAll(async (): Promise<void> => pool.end());
 
-  it('can create a user and request', async (): Promise<void> => {
+  it("can create a user and request", async (): Promise<void> => {
     query = `
     INSERT INTO users_requests (user_id, request_id)
       VALUES
@@ -27,7 +27,7 @@ export default (): void => {
     expect(error).toBe(undefined);
   });
 
-  it('wont create a user with an invalid id', async (): Promise<void> => {
+  it("wont create a user with an invalid id", async (): Promise<void> => {
     query = `
     INSERT INTO users_friends (user_id, request_id)
       VALUES
@@ -42,7 +42,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('wont create a friend with an invalid id', async (): Promise<void> => {
+  it("wont create a friend with an invalid id", async (): Promise<void> => {
     query = `
     INSERT INTO users_friends (user_id, request_id)
       VALUES
@@ -57,7 +57,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('wont create a record without a request_id', async (): Promise<void> => {
+  it("wont create a record without a request_id", async (): Promise<void> => {
     query = `
     INSERT INTO users_requests (user_id)
       VALUES
@@ -72,7 +72,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('wont create a record without a user_id', async (): Promise<void> => {
+  it("wont create a record without a user_id", async (): Promise<void> => {
     query = `
     INSERT INTO users_requests (request_id)
       VALUES
@@ -87,7 +87,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('record has a create_date', async (): Promise<void> => {
+  it("record has a create_date", async (): Promise<void> => {
     query = `
     SELECT create_date FROM users_requests WHERE users_requests.id=1;
     `;

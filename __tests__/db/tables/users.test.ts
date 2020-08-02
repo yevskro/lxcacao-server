@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 export default (): void => {
-  const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
+  const conString = "postgres://postgres@127.0.0.1:5432/testdb";
 
   let pool: Pool;
   let query: string;
@@ -13,12 +13,12 @@ export default (): void => {
 
   afterAll(async (): Promise<void> => pool.end());
 
-  it('can query database', async (): Promise<void> => {
-    const time = await pool.query('SELECT NOW();');
+  it("can query database", async (): Promise<void> => {
+    const time = await pool.query("SELECT NOW();");
     expect(time).not.toBe(undefined);
   });
 
-  it('can add a user', async (): Promise<void> => {
+  it("can add a user", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -33,7 +33,7 @@ export default (): void => {
     expect(error).toBe(undefined);
   });
 
-  it('cannot create a duplicate user', async (): Promise<void> => {
+  it("cannot create a duplicate user", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -48,16 +48,18 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('last_update, create_update are identical timestamps', async (): Promise<void> => {
+  it("last_update, create_update are identical timestamps", async (): Promise<
+    void
+  > => {
     const { last_update, create_date } = (
-      await pool.query('SELECT * FROM users WHERE users.id = 1;')
+      await pool.query("SELECT * FROM users WHERE users.id = 1;")
     ).rows[0];
     expect(last_update.length).not.toBe(0);
     expect(create_date.length).not.toBe(0);
     expect(last_update).toStrictEqual(create_date);
   });
 
-  it('secure_key is a unique key', async (): Promise<void> => {
+  it("secure_key is a unique key", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -71,12 +73,16 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('img_file_name has a default value of an empty string', async (): Promise<void> => {
-    const { img_file_name } = (await pool.query('SELECT * FROM users WHERE users.id = 1;')).rows[0];
-    expect(img_file_name).toBe('');
+  it("img_file_name has a default value of an empty string", async (): Promise<
+    void
+  > => {
+    const { img_file_name } = (
+      await pool.query("SELECT * FROM users WHERE users.id = 1;")
+    ).rows[0];
+    expect(img_file_name).toBe("");
   });
 
-  it('cant create a user without secure_key', async (): Promise<void> => {
+  it("cant create a user without secure_key", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip) 
         VALUES
@@ -91,7 +97,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create a user without login_ip', async (): Promise<void> => {
+  it("cant create a user without login_ip", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, secure_key) 
         VALUES
@@ -106,7 +112,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create a user without last_name', async (): Promise<void> => {
+  it("cant create a user without last_name", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, login_ip, secure_key) 
         VALUES
@@ -121,7 +127,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create a user without first_name', async (): Promise<void> => {
+  it("cant create a user without first_name", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, last_name, login_ip, secure_key) 
         VALUES
@@ -136,7 +142,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create a user without gmail', async (): Promise<void> => {
+  it("cant create a user without gmail", async (): Promise<void> => {
     query = `
     INSERT INTO users (first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -151,7 +157,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty secure_key', async (): Promise<void> => {
+  it("cant create user with empty secure_key", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -166,7 +172,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty login_ip', async (): Promise<void> => {
+  it("cant create user with empty login_ip", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, secure_key, login_ip) 
         VALUES
@@ -181,7 +187,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty last_name', async (): Promise<void> => {
+  it("cant create user with empty last_name", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, login_ip, secure_key, last_name) 
         VALUES
@@ -196,7 +202,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty first_name', async (): Promise<void> => {
+  it("cant create user with empty first_name", async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, last_name, login_ip, secure_key, first_name) 
         VALUES
@@ -211,7 +217,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty gmail', async (): Promise<void> => {
+  it("cant create user with empty gmail", async (): Promise<void> => {
     query = `
     INSERT INTO users (first_name, last_name, login_ip, secure_key, gmail) 
         VALUES

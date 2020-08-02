@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['airbnb', 'plugin:@typescript-eslint/recommended'],
+  extends: ['airbnb-typescript-prettier', 'plugin:@typescript-eslint/recommended'],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'prettier'],
   settings: {
@@ -15,7 +15,7 @@ module.exports = {
       2,
       { devDependencies: ['**/test.tsx', '**/test.ts'] },
     ],
-    '@typescript-eslint/indent': [2, 2],
+    '@typescript-eslint/indent': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',
