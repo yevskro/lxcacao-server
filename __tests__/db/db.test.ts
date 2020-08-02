@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import users from '/tables/users_friends.ts';
+import users from './tables/users';
 
 describe('database test', () => {
     const conString: string = 'postgres://postgres@127.0.0.1:5432/testdb';
