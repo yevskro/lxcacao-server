@@ -33,7 +33,8 @@ export default (): void => {
     (4, 2)
     `;
     try {
-      await pool.query(query);
+      const p = await pool.query(query);
+      console.log(p);
     }
     catch (err) {
       expect(err).not.toBe(undefined);
