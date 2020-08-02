@@ -9,7 +9,6 @@ module.exports = {
   rules: {
     'implicit-arrow-linebreak': 'off',
     'comma-dangle': 'off',
-    indent: 'off',
     'no-trailing-spaces': 'off',
     'import/extensions': [
       'error',
