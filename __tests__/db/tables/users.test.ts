@@ -2,8 +2,17 @@
 // eslint-disable-next-line no-unused-vars
 import { Pool } from 'pg';
 
-export default (pool: Pool): jest.EmptyFunction => {
+export default (): void => {
+  const conString: string = 'postgres://postgres@127.0.0.1:5432/testdb';
+
+  let pool: Pool;
   let query: string;
+
+  beforeAll((): void => {
+    pool = new Pool({ connectionString: conString });
+  });
+
+  afterAll(async (): Promise<void> => pool.end());
 
   it('can query database', async (): Promise<void> => {
     const time = await pool.query('SELECT NOW();');
@@ -202,6 +211,4 @@ export default (pool: Pool): jest.EmptyFunction => {
       expect(err).not.toBe(undefined);
     }
   });
-
-  return () => { };
 };

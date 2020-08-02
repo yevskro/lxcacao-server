@@ -36,6 +36,11 @@
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{ts,js,tsx,jsx}": [
       "eslint --fix",
