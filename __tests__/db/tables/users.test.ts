@@ -18,11 +18,6 @@ export default (): void => {
     expect(time).not.toBe(undefined);
   });
 
-  it('is an empty table', async (): Promise<void> => {
-    const result = await pool.query('SELECT * FROM users;');
-    expect(result.rows.length).toBe(0);
-  });
-
   it('can add a user', async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
