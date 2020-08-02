@@ -18,12 +18,14 @@ export default (): void => {
       VALUES
     (1, 2)
     `;
+    let error;
     try {
       await pool.query(query);
     }
     catch (err) {
-      expect(err).toBe(undefined);
+      error = err;
     }
+    expect(error).toBe(undefined);
   });
 
   it('wont create a user with an invalid id', async (): Promise<void> => {
@@ -32,12 +34,14 @@ export default (): void => {
       VALUES
     (4, 2)
     `;
+    let error;
     try {
-      const p = await pool.query(query);
+      await pool.query(query);
     }
     catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('wont create a block user with an invalid id', async (): Promise<void> => {
@@ -46,12 +50,14 @@ export default (): void => {
       VALUES
     (2, 4)
     `;
+    let error;
     try {
       await pool.query(query);
     }
     catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('wont create a record without a block_id', async (): Promise<void> => {
@@ -60,12 +66,14 @@ export default (): void => {
       VALUES
     (1)
     `;
+    let error;
     try {
       await pool.query(query);
     }
     catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('wont create a record without a user_id', async (): Promise<void> => {
@@ -74,23 +82,27 @@ export default (): void => {
       VALUES
     (1)
     `;
+    let error;
     try {
       await pool.query(query);
     }
     catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('record has a create_date', async (): Promise<void> => {
     query = `
     SELECT create_date FROM users_blocks WHERE users_blocks.id=1;
     `;
+    let error;
     try {
       await pool.query(query);
     }
     catch (err) {
-      expect(err).toBe(undefined);
+      error = err;
     }
+    expect(error).toBe(undefined);
   });
 };
