@@ -8,8 +8,10 @@
   "license": "MIT",
   "scripts": {
     "ci:test": "cross-env NODE_ENV=test jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit",
-    "setup-testdb": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
-    "test": "yarn setup-testdb && jest --coverage"
+    "create-tables": "psql -h localhost -U postgres -d testdb -f src/db/create.sql",
+    "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
+    "setup-testdb": "yarn create-tables && yarn seed-database",
+    "test": "yarn setup-testdb & jest"
   },
   "dependencies": {
     "pg": "^8.3.0"
@@ -34,15 +36,11 @@
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "*.{ts,js,tsx,jsx}": [
       "eslint --fix",
-      "yarn setup-testdb && jest --coverage --findRelatedTests"
+      "yarn setup-testdb",
+      "jest --findRelatedTests"
     ]
   }
 }
