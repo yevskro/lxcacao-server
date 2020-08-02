@@ -24,11 +24,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).toBe(undefined);
+      error = err;
     }
+    expect(error).toBe(undefined);
   });
 
   it('cannot create a duplicate user', async (): Promise<void> => {
@@ -37,11 +39,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('last_update, create_update are identical timestamps', async (): Promise<void> => {
@@ -58,11 +62,13 @@ export default (): void => {
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
     ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0000');`;
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('img_file_name has a default value of an empty string', async (): Promise<void> => {
@@ -76,11 +82,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', 'test', '127.0.0.1');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create a user without login_ip', async (): Promise<void> => {
@@ -89,11 +97,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', 'test', '0000');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create a user without last_name', async (): Promise<void> => {
@@ -102,11 +112,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create a user without first_name', async (): Promise<void> => {
@@ -115,11 +127,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create a user without gmail', async (): Promise<void> => {
@@ -128,11 +142,13 @@ export default (): void => {
         VALUES
     ('test', 'test', '127.0.0.1', '0000');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create user with empty secure_key', async (): Promise<void> => {
@@ -141,11 +157,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', 'test', '127.0.0.1', '');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create user with empty login_ip', async (): Promise<void> => {
@@ -154,11 +172,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', 'test', '0000', '');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create user with empty last_name', async (): Promise<void> => {
@@ -167,11 +187,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create user with empty first_name', async (): Promise<void> => {
@@ -180,11 +202,13 @@ export default (): void => {
         VALUES
     ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 
   it('cant create user with empty gmail', async (): Promise<void> => {
@@ -193,10 +217,12 @@ export default (): void => {
         VALUES
     ('test', 'test', '127.0.0.1', '0000', '');`;
 
+    let error;
     try {
       await pool.query(query);
     } catch (err) {
-      expect(err).not.toBe(undefined);
+      error = err;
     }
+    expect(error).not.toBe(undefined);
   });
 };
