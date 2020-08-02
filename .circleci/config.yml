@@ -32,13 +32,13 @@ jobs:
 
       - save_cache:
           paths:
-            - node_modules
-          key: v3-dependencies-{{ checksum "package.json" }}
+            - yarn.lock
+          key: yarn-lock-{{ checksum "yarn.lock" }}
 
       - save_cache:
           paths:
-            - yarn.lock
-          key: yarn-lock-{{ checksum "yarn.lock" }}
+            - node_modules
+          key: v3-dependencies-{{ checksum "package.json" }}
 
       - run:
           name: Waiting for Postgres to be ready
