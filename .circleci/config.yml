@@ -21,10 +21,10 @@ jobs:
             - v3-dependencies-
 
       - restore_cache:
-        keys:
-          - yarn-lock-{{ checksum "yarn.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - yarn-lock-
+          keys:
+            - yarn-lock-{{ checksum "yarn.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - yarn-lock-
 
       - run:
           name: Installing dependencies
