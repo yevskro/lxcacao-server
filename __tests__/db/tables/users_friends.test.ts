@@ -34,7 +34,6 @@ export default (): void => {
     `;
     try {
       const p = await pool.query(query);
-      console.log(p);
     }
     catch (err) {
       expect(err).not.toBe(undefined);
