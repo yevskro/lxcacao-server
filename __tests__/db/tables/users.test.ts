@@ -50,9 +50,7 @@ export default (): void => {
     }
   });
 
-  it('last_update, create_update are identical timestamps', async (): Promise<
-    void
-  > => {
+  it('last_update, create_update are identical timestamps', async (): Promise<void> => {
     const { last_update, create_date } = (
       await pool.query('SELECT * FROM users WHERE users.id = 1;')
     ).rows[0];
@@ -73,12 +71,8 @@ export default (): void => {
     }
   });
 
-  it('img_file_name has a default value of an empty string', async (): Promise<
-    void
-  > => {
-    const { img_file_name } = (
-      await pool.query('SELECT * FROM users WHERE users.id = 1;')
-    ).rows[0];
+  it('img_file_name has a default value of an empty string', async (): Promise<void> => {
+    const { img_file_name } = (await pool.query('SELECT * FROM users WHERE users.id = 1;')).rows[0];
     expect(img_file_name).toBe('');
   });
 
