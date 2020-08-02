@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS users_chats;
 DROP TABLE IF EXISTS users_recipes;
 DROP TABLE IF EXISTS recipes;
 DROP TABLE IF EXISTS users_requests;
-DROP TABLE IF EXISTS users_blocked;
+DROP TABLE IF EXISTS users_blocks;
 DROP TABLE IF EXISTS users_friends;
 DROP TABLE IF EXISTS users;
 
