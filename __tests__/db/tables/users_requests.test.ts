@@ -56,7 +56,7 @@ export default (): void => {
 
   it('wont create a record without a request_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_friends (user_id)
+    INSERT INTO users_requests (user_id)
       VALUES
     (1)
     `;
@@ -70,7 +70,7 @@ export default (): void => {
 
   it('wont create a record without a user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_friends (request_id)
+    INSERT INTO users_requests (request_id)
       VALUES
     (1)
     `;
@@ -82,15 +82,15 @@ export default (): void => {
     }
   });
 
-  it('record has a timestamp', async (): Promise<void> => {
+  it('record has a create_date', async (): Promise<void> => {
     query = `
-    SELECT timestamp FROM users_friends WHERE users_friends.id=1;
+    SELECT create_date FROM users_requests WHERE users_requests.id=1;
     `;
     try {
       await pool.query(query);
     }
     catch (err) {
-      expect(err).not.toBe(undefined);
+      expect(err).toBe(undefined);
     }
   });
 };

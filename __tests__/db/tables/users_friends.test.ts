@@ -53,4 +53,44 @@ export default (): void => {
       expect(err).not.toBe(undefined);
     }
   });
+
+  it('wont create a record without a request_id', async (): Promise<void> => {
+    query = `
+    INSERT INTO users_friends (user_id)
+      VALUES
+    (1)
+    `;
+    try {
+      await pool.query(query);
+    }
+    catch (err) {
+      expect(err).not.toBe(undefined);
+    }
+  });
+
+  it('wont create a record without a user_id', async (): Promise<void> => {
+    query = `
+    INSERT INTO users_friends (request_id)
+      VALUES
+    (1)
+    `;
+    try {
+      await pool.query(query);
+    }
+    catch (err) {
+      expect(err).not.toBe(undefined);
+    }
+  });
+
+  it('record has a create_date', async (): Promise<void> => {
+    query = `
+    SELECT create_date FROM users_friends WHERE users_friends.id=1;
+    `;
+    try {
+      await pool.query(query);
+    }
+    catch (err) {
+      expect(err).toBe(undefined);
+    }
+  });
 };
