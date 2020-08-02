@@ -81,7 +81,7 @@ describe('users table', (): void => {
     expect(img_file_name).toBe('');
   });
 
-  describe("can't create user without mandatory fields", (): void => {
+  describe("can't create users without mandatory fields", (): void => {
     it('secure_key', async (): Promise<void> => {
       query = `
       INSERT INTO users (gmail, first_name, last_name, login_ip) 
