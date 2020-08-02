@@ -12,6 +12,7 @@ describe('database test', () => {
         } catch (err) {
             console.log(err);
         }
+        console.log(pool);
     });
 
     afterAll(async (): Promise<void> => pool.end());
