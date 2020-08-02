@@ -48,7 +48,7 @@
   "lint-staged": {
     "*.{ts,js,tsx,jsx}": [
       "yarn setup-testdb",
-      "jest --findRelatedTests --coverage"
+      "jest --findRelatedTests"
     ]
   }
 }

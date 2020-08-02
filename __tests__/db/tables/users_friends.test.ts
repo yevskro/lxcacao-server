@@ -39,4 +39,18 @@ export default (): void => {
       expect(err).not.toBe(undefined);
     }
   });
+
+  it('wont create a friend with an invalid id', async (): Promise<void> => {
+    query = `
+    INSERT INTO users_friends (user_id, friend_id)
+      VALUES
+    (2, 4)
+    `;
+    try {
+      await pool.query(query);
+    }
+    catch (err) {
+      expect(err).not.toBe(undefined);
+    }
+  });
 };
