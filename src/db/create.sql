@@ -28,11 +28,11 @@ CREATE TABLE users_friends
     create_date TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE users_blocked
+CREATE TABLE users_blocks
 (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    blocked_id INTEGER REFERENCES users(id),
+    block_id INTEGER REFERENCES users(id),
     create_date TIMESTAMP DEFAULT NOW()
 );
 
