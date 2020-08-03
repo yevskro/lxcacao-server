@@ -1,5 +1,5 @@
 {
-  "name": "LxCacao-Server",
+  "name": "lxcacao-server",
   "version": "0.0.0",
   "description": "The backend for the LxCacao React Native application.",
   "main": "server/server.js",
@@ -11,8 +11,7 @@
     "create-tables": "psql -h localhost -U postgres -d testdb -f src/db/create.sql",
     "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
     "setup-testdb": "yarn create-tables && yarn seed-database",
-    "test": "yarn setup-testdb & jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "test": "yarn setup-testdb & jest"
   },
   "dependencies": {
     "pg": "^8.3.0"
@@ -55,6 +54,8 @@
   },
   "lint-staged": {
     "*.{ts,js,tsx,jsx}": [
+      "eslint --fix",
+      "prettier --write",
       "yarn setup-testdb",
       "jest --findRelatedTests"
     ]
