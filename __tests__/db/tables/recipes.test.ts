@@ -15,7 +15,6 @@ import { Pool } from 'pg';
     check a recipe can be created with all fields
     check mandotory fields can't be null or empty strings
     check ingredients and how to prepare can hold arrays
-    check from_full_name can't be an empty string if there is a from_id
 */
 export default (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';

@@ -54,7 +54,7 @@ CREATE TABLE recipes
     ingredients TEXT[] NOT NULL DEFAULT '{}',
     how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
     from_id INTEGER REFERENCES users(id) DEFAULT 0,
-    from_full_name TEXT IF from_id <> 0 THEN CHECK (from_full_name <> '') ELSE DEFAULT '' END IF,
+    from_full_name TEXT DEFAULT '',
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP DEFAULT NOW()
 );
