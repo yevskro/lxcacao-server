@@ -47,13 +47,15 @@ CREATE TABLE users_requests
 CREATE TABLE recipes
 (
     id SERIAL PRIMARY KEY,
-    name TEXT,
-    time TEXT,
-    type TEXT,
-    private BOOLEAN,
-    img_file_name TEXT,
-    ingredients TEXT[],
-    how_to_prepare TEXT[],
+    name TEXT NOT NULL CHECK (name <> ''),
+    time TEXT NOT NULL CHECK (name <> ''),
+    type TEXT NOT NULL CHECK (type <> ''),
+    from_full_name TEXT DEFAULT '',
+    from_id INTEGER REFERENCES users(id) DEFAULT 0,
+    private BOOLEAN NOT NULL,
+    img_file_name TEXT NOT NULL DEFAULT '',
+    ingredients TEXT[] NOT NULL DEFAULT {''},
+    how_to_prepare TEXT[] NOT NULL DEFAULT {''},
     create_date TIMESTAMP DEFAULT NOW()
 );
 
