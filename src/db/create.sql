@@ -50,12 +50,12 @@ CREATE TABLE recipes
     name TEXT NOT NULL CHECK (name <> ''),
     time TEXT NOT NULL CHECK (name <> ''),
     type TEXT NOT NULL CHECK (type <> ''),
-    from_full_name TEXT DEFAULT '',
-    from_id INTEGER REFERENCES users(id) DEFAULT 0,
     private BOOLEAN NOT NULL,
-    img_file_name TEXT NOT NULL DEFAULT '',
     ingredients TEXT[] NOT NULL DEFAULT {''},
     how_to_prepare TEXT[] NOT NULL DEFAULT {''},
+    from_id INTEGER REFERENCES users(id) DEFAULT 0,
+    from_full_name TEXT DEFAULT '',
+    img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP DEFAULT NOW()
 );
 
