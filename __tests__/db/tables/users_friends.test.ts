@@ -74,7 +74,7 @@ export default (): void => {
 
   it('wont create a record without a user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_friends (request_id)
+    INSERT INTO users_friends (friend_id)
       VALUES
     (1)
     `;
