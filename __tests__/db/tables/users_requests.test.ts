@@ -29,7 +29,7 @@ export default (): void => {
 
   it('wont create a user with an invalid id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_friends (user_id, request_id)
+    INSERT INTO users_requests (user_id, request_id)
       VALUES
     (4, 2)
     `;
@@ -44,7 +44,7 @@ export default (): void => {
 
   it('wont create a friend with an invalid id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_friends (user_id, request_id)
+    INSERT INTO users_requests (user_id, request_id)
       VALUES
     (2, 4)
     `;
