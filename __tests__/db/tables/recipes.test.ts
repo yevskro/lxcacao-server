@@ -251,11 +251,38 @@ export default (): void => {
     expect(error).toBe(undefined);
   });
 
-  it('has the default value of null in form_id', async (): Promise<void> => {
+  it('has the default value of null in from_id', async (): Promise<void> => {
     query = `
-    SELECT from_id FROM recipes WHERE recipes.id = 1 AND from_id = NULL;
+    SELECT from_id FROM recipes WHERE recipes.id = 1 AND recipes.from_id IS NULL;
     `;
 
+    const { from_id } = (await pool.query(query)).rows[0];
+    expect(from_id).toBe(null);
+  });
+
+  it('cant create a recipe with an invalid from_id', async (): Promise<
+    void
+  > => {
+    query = `
+    INSERT INTO recipes (name, type, time, private, from_id)
+      VALUES
+    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000')
+    `;
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  it('has a from_full_name', async (): Promise<void> => {
+    query = `
+    INSERT INTO recipes (name, type, time, private, from_full_name)
+      VALUES
+    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', 'Jim Durran')
+    `;
     let error;
     try {
       await pool.query(query);
