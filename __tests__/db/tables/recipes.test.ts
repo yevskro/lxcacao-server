@@ -112,11 +112,11 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  xit('cant create a user without first_name', async (): Promise<void> => {
+  it('cant create a recipe without private', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, last_name, login_ip, secure_key) 
+    INSERT INTO users (name, time, type) 
         VALUES
-    ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
+    ('Beef Straganoff, '44m 30s', true');`;
 
     let error;
     try {
