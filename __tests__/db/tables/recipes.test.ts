@@ -45,30 +45,17 @@ export default (): void => {
     expect(error).toBe(undefined);
   });
 
-  xit('cannot create a duplicate user', async (): Promise<void> => {
+  it('recipes has a create_date', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
-        VALUES
-    ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
-
+    SELECT create_date FROM recipes WHERE recipes.id=1;
+    `;
     let error;
     try {
       await pool.query(query);
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
-  });
-
-  xit('last_update, create_update are identical timestamps', async (): Promise<
-    void
-  > => {
-    const { last_update, create_date } = (
-      await pool.query('SELECT * FROM users WHERE users.id = 1;')
-    ).rows[0];
-    expect(last_update.length).not.toBe(0);
-    expect(create_date.length).not.toBe(0);
-    expect(last_update).toStrictEqual(create_date);
+    expect(error).toBe(undefined);
   });
 
   xit('secure_key is a unique key', async (): Promise<void> => {
