@@ -186,4 +186,25 @@ export default (): void => {
     }
     expect(error).not.toBe(undefined);
   });
+
+  it('can save an array into ingredients', async (): Promise<void> => {
+    query = `
+    INSERT INTO recipes (name, type, time, private, ingredients) 
+        VALUES
+    ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['1 cucumber','2 pickles']);`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBe(undefined);
+  });
 };
+/*
+    ingredients TEXT[] NOT NULL DEFAULT '{}',
+    how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
+    from_id INTEGER REFERENCES users(id) DEFAULT 0,
+    from_full_name TEXT DEFAULT '', 
+*/
