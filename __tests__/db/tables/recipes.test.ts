@@ -250,6 +250,20 @@ export default (): void => {
     }
     expect(error).toBe(undefined);
   });
+
+  it('has the default value of null in form_id', async (): Promise<void> => {
+    query = `
+    SELECT from_id FROM recipes WHERE recipes.id = 1 AND from_id = NULL;
+    `;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBe(undefined);
+  });
 };
 /*
     from_id INTEGER REFERENCES users(id) DEFAULT NULL,
