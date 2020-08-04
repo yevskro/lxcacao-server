@@ -157,11 +157,11 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  xit('cant create user with empty last_name', async (): Promise<void> => {
+  it('cant create user with empty time', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, login_ip, secure_key, last_name) 
+    INSERT INTO users (name, type, time, private) 
         VALUES
-    ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
+    ('Beef Straganoff', 'Dinner Entree, '', 'false');`;
 
     let error;
     try {
