@@ -82,11 +82,11 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  xit('cant create a user without login_ip', async (): Promise<void> => {
+  it('cant create a recipe without time', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, last_name, secure_key) 
+    INSERT INTO users (name, type, private) 
         VALUES
-    ('test@gmail.com', 'test', 'test', '0000');`;
+    ('Beef Straganoff', 'Dinner Entree', 'true');`;
 
     let error;
     try {
