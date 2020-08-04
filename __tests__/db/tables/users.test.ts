@@ -48,7 +48,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('last_update, create_update are identical timestamps', async (): Promise<
+  it('last_update, create_date are identical timestamps', async (): Promise<
     void
   > => {
     const { last_update, create_date } = (
