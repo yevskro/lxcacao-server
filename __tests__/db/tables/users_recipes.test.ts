@@ -16,7 +16,7 @@ export default (): void => {
     query = `
     INSERT INTO users_recipes (user_id, recipe_id)
       VALUES
-    (1, 2)
+    (1, 1)
     `;
     let error;
     try {
