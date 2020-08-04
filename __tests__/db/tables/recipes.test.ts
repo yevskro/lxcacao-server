@@ -34,7 +34,7 @@ export default (): void => {
     query = `
     INSERT INTO recipes (name, time, type, private) 
         VALUES
-    ('Beef Straganoff', '1hr15m', 'Dinner Entree', 'false');`;
+    ('Beef Straganoff', '1hr 15m', 'Dinner Entree', 'false');`;
 
     let error;
     try {
@@ -45,7 +45,7 @@ export default (): void => {
     expect(error).toBe(undefined);
   });
 
-  it('recipes has a create_date', async (): Promise<void> => {
+  it('has a create_date', async (): Promise<void> => {
     query = `
     SELECT create_date FROM recipes WHERE recipes.id=1;
     `;
@@ -67,11 +67,11 @@ export default (): void => {
     expect(img_file_name).toBe('');
   });
 
-  xit('cant create a user without secure_key', async (): Promise<void> => {
+  it('cant create a recipe without a name', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, last_name, login_ip) 
+    INSERT INTO users (type, time, private) 
         VALUES
-    ('test@gmail.com', 'test', 'test', '127.0.0.1');`;
+    ('Dinner Entree', '1hr 15m', 'false');`;
 
     let error;
     try {
