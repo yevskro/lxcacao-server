@@ -201,6 +201,21 @@ export default (): void => {
     }
     expect(error).toBe(undefined);
   });
+
+  it('can save an array into how_to_prepare', async (): Promise<void> => {
+    query = `
+    INSERT INTO recipes (name, type, time, private, how_to_prepare) 
+        VALUES
+    ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['cook beef','cook fries']);`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBe(undefined);
+  });
 };
 /*
     ingredients TEXT[] NOT NULL DEFAULT '{}',
