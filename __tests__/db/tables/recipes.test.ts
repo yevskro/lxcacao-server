@@ -69,7 +69,7 @@ export default (): void => {
 
   it('cant create a recipe without a name', async (): Promise<void> => {
     query = `
-    INSERT INTO users (type, time, private) 
+    INSERT INTO recipes (type, time, private) 
         VALUES
     ('Dinner Entree', '1hr 15m', 'false');`;
 
@@ -84,7 +84,7 @@ export default (): void => {
 
   it('cant create a recipe without time', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, type, private) 
+    INSERT INTO recipes (name, type, private) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree', 'true');`;
 
@@ -99,7 +99,7 @@ export default (): void => {
 
   it('cant create a recipe without type', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, time, private) 
+    INSERT INTO recipes (name, time, private) 
         VALUES
     ('Beef Straganoff', '55m', 'false');`;
 
@@ -114,7 +114,7 @@ export default (): void => {
 
   it('cant create a recipe without private', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, time, type) 
+    INSERT INTO recipes (name, time, type) 
         VALUES
     ('Beef Straganoff, '44m 30s', true');`;
 
@@ -127,9 +127,9 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty name', async (): Promise<void> => {
+  it('cant create recipe with empty name', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private) 
         VALUES
     ('', 'Dinner', 'Entree', '25m', 'true');`;
 
@@ -142,9 +142,9 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty type', async (): Promise<void> => {
+  it('cant create recipe with empty type', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private) 
         VALUES
     ('Beef Straganoff, '', '3hr', 'false');`;
 
@@ -157,9 +157,9 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty time', async (): Promise<void> => {
+  it('cant create recipe with empty time', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree, '', 'false');`;
 
@@ -172,26 +172,11 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('cant create user with empty private', async (): Promise<void> => {
+  it('cant create recipe with empty private', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', '');`;
-
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).not.toBe(undefined);
-  });
-
-  xit('cant create user with empty gmail', async (): Promise<void> => {
-    query = `
-    INSERT INTO users (first_name, last_name, login_ip, secure_key, gmail) 
-        VALUES
-    ('test', 'test', '127.0.0.1', '0000', '');`;
 
     let error;
     try {
