@@ -58,25 +58,11 @@ export default (): void => {
     expect(error).toBe(undefined);
   });
 
-  xit('secure_key is a unique key', async (): Promise<void> => {
-    query = `
-    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
-        VALUES
-    ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0000');`;
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).not.toBe(undefined);
-  });
-
-  xit('img_file_name has a default value of an empty string', async (): Promise<
+  it('img_file_name has a default value of an empty string', async (): Promise<
     void
   > => {
     const { img_file_name } = (
-      await pool.query('SELECT * FROM users WHERE users.id = 1;')
+      await pool.query('SELECT * FROM recipes WHERE recipes.id = 1;')
     ).rows[0];
     expect(img_file_name).toBe('');
   });
