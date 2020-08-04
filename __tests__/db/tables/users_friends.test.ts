@@ -57,7 +57,7 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  it('wont create a record without a request_id', async (): Promise<void> => {
+  it('wont create a record without a friend_id', async (): Promise<void> => {
     query = `
     INSERT INTO users_friends (user_id)
       VALUES

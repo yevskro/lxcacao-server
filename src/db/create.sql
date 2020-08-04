@@ -16,32 +16,32 @@ CREATE TABLE users
     login_ip TEXT NOT NULL CHECK (login_ip <> ''),
     secure_key TEXT UNIQUE NOT NULL CHECK (secure_key <> ''),
     img_file_name TEXT DEFAULT '',
-    last_update TIMESTAMP DEFAULT NOW(),
-    create_date TIMESTAMP DEFAULT NOW()
+    last_update TIMESTAMP NOT NULL DEFAULT NOW(),
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_friends
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    friend_id INTEGER REFERENCES users(id) NOT NULL,
-    create_date TIMESTAMP DEFAULT NOW()
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    friend_id INTEGER NOT NULL REFERENCES users(id),
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_blocks
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    block_id INTEGER REFERENCES users(id) NOT NULL,
-    create_date TIMESTAMP DEFAULT NOW()
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    block_id INTEGER NOT NULL REFERENCES users(id),
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_requests
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    request_id INTEGER REFERENCES users(id) NOT NULL,
-    create_date TIMESTAMP DEFAULT NOW()
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    request_id INTEGER NOT NULL REFERENCES users(id),
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE recipes
@@ -56,20 +56,21 @@ CREATE TABLE recipes
     from_id INTEGER REFERENCES users(id) DEFAULT NULL,
     from_full_name TEXT DEFAULT '',
     img_file_name TEXT NOT NULL DEFAULT '',
-    create_date TIMESTAMP DEFAULT NOW()
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_recipes
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    recipe_id INTEGER REFERENCES recipes(id) NOT NULL
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    recipe_id INTEGER NOT NULL REFERENCES recipes(id)
 );
 
 CREATE TABLE users_chats
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) NOT NULL,
-    friend_id INTEGER NOT NULL,
-    msgs TEXT[]
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    friend_id INTEGER NOT NULL REFERENCES users(id),
+    msgs TEXT[] NOT NULL DEFAULT '{}',
+    last_update TIMESTAMP NOT NULL DEFAULT NOW()
 );
