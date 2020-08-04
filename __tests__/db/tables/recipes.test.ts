@@ -291,6 +291,16 @@ export default (): void => {
     }
     expect(error).toBe(undefined);
   });
+
+  it('has a default value of an empty string for from_full_name', async (): Promise<
+    void
+  > => {
+    query = `
+    SELECT from_full_name FROM recipes WHERE recipes.id = 1;
+    `;
+    const { from_full_name } = (await pool.query(query)).rows[0];
+    expect(from_full_name).toStrictEqual('');
+  });
 };
 /*
     from_id INTEGER REFERENCES users(id) DEFAULT NULL,
