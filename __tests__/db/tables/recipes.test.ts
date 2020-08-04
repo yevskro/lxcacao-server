@@ -216,6 +216,16 @@ export default (): void => {
     }
     expect(error).toBe(undefined);
   });
+
+  it('has a default value of an empty array in ingredients', async (): Promise<
+    void
+  > => {
+    query = `
+      SELECT ingredients FROM recipes WHERE recipes.id = 1;
+    `;
+    const ingredients = await pool.query(query);
+    console.log(ingredients);
+  });
 };
 /*
     ingredients TEXT[] NOT NULL DEFAULT '{}',
