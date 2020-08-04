@@ -129,9 +129,9 @@ export default (): void => {
 
   it('cant create user with empty name', async (): Promise<void> => {
     query = `
-    INSERT INTO users (name, type, time) 
+    INSERT INTO users (name, type, time, private) 
         VALUES
-    ('', 'Dinner', 'Entree', '25m');`;
+    ('', 'Dinner', 'Entree', '25m', 'true');`;
 
     let error;
     try {
@@ -142,11 +142,11 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  xit('cant create user with empty login_ip', async (): Promise<void> => {
+  it('cant create user with empty type', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, last_name, secure_key, login_ip) 
+    INSERT INTO users (name, type, time, private) 
         VALUES
-    ('test@gmail.com', 'test', 'test', '0000', '');`;
+    ('Beef Straganoff, '', '3hr', 'false');`;
 
     let error;
     try {
