@@ -236,10 +236,22 @@ export default (): void => {
     const { how_to_prepare } = (await pool.query(query)).rows[0];
     expect(how_to_prepare).toStrictEqual([]);
   });
+
+  it('has a from_id', async (): Promise<void> => {
+    query = `
+    SELECT from_id FROM recipes WHERE recipes.id = 1;
+    `;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBe(undefined);
+  });
 };
 /*
-    ingredients TEXT[] NOT NULL DEFAULT '{}',
-    how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
-    from_id INTEGER REFERENCES users(id) DEFAULT 0,
-    from_full_name TEXT DEFAULT '', 
+    from_id INTEGER REFERENCES users(id) DEFAULT NULL,
+    from_full_name TEXT DEFAULT '',
 */
