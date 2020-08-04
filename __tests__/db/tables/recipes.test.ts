@@ -1,15 +1,18 @@
+/* eslint-disable camelcase */
 import { Pool } from 'pg';
 /*  
     name TEXT NOT NULL CHECK (name <> ''),
     time TEXT NOT NULL CHECK (name <> ''),
     type TEXT NOT NULL CHECK (type <> ''),
     private BOOLEAN NOT NULL,
+
     ingredients TEXT[] NOT NULL DEFAULT {''},
     how_to_prepare TEXT[] NOT NULL DEFAULT {''},
     from_id INTEGER REFERENCES users(id) DEFAULT 0,
     from_full_name TEXT DEFAULT '',
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP DEFAULT NOW() 
+
     check a recipe can be created with mandotory fields
     check a recipe can't be created without mandatory fields
     check a recipe can be created with all fields
@@ -26,4 +29,218 @@ export default (): void => {
   });
 
   afterAll(async (): Promise<void> => pool.end());
+
+  it('can add a recipe', async (): Promise<void> => {
+    query = `
+    INSERT INTO recipes (name, time, type, private) 
+        VALUES
+    ('Beef Straganoff', '1hr15m', 'Dinner Entree', 'false');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBe(undefined);
+  });
+
+  xit('cannot create a duplicate user', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '127.0.0.1', '0000');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('last_update, create_update are identical timestamps', async (): Promise<
+    void
+  > => {
+    const { last_update, create_date } = (
+      await pool.query('SELECT * FROM users WHERE users.id = 1;')
+    ).rows[0];
+    expect(last_update.length).not.toBe(0);
+    expect(create_date.length).not.toBe(0);
+    expect(last_update).toStrictEqual(create_date);
+  });
+
+  xit('secure_key is a unique key', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0000');`;
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('img_file_name has a default value of an empty string', async (): Promise<
+    void
+  > => {
+    const { img_file_name } = (
+      await pool.query('SELECT * FROM users WHERE users.id = 1;')
+    ).rows[0];
+    expect(img_file_name).toBe('');
+  });
+
+  xit('cant create a user without secure_key', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '127.0.0.1');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create a user without login_ip', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '0000');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create a user without last_name', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, login_ip, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create a user without first_name', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, last_name, login_ip, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', '127.0.0.1', '0000');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create a user without gmail', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test', 'test', '127.0.0.1', '0000');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create user with empty secure_key', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '127.0.0.1', '');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create user with empty login_ip', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, secure_key, login_ip) 
+        VALUES
+    ('test@gmail.com', 'test', 'test', '0000', '');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create user with empty last_name', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, login_ip, secure_key, last_name) 
+        VALUES
+    ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create user with empty first_name', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, last_name, login_ip, secure_key, first_name) 
+        VALUES
+    ('test@gmail.com', 'test', '127.0.0.1', '0000', '');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
+
+  xit('cant create user with empty gmail', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (first_name, last_name, login_ip, secure_key, gmail) 
+        VALUES
+    ('test', 'test', '127.0.0.1', '0000', '');`;
+
+    let error;
+    try {
+      await pool.query(query);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBe(undefined);
+  });
 };
