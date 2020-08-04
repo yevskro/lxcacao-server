@@ -127,26 +127,11 @@ export default (): void => {
     expect(error).not.toBe(undefined);
   });
 
-  xit('cant create a user without gmail', async (): Promise<void> => {
+  it('cant create user with empty name', async (): Promise<void> => {
     query = `
-    INSERT INTO users (first_name, last_name, login_ip, secure_key) 
+    INSERT INTO users (name, type, time) 
         VALUES
-    ('test', 'test', '127.0.0.1', '0000');`;
-
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).not.toBe(undefined);
-  });
-
-  xit('cant create user with empty secure_key', async (): Promise<void> => {
-    query = `
-    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
-        VALUES
-    ('test@gmail.com', 'test', 'test', '127.0.0.1', '');`;
+    ('', 'Dinner', 'Entree', '25m');`;
 
     let error;
     try {
