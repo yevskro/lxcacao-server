@@ -223,8 +223,18 @@ export default (): void => {
     query = `
       SELECT ingredients FROM recipes WHERE recipes.id = 1;
     `;
-    const ingredients = await pool.query(query);
-    console.log(ingredients);
+    const { ingredients } = (await pool.query(query)).rows[0];
+    expect(ingredients).toStrictEqual([]);
+  });
+
+  it('has a default value of an empty array in how_to_prepare', async (): Promise<
+    void
+  > => {
+    query = `
+    SELECT how_to_prepare FROM recipes WHERE recipes.id = 1;
+  `;
+    const { how_to_prepare } = (await pool.query(query)).rows[0];
+    expect(how_to_prepare).toStrictEqual([]);
   });
 };
 /*
