@@ -15,6 +15,6 @@ describe('database test', (): void => {
   describe('users_blocks table', usersBlocksTest);
   describe('users_requests', usersRequestsTest);
   describe('recipes table', recipesTest);
-  describe('users_recipes', usersRecipesTest);
-  describe('users_chats', usersChatsTest);
+  describe('users_recipes table', usersRecipesTest);
+  describe('users_chats table', usersChatsTest);
 });
