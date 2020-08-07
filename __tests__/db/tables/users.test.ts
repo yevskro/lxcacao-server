@@ -57,6 +57,28 @@ export default (): void => {
     );
   });
 
+  it('last_update cannot be null', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_update) 
+        VALUES
+    ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0005', null);`;
+
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.NOT_NULL_VIOLATION
+    );
+  });
+
+  it('last_update cannot be an empty string', async (): Promise<void> => {
+    query = `
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_update) 
+        VALUES
+    ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0005', '');`;
+
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.INVALID_DATETIME_FORMAT
+    );
+  });
+
   it('img_file_name has a default value of an empty string', async (): Promise<
     void
   > => {

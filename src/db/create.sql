@@ -16,7 +16,7 @@ CREATE TABLE users
     login_ip TEXT NOT NULL CHECK (login_ip <> ''),
     secure_key TEXT UNIQUE NOT NULL CHECK (secure_key <> ''),
     img_file_name TEXT DEFAULT '',
-    last_update TIMESTAMP NOT NULL DEFAULT NOW() CHECK (last_update <> ''),
+    last_update TIMESTAMP NOT NULL DEFAULT NOW(),
     create_date TIMESTAMP NOT NULL DEFAULT NOW() 
 );
 
