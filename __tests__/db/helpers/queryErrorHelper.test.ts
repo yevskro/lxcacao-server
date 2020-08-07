@@ -2,7 +2,7 @@
   Author: Yevgeniy Skroznikov
   Date: August 7 2020
   Description:
-  Test for the exported function from queryErrorHelper.
+  Tests the exported function from queryErrorHelper.
 */
 
 import { Pool } from 'pg';

@@ -1,4 +1,15 @@
 /* eslint-disable camelcase */
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 7 2020
+  Description:
+  Test suite for the server's PostgreSQL database.
+  Tests for uniqueness, checks for invalid null fields, invalid empty strings,
+  valid foreign keys, and valid timestamp types.
+   
+  Look at root/src/db/create.sql to see the tables that are tested.
+*/
+
 import { Pool } from 'pg';
 import usersTest from './tables/users.test';
 import usersFriendsTest from './tables/usersFriends.test';
