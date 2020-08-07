@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { Pool } from 'pg';
+import { PostgresError } from 'pg-error-enum';
 
 export default (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -45,7 +46,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.UNIQUE_VIOLATION);
   });
 
   it('last_update, create_date are identical timestamps', async (): Promise<
@@ -70,7 +72,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.UNIQUE_VIOLATION);
   });
 
   it('img_file_name has a default value of an empty string', async (): Promise<
@@ -94,7 +97,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a user without login_ip', async (): Promise<void> => {
@@ -109,7 +113,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a user without last_name', async (): Promise<void> => {
@@ -124,7 +129,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a user without first_name', async (): Promise<void> => {
@@ -139,7 +145,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a user without gmail', async (): Promise<void> => {
@@ -154,7 +161,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create user with empty secure_key', async (): Promise<void> => {
@@ -169,7 +177,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create user with empty login_ip', async (): Promise<void> => {
@@ -184,7 +193,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create user with empty last_name', async (): Promise<void> => {
@@ -199,7 +209,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create user with empty first_name', async (): Promise<void> => {
@@ -214,7 +225,8 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create user with empty gmail', async (): Promise<void> => {
@@ -229,6 +241,7 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 };
