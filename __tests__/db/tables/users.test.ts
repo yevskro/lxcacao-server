@@ -14,11 +14,6 @@ export default (): void => {
 
   afterAll(async (): Promise<void> => pool.end());
 
-  it('can query database', async (): Promise<void> => {
-    const time = await pool.query('SELECT NOW();');
-    expect(time).not.toBe(undefined);
-  });
-
   it('can add a user', async (): Promise<void> => {
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
