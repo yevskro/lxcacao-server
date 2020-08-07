@@ -1,18 +1,20 @@
 /* eslint-disable camelcase */
-import users from './tables/users.test';
-import users_friends from './tables/users_friends.test';
-import users_blocks from './tables/users_blocks.test';
-import users_requests from './tables/users_requests.test';
-import recipes from './tables/recipes.test';
-import users_recipes from './tables/users_recipes.test';
-import users_chats from './tables/users_chats.test';
+import usersTest from './tables/users.test';
+import usersFriendsTest from './tables/usersFriends.test';
+import usersBlocksTest from './tables/usersBlocks.test';
+import usersRequestsTest from './tables/usersRequests.test';
+import recipesTest from './tables/recipes.test';
+import usersRecipesTest from './tables/usersRecipes.test';
+import usersChatsTest from './tables/usersChats.test';
+import queryErrorHelperTest from './helpers/queryErrorHelper.test';
 
 describe('database test', (): void => {
-  describe('users table', users);
-  describe('users_friends table', users_friends);
-  describe('users_blocks table', users_blocks);
-  describe('users_requests', users_requests);
-  describe('recipes table', recipes);
-  describe('users_recipes', users_recipes);
-  describe('users_chats', users_chats);
+  describe('query error helper', queryErrorHelperTest);
+  describe('users table', usersTest);
+  describe('users_friends table', usersFriendsTest);
+  describe('users_blocks table', usersBlocksTest);
+  describe('users_requests', usersRequestsTest);
+  describe('recipes table', recipesTest);
+  describe('users_recipes', usersRecipesTest);
+  describe('users_chats', usersChatsTest);
 });

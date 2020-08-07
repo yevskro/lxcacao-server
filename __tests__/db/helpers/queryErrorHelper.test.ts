@@ -1,8 +1,8 @@
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import queryTestError from './QueryTestError';
+import queryErrorHelper from './queryErrorHelper';
 
-describe('QueryTestError Helper', (): void => {
+export default (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
 
   let pool: Pool;
@@ -15,8 +15,8 @@ describe('QueryTestError Helper', (): void => {
 
   it('can test an error from a query', async (): Promise<void> => {
     query = 'SELECT * FROM nonexistingtable;';
-    expect(await queryTestError(pool, query)).toBe(
+    expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.UNDEFINED_TABLE
     );
   });
-});
+};
