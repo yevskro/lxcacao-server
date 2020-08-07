@@ -5,5 +5,5 @@ module.exports = {
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)'],
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['/tables/', '/models/'],
+  testPathIgnorePatterns: ['/tables/', '/models/', 'QueryTestError.ts'],
 };
