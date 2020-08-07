@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { Pool } from 'pg';
+import { PostgresError } from 'pg-error-enum';
 
 export default (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -61,7 +62,7 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a recipe without time', async (): Promise<void> => {
@@ -76,7 +77,7 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a recipe without type', async (): Promise<void> => {
@@ -91,14 +92,14 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create a recipe without private', async (): Promise<void> => {
     query = `
     INSERT INTO recipes (name, time, type) 
         VALUES
-    ('Beef Straganoff, '44m 30s', true');`;
+    ('Beef Straganoff', '44m 30s', 'Dinner Entree');`;
 
     let error;
     try {
@@ -106,14 +107,14 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
   });
 
   it('cant create recipe with empty name', async (): Promise<void> => {
     query = `
     INSERT INTO recipes (name, type, time, private) 
         VALUES
-    ('', 'Dinner', 'Entree', '25m', 'true');`;
+    ('', 'Dinner Entree', '25m', 'true');`;
 
     let error;
     try {
@@ -121,14 +122,14 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create recipe with empty type', async (): Promise<void> => {
     query = `
     INSERT INTO recipes (name, type, time, private) 
         VALUES
-    ('Beef Straganoff, '', '3hr', 'false');`;
+    ('Beef Straganoff', '', '3hr', 'false');`;
 
     let error;
     try {
@@ -136,14 +137,14 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create recipe with empty time', async (): Promise<void> => {
     query = `
     INSERT INTO recipes (name, type, time, private) 
         VALUES
-    ('Beef Straganoff', 'Dinner Entree, '', 'false');`;
+    ('Beef Straganoff', 'Dinner Entree', '', 'false');`;
 
     let error;
     try {
@@ -151,7 +152,7 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
   });
 
   it('cant create recipe with empty private', async (): Promise<void> => {
@@ -166,7 +167,7 @@ export default (): void => {
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.INVALID_TEXT_REPRESENTATION);
   });
 
   it('can save an array into ingredients', async (): Promise<void> => {
@@ -203,8 +204,8 @@ export default (): void => {
     void
   > => {
     query = `
-      SELECT ingredients FROM recipes WHERE recipes.id = 1;
-    `;
+      SELECT ingredients FROM recipes WHERE recipes.id = 1;`;
+
     const { ingredients } = (await pool.query(query)).rows[0];
     expect(ingredients).toStrictEqual([]);
   });
@@ -213,16 +214,14 @@ export default (): void => {
     void
   > => {
     query = `
-    SELECT how_to_prepare FROM recipes WHERE recipes.id = 1;
-  `;
+    SELECT how_to_prepare FROM recipes WHERE recipes.id = 1;`;
     const { how_to_prepare } = (await pool.query(query)).rows[0];
     expect(how_to_prepare).toStrictEqual([]);
   });
 
   it('has a from_id', async (): Promise<void> => {
     query = `
-    SELECT from_id FROM recipes WHERE recipes.id = 1;
-    `;
+    SELECT from_id FROM recipes WHERE recipes.id = 1;`;
 
     let error;
     try {
@@ -235,8 +234,7 @@ export default (): void => {
 
   it('has the default value of null in from_id', async (): Promise<void> => {
     query = `
-    SELECT from_id FROM recipes WHERE recipes.id = 1 AND recipes.from_id IS NULL;
-    `;
+    SELECT from_id FROM recipes WHERE recipes.id = 1 AND recipes.from_id IS NULL;`;
 
     const { from_id } = (await pool.query(query)).rows[0];
     expect(from_id).toBe(null);
@@ -248,23 +246,21 @@ export default (): void => {
     query = `
     INSERT INTO recipes (name, type, time, private, from_id)
       VALUES
-    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000')
-    `;
+    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000');`;
     let error;
     try {
       await pool.query(query);
     } catch (err) {
       error = err;
     }
-    expect(error).not.toBe(undefined);
+    expect(error.code).toBe(PostgresError.FOREIGN_KEY_VIOLATION);
   });
 
   it('has a from_full_name', async (): Promise<void> => {
     query = `
     INSERT INTO recipes (name, type, time, private, from_full_name)
       VALUES
-    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', 'Jim Durran')
-    `;
+    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', 'Jim Durran');`;
     let error;
     try {
       await pool.query(query);

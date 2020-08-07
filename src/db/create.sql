@@ -48,7 +48,7 @@ CREATE TABLE recipes
 (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL CHECK (name <> ''),
-    time TEXT NOT NULL CHECK (name <> ''),
+    time TEXT NOT NULL CHECK (time <> ''),
     type TEXT NOT NULL CHECK (type <> ''),
     private BOOLEAN NOT NULL,
     ingredients TEXT[] NOT NULL DEFAULT '{}',

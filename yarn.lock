@@ -4555,6 +4555,11 @@ pg-connection-string@^2.3.0:
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-2.3.0.tgz#c13fcb84c298d0bfa9ba12b40dd6c23d946f55d6"
   integrity sha512-ukMTJXLI7/hZIwTW7hGMZJ0Lj0S2XQBCJ4Shv4y1zgQ/vqVea+FLhzywvPj0ujSuofu+yA4MYHGZPTsgjBgJ+w==
 
+pg-error-enum@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/pg-error-enum/-/pg-error-enum-0.4.0.tgz#d115a91fdfe597d777eff67f452048e2482e55b4"
+  integrity sha512-uzii3j3wFjjJELVxhRx3h1pfpgAMAepFDZVEgHfBz44zND078Fouizw5tTXYfWaEKXAJb0B8mYLARnNZz/spjA==
+
 pg-int8@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
