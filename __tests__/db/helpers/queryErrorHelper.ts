@@ -1,3 +1,13 @@
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 7 2020
+  Description:
+  Exporting a helper function for tests that
+  that query a postgres database and test
+  the error code.
+  The error code is an enum type PostgresError.
+  If there is no error undefined is returned.
+*/
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 

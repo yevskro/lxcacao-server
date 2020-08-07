@@ -1,3 +1,10 @@
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 7 2020
+  Description:
+  Test for the exported function from queryErrorHelper.
+*/
+
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import queryErrorHelper from './queryErrorHelper';
