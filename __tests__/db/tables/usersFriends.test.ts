@@ -1,4 +1,18 @@
 /* eslint-disable camelcase */
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 7 2020
+  Description:
+  Tests the users_friends table's columns.
+  Tests for uniqueness, checks for invalid null fields, invalid empty strings,
+  valid foreign keys, and valid timestamp types.
+  
+  Columns:
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    friend_id INTEGER NOT NULL REFERENCES users(id),
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
+*/
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import queryErrorHelper from '../helpers/queryErrorHelper';

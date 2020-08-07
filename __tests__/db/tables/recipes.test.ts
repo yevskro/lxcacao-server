@@ -1,4 +1,25 @@
 /* eslint-disable camelcase */
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 7 2020
+  Description:
+  Tests the recipes table's columns.
+  Tests for uniqueness, checks for invalid null fields, invalid empty strings,
+  valid foreign keys, and valid timestamp types.
+  
+  Columns: 
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL CHECK (name <> ''),
+    time TEXT NOT NULL CHECK (time <> ''),
+    type TEXT NOT NULL CHECK (type <> ''),
+    private BOOLEAN NOT NULL,
+    ingredients TEXT[] NOT NULL DEFAULT '{}',
+    how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
+    from_id INTEGER REFERENCES users(id) DEFAULT NULL,
+    from_full_name TEXT DEFAULT '',
+    img_file_name TEXT NOT NULL DEFAULT '',
+    create_date TIMESTAMP NOT NULL DEFAULT NOW()
+*/
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import queryErrorHelper from '../helpers/queryErrorHelper';

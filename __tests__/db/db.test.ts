@@ -3,10 +3,10 @@
   Author: Yevgeniy Skroznikov
   Date: August 7 2020
   Description:
-  Test suite for the server's PostgreSQL database.
+  Test suite for the server's PostgreSQL test database(testdb).
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
-   
+
   Look at root/src/db/create.sql to see the tables that are tested.
 */
 

@@ -1,4 +1,23 @@
 /* eslint-disable camelcase */
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 7 2020
+  Description:
+  Tests the users table's columns.
+  Tests for uniqueness, checks for invalid null fields, invalid empty strings,
+  valid foreign keys, and valid timestamp types.
+  
+  Columns:
+    id SERIAL PRIMARY KEY,
+    gmail TEXT UNIQUE NOT NULL CHECK (gmail <> ''),
+    first_name TEXT NOT NULL CHECK (first_name <> ''),
+    last_name TEXT NOT NULL CHECK (last_name <> ''),
+    login_ip TEXT NOT NULL CHECK (login_ip <> ''),
+    secure_key TEXT UNIQUE NOT NULL CHECK (secure_key <> ''),
+    img_file_name TEXT DEFAULT '',
+    last_update TIMESTAMP NOT NULL DEFAULT NOW(),
+    create_date TIMESTAMP NOT NULL DEFAULT NOW() 
+*/
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import queryErrorHelper from '../helpers/queryErrorHelper';
