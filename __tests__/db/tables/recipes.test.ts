@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
+import queryErrorHelper from '../helpers/queryErrorHelper';
 
 export default (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -19,26 +20,14 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', '1hr 15m', 'Dinner Entree', 'false');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).toBe(undefined);
+    expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('has a create_date', async (): Promise<void> => {
     query = `
-    SELECT create_date FROM recipes WHERE recipes.id=1;
-    `;
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).toBe(undefined);
+    SELECT create_date FROM recipes WHERE recipes.id=1;`;
+
+    expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('img_file_name has a default value of an empty string', async (): Promise<
@@ -56,13 +45,9 @@ export default (): void => {
         VALUES
     ('Dinner Entree', '1hr 15m', 'false');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.NOT_NULL_VIOLATION
+    );
   });
 
   it('cant create a recipe without time', async (): Promise<void> => {
@@ -71,13 +56,9 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', 'Dinner Entree', 'true');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.NOT_NULL_VIOLATION
+    );
   });
 
   it('cant create a recipe without type', async (): Promise<void> => {
@@ -86,13 +67,9 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', '55m', 'false');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.NOT_NULL_VIOLATION
+    );
   });
 
   it('cant create a recipe without private', async (): Promise<void> => {
@@ -101,13 +78,9 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', '44m 30s', 'Dinner Entree');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.NOT_NULL_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.NOT_NULL_VIOLATION
+    );
   });
 
   it('cant create recipe with empty name', async (): Promise<void> => {
@@ -116,13 +89,9 @@ export default (): void => {
         VALUES
     ('', 'Dinner Entree', '25m', 'true');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.CHECK_VIOLATION
+    );
   });
 
   it('cant create recipe with empty type', async (): Promise<void> => {
@@ -131,13 +100,9 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', '', '3hr', 'false');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.CHECK_VIOLATION
+    );
   });
 
   it('cant create recipe with empty time', async (): Promise<void> => {
@@ -146,13 +111,9 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '', 'false');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.CHECK_VIOLATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.CHECK_VIOLATION
+    );
   });
 
   it('cant create recipe with empty private', async (): Promise<void> => {
@@ -161,13 +122,9 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', '');`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.INVALID_TEXT_REPRESENTATION);
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.INVALID_TEXT_REPRESENTATION
+    );
   });
 
   it('can save an array into ingredients', async (): Promise<void> => {
@@ -176,13 +133,7 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['1 cucumber','2 pickles']);`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).toBe(undefined);
+    expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('can save an array into how_to_prepare', async (): Promise<void> => {
@@ -191,13 +142,7 @@ export default (): void => {
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['cook beef','cook fries']);`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).toBe(undefined);
+    expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('has a default value of an empty array in ingredients', async (): Promise<
@@ -223,13 +168,7 @@ export default (): void => {
     query = `
     SELECT from_id FROM recipes WHERE recipes.id = 1;`;
 
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).toBe(undefined);
+    expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('has the default value of null in from_id', async (): Promise<void> => {
@@ -247,13 +186,10 @@ export default (): void => {
     INSERT INTO recipes (name, type, time, private, from_id)
       VALUES
     ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000');`;
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error.code).toBe(PostgresError.FOREIGN_KEY_VIOLATION);
+
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.FOREIGN_KEY_VIOLATION
+    );
   });
 
   it('has a from_full_name', async (): Promise<void> => {
@@ -261,21 +197,16 @@ export default (): void => {
     INSERT INTO recipes (name, type, time, private, from_full_name)
       VALUES
     ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', 'Jim Durran');`;
-    let error;
-    try {
-      await pool.query(query);
-    } catch (err) {
-      error = err;
-    }
-    expect(error).toBe(undefined);
+
+    expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('has a default value of an empty string for from_full_name', async (): Promise<
     void
   > => {
     query = `
-    SELECT from_full_name FROM recipes WHERE recipes.id = 1;
-    `;
+    SELECT from_full_name FROM recipes WHERE recipes.id = 1;`;
+
     const { from_full_name } = (await pool.query(query)).rows[0];
     expect(from_full_name).toStrictEqual('');
   });
