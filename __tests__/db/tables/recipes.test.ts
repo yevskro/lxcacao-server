@@ -48,7 +48,7 @@ export default (): void => {
 
   it('has a create_date', async (): Promise<void> => {
     query = `
-    SELECT create_date FROM recipes WHERE recipes.id=1;`;
+    SELECT create_date FROM recipes WHERE recipes.name = 'Beef Straganoff';`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
@@ -57,7 +57,9 @@ export default (): void => {
     void
   > => {
     const { img_file_name } = (
-      await pool.query('SELECT * FROM recipes WHERE recipes.id = 1;')
+      await pool.query(
+        `SELECT * FROM recipes WHERE recipes.name = 'Beef Straganoff';`
+      )
     ).rows[0];
     expect(img_file_name).toBe('');
   });
