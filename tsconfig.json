@@ -9,5 +9,6 @@
     "sourceMap": true,
     "baseUrl": ".",
   },
-  "include": ["src/", "__tests__/", "jest.config.js", ".eslintrc.js"]
+  "include": ["src/", "__tests__/", "jest.config.js", ".eslintrc.js"],
+  "exclude": ["node_modules"]
 }
