@@ -4,7 +4,7 @@
 */
 
 import { Pool } from 'pg';
-import User from '../../../src/models/User';
+import User, { UserData } from '../../../src/models/User';
 
 export default (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -24,17 +24,17 @@ export default (): void => {
   });
 
   it('can get the user id', (): void => {
-    expect(user.getId()).toBe(1);
+    expect(user.getUserId()).toBe(1);
   });
 
   it('can create a user', async (): Promise<void> => {
     expect(
       (await User.create(pool, {
         gmail: 'durran@gmail.com',
-        firstName: 'durran',
-        lastName: 'durran',
-        loginIP: '127.0.0.1',
-        secureKey: '1337',
+        first_name: 'durran',
+        last_name: 'durran',
+        login_ip: '127.0.0.1',
+        secure_key: '1337',
       })) instanceof User
     ).toBe(true);
   });
@@ -45,16 +45,23 @@ export default (): void => {
     expect(
       (await User.create(pool, {
         gmail: 'durran@gmail.com',
-        firstName: 'durran',
-        lastName: 'durran',
-        loginIP: '127.0.0.1',
-        secureKey: '1337',
+        first_name: 'durran',
+        last_name: 'durran',
+        login_ip: '127.0.0.1',
+        secure_key: '1337',
       })) instanceof Error
     ).toBe(true);
   });
 
-  it('has a customizable get fields method', (): void => {
-    console.log('stub');
+  it('can query customizable user data by id', async (): Promise<void> => {
+    const data: UserData = await user.queryUserDataById(pool, {
+      gmail: true,
+      first_name: true,
+      last_name: true,
+    });
+    expect(data.gmail).toStrictEqual('root@gmail.com');
+    expect(data.first_name).toStrictEqual('test');
+    expect(data.last_name).toStrictEqual('test');
   });
 
   it('has a get a single recipe method', (): void => {
