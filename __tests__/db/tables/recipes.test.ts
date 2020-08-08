@@ -7,7 +7,7 @@
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
 
-  Columns: 
+  Columns:
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL CHECK (name <> ''),
     time TEXT NOT NULL CHECK (time <> ''),
@@ -58,7 +58,7 @@ export default (): void => {
   > => {
     const { img_file_name } = (
       await pool.query(
-        `SELECT * FROM recipes WHERE recipes.name = 'Beef Straganoff';`
+        "SELECT * FROM recipes WHERE recipes.name = 'Beef Straganoff';"
       )
     ).rows[0];
     expect(img_file_name).toBe('');

@@ -3,19 +3,38 @@
     Date: August 7 2020
 */
 
+import { Pool } from 'pg';
 import User from '../../../src/models/User';
 
 export default (): void => {
-  it('has a constructor that takes in a user id', (): void => {
-    console.log('stub');
+  const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
+
+  let pool: Pool;
+  let user: User;
+
+  beforeAll((): void => {
+    pool = new Pool({ connectionString: conString });
   });
 
-  it('it has a static create method', (): void => {
-    console.log('stub');
+  afterAll(async (): Promise<void> => pool.end());
+
+  it('can be instanciated', (): void => {
+    user = new User(1);
+    expect(user instanceof User).toBe(true);
   });
 
-  it('has a get user id method', (): void => {
-    console.log('stub');
+  it('can get the user id', (): void => {
+    expect(user.getId()).toBe(1);
+  });
+
+  it('has a static create method', (): void => {
+    User.create(pool, {
+      gmail: 'durran@gmail.com',
+      firstName: 'durran',
+      lastName: 'durran',
+      loginIP: '127.0.0.1',
+      secureKey: '1337',
+    });
   });
 
   it('has a customizable get fields method', (): void => {
@@ -83,6 +102,14 @@ export default (): void => {
   });
 
   it('has an unblock user method', (): void => {
+    console.log('stub');
+  });
+
+  it('can update the profile image', (): void => {
+    console.log('stub');
+  });
+
+  it('can update the last_udate', (): void => {
     console.log('stub');
   });
 };
