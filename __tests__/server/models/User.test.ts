@@ -3,10 +3,14 @@
     Date: August 7 2020
 */
 
-import User from '../../../src/server/models/User';
+import User from '../../../src/models/User';
 
 export default (): void => {
   it('has a constructor that takes in a user id', (): void => {
+    console.log('stub');
+  });
+
+  it('it has a static create method', (): void => {
     console.log('stub');
   });
 
