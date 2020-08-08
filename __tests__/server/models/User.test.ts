@@ -39,6 +39,20 @@ export default (): void => {
     ).toBe(true);
   });
 
+  it('returns an error when database throws on creation', async (): Promise<
+    void
+  > => {
+    expect(
+      (await User.create(pool, {
+        gmail: 'durran@gmail.com',
+        firstName: 'durran',
+        lastName: 'durran',
+        loginIP: '127.0.0.1',
+        secureKey: '1337',
+      })) instanceof Error
+    ).toBe(true);
+  });
+
   it('has a customizable get fields method', (): void => {
     console.log('stub');
   });
