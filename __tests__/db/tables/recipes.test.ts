@@ -6,7 +6,7 @@
   Tests the recipes table's columns.
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
-  
+
   Columns: 
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL CHECK (name <> ''),
@@ -20,6 +20,7 @@
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 */
+
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import queryErrorHelper from '../helpers/queryErrorHelper';
@@ -29,6 +30,7 @@ export default (): void => {
 
   let pool: Pool;
   let query: string;
+
   beforeAll((): void => {
     pool = new Pool({ connectionString: conString });
   });

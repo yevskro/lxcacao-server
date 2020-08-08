@@ -21,7 +21,7 @@ import usersChatsTest from './tables/usersChats.test';
 import queryErrorHelperTest from './helpers/queryErrorHelper.test';
 import queryErrorHelper from './helpers/queryErrorHelper';
 
-describe('database test', (): void => {
+describe('database test suite', (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
 
   let pool: Pool;

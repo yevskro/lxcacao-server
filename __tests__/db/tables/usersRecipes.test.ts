@@ -6,12 +6,13 @@
   Tests the users_recipes table's columns.
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
-  
+
   Columns:
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
     recipe_id INTEGER NOT NULL REFERENCES recipes(id)
 */
+
 import { Pool } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import queryErrorHelper from '../helpers/queryErrorHelper';
@@ -21,6 +22,7 @@ export default (): void => {
 
   let pool: Pool;
   let query: string;
+
   beforeAll((): void => {
     pool = new Pool({ connectionString: conString });
   });

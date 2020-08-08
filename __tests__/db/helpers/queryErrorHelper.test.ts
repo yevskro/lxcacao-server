@@ -14,6 +14,7 @@ export default (): void => {
 
   let pool: Pool;
   let query: string;
+
   beforeAll((): void => {
     pool = new Pool({ connectionString: conString });
   });
@@ -22,6 +23,7 @@ export default (): void => {
 
   it('can test an error from a query', async (): Promise<void> => {
     query = 'SELECT * FROM nonexistingtable;';
+
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.UNDEFINED_TABLE
     );
