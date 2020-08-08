@@ -1,7 +1,10 @@
 /* eslint-disable camelcase */
 import { Pool } from 'pg';
 
-export interface UserCreateData {
+type UserId = number;
+type RecipeId = number;
+
+export interface CreateUserData {
   gmail: string;
   first_name: string;
   last_name: string;
@@ -35,25 +38,39 @@ export interface QueryUserData {
   all?: boolean;
 }
 
+interface CreateRecipeData {
+  name: string;
+  time: string;
+  type: string;
+  private: boolean;
+  ingredients?: [string];
+  how_to_prepare?: [string];
+  from_id?: number;
+  from_full_name?: string;
+  img_file_name?: string;
+}
+
 class User {
   static async create(
     pool: Pool,
-    userCreateData: UserCreateData,
+    createUserData: CreateUserData,
     onError?: (err: Error) => void
-  ): Promise<number> {
+  ): Promise<UserId> {
     const query = `
-    INSERT INTO users(gmail, first_name, last_name, login_ip, secure_key)
+    INSERT INTO users(${User.genQueryUserDataString(
+      (createUserData as unknown) as QueryUserData
+    )})
     VALUES
     ($1, $2, $3, $4, $5) RETURNING users.id;`;
 
     try {
       return (
         await pool.query(query, [
-          userCreateData.gmail,
-          userCreateData.first_name,
-          userCreateData.last_name,
-          userCreateData.login_ip,
-          userCreateData.secure_key,
+          createUserData.gmail,
+          createUserData.first_name,
+          createUserData.last_name,
+          createUserData.login_ip,
+          createUserData.secure_key,
         ])
       ).rows[0].id;
     } catch (err) {
@@ -79,7 +96,7 @@ class User {
 
   static async queryUserDataById(
     pool: Pool,
-    id: number,
+    id: UserId,
     queryData: QueryUserData,
     onError?: (err: Error) => void
   ): Promise<UserData> {
@@ -126,6 +143,13 @@ class User {
 
     return undefined;
   }
+
+  /*
+  static async createRecipe(
+    userId: number,
+    recipeCreateData: CreateRecipeData,
+    onError: (err: Error) => void
+  ): Promise<RecipeId> {} */
 }
 
 export default User;

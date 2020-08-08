@@ -103,7 +103,9 @@ export default (): void => {
     void
   > => {
     const { img_file_name } = (
-      await pool.query('SELECT * FROM users WHERE users.id = 1;')
+      await pool.query(
+        `SELECT * FROM users WHERE users.gmail = 'test@gmail.com';`
+      )
     ).rows[0];
     expect(img_file_name).toBe('');
   });

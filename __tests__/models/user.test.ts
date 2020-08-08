@@ -66,15 +66,17 @@ describe('users model test suite', (): void => {
         id: true,
         first_name: true,
         last_name: true,
+        img_file_name: true,
       }
     );
 
     expect(data.id).toBe(1);
     expect(data.first_name).toStrictEqual('test');
     expect(data.last_name).toStrictEqual('test');
+    expect(data.img_file_name).toStrictEqual('test.png');
   });
 
-  it('has a get a single recipe method', (): void => {
+  it('can create a recipe that belongs to a user', (): void => {
     console.log('stub');
   });
 

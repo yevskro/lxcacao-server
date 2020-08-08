@@ -1,7 +1,7 @@
 INSERT INTO users
-  (gmail, first_name, last_name, login_ip, secure_key)
+  (gmail, first_name, last_name, login_ip, secure_key, img_file_name)
 VALUES
-  ('root@gmail.com', 'test', 'test', '127.0.0.1', '0001');
+  ('root@gmail.com', 'test', 'test', '127.0.0.1', '0001', 'test.png');
 
 INSERT INTO users
   (gmail, first_name, last_name, login_ip, secure_key)
