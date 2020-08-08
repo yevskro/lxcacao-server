@@ -36,16 +36,10 @@ export interface QueryUserData {
 }
 
 class User {
-  private id: number;
-
-  constructor(id: number) {
-    this.id = id;
-  }
-
   static async create(
     pool: Pool,
     userCreateData: UserCreateData
-  ): Promise<User> {
+  ): Promise<number | Error> {
     const query = `
     INSERT INTO users(gmail, first_name, last_name, login_ip, secure_key)
     VALUES
@@ -59,41 +53,60 @@ class User {
         userCreateData.login_ip,
         userCreateData.secure_key,
       ]);
-      return new User(result.rows[0].id);
+      return result.rows[0].id;
     } catch (err) {
       return err;
     }
   }
 
-  getUserId(): number {
-    return this.id;
+  private static genQueryDataString(queryData: QueryUserData) {
+    const dataFields = [];
+    if (queryData.id) dataFields.push('id');
+    if (queryData.gmail) dataFields.push('gmail');
+    if (queryData.first_name) dataFields.push('first_name');
+    if (queryData.last_name) dataFields.push('last_name');
+    if (queryData.create_date) dataFields.push('create_date');
+    if (queryData.img_file_name) dataFields.push('img_file_name');
+    if (queryData.last_update) dataFields.push('last_update');
+    if (queryData.login_ip) dataFields.push('login_ip');
+    if (queryData.secure_key) dataFields.push('secure_key');
+    return dataFields.join(', ');
   }
 
-  async queryUserDataById(
+  static async queryUserDataById(
     pool: Pool,
+    id: number,
     queryData: QueryUserData
   ): Promise<UserData> {
     let query = '';
     if (queryData.all) {
-      query = `SELECT * FROM users WHERE users.id = ${this.getUserId()};`;
+      query = `SELECT * FROM users WHERE users.id = ($1);`;
     } else {
-      const dataFields = [];
       query = 'SELECT ';
-      if (queryData.gmail) dataFields.push('gmail');
-      if (queryData.first_name) dataFields.push('first_name');
-      if (queryData.last_name) dataFields.push('last_name');
-      if (queryData.create_date) dataFields.push('create_date');
-      if (queryData.img_file_name) dataFields.push('img_file_name');
-      if (queryData.last_update) dataFields.push('last_update');
-      if (queryData.login_ip) dataFields.push('login_ip');
-      if (queryData.secure_key) dataFields.push('secure_key');
-
-      query += `${dataFields.join(', ')} FROM users WHERE users.id = ${
-        this.id
-      };`;
+      query += `${User.genQueryDataString(
+        queryData
+      )} FROM users WHERE users.id = ($1);`;
     }
 
-    return (await pool.query(query)).rows[0];
+    return (await pool.query(query, [id])).rows[0];
+  }
+
+  static async queryUserDataByGmail(
+    pool: Pool,
+    gmail: string,
+    queryData: QueryUserData
+  ): Promise<UserData> {
+    let query = '';
+    if (queryData.all) {
+      query = 'SELECT * FROM users WHERE users.gmail = ($1);';
+    } else {
+      query = 'SELECT ';
+      query += `${User.genQueryDataString(
+        queryData
+      )} FROM users WHERE users.gmail = ($1);`;
+    }
+
+    return (await pool.query(query, [gmail])).rows[0];
   }
 }
 

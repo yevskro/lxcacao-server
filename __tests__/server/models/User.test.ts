@@ -18,25 +18,16 @@ export default (): void => {
 
   afterAll(async (): Promise<void> => pool.end());
 
-  it('can be instanciated', (): void => {
-    user = new User(1);
-    expect(user instanceof User).toBe(true);
-  });
-
-  it('can get the user id', (): void => {
-    expect(user.getUserId()).toBe(1);
-  });
-
   it('can create a user', async (): Promise<void> => {
     expect(
-      (await User.create(pool, {
+      typeof (await User.create(pool, {
         gmail: 'durran@gmail.com',
         first_name: 'durran',
         last_name: 'durran',
         login_ip: '127.0.0.1',
         secure_key: '1337',
-      })) instanceof User
-    ).toBe(true);
+      }))
+    ).toBe('number');
   });
 
   it('returns an error when database throws on creation', async (): Promise<
@@ -54,12 +45,28 @@ export default (): void => {
   });
 
   it('can query customizable user data by id', async (): Promise<void> => {
-    const data: UserData = await user.queryUserDataById(pool, {
+    const data: UserData = await User.queryUserDataById(pool, 1, {
       gmail: true,
       first_name: true,
       last_name: true,
     });
     expect(data.gmail).toStrictEqual('root@gmail.com');
+    expect(data.first_name).toStrictEqual('test');
+    expect(data.last_name).toStrictEqual('test');
+  });
+
+  it('can query customizable user data by gmail', async (): Promise<void> => {
+    const data: UserData = await User.queryUserDataByGmail(
+      pool,
+      'root@gmail.com',
+      {
+        id: true,
+        first_name: true,
+        last_name: true,
+      }
+    );
+    console.log(data);
+    expect(data.id).toBe(1);
     expect(data.first_name).toStrictEqual('test');
     expect(data.last_name).toStrictEqual('test');
   });
