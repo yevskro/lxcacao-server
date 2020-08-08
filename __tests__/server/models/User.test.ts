@@ -27,14 +27,16 @@ export default (): void => {
     expect(user.getId()).toBe(1);
   });
 
-  it('has a static create method', (): void => {
-    User.create(pool, {
-      gmail: 'durran@gmail.com',
-      firstName: 'durran',
-      lastName: 'durran',
-      loginIP: '127.0.0.1',
-      secureKey: '1337',
-    });
+  it('can create a user', async (): Promise<void> => {
+    expect(
+      (await User.create(pool, {
+        gmail: 'durran@gmail.com',
+        firstName: 'durran',
+        lastName: 'durran',
+        loginIP: '127.0.0.1',
+        secureKey: '1337',
+      })) instanceof User
+    ).toBe(true);
   });
 
   it('has a customizable get fields method', (): void => {
