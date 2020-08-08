@@ -1,5 +1,8 @@
 module.exports = {
-  extends: ['airbnb-typescript-prettier', 'plugin:@typescript-eslint/recommended'],
+  extends: [
+    'airbnb-typescript-prettier',
+    'plugin:@typescript-eslint/recommended',
+  ],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'prettier'],
   settings: {
@@ -7,10 +10,6 @@ module.exports = {
     'import/resolver': { typescript: {} },
   },
   rules: {
-    'react/jsx-filename-extension': [
-      2,
-      { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
-    ],
     'import/no-extraneous-dependencies': [
       2,
       { devDependencies: ['**/test.tsx', '**/test.ts'] },

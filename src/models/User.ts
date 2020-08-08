@@ -63,7 +63,7 @@ class User {
     return undefined;
   }
 
-  private static genQueryDataString(queryData: QueryUserData) {
+  private static genQueryUserDataString(queryData: QueryUserData) {
     const dataFields = [];
     if (queryData.id) dataFields.push('id');
     if (queryData.gmail) dataFields.push('gmail');
@@ -88,7 +88,7 @@ class User {
       query = `SELECT * FROM users WHERE users.id = ($1);`;
     } else {
       query = 'SELECT ';
-      query += `${User.genQueryDataString(
+      query += `${User.genQueryUserDataString(
         queryData
       )} FROM users WHERE users.id = ($1);`;
     }
@@ -113,7 +113,7 @@ class User {
       query = 'SELECT * FROM users WHERE users.gmail = ($1);';
     } else {
       query = 'SELECT ';
-      query += `${User.genQueryDataString(
+      query += `${User.genQueryUserDataString(
         queryData
       )} FROM users WHERE users.gmail = ($1);`;
     }
@@ -123,6 +123,7 @@ class User {
     } catch (err) {
       if (onError) onError(err);
     }
+
     return undefined;
   }
 }

@@ -4,13 +4,12 @@
 */
 
 import { Pool } from 'pg';
-import User, { UserData } from '../../../src/models/User';
+import User, { UserData } from '../../src/models/User';
 
-export default (): void => {
+describe('users model test suite', (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
 
   let pool: Pool;
-  let user: User;
 
   beforeAll((): void => {
     pool = new Pool({ connectionString: conString });
@@ -146,4 +145,4 @@ export default (): void => {
   it('can update the last_udate', (): void => {
     console.log('stub');
   });
-};
+});
