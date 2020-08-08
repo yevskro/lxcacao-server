@@ -30,18 +30,22 @@ export default (): void => {
     ).toBe('number');
   });
 
-  it('returns an error when database throws on creation', async (): Promise<
+  it('invokes on error callback when database throws on creation', async (): Promise<
     void
   > => {
-    expect(
-      (await User.create(pool, {
+    const onError = jest.fn();
+    await User.create(
+      pool,
+      {
         gmail: 'durran@gmail.com',
         first_name: 'durran',
         last_name: 'durran',
         login_ip: '127.0.0.1',
         secure_key: '1337',
-      })) instanceof Error
-    ).toBe(true);
+      },
+      onError
+    );
+    expect(onError).toBeCalled();
   });
 
   it('can query customizable user data by id', async (): Promise<void> => {
@@ -65,7 +69,7 @@ export default (): void => {
         last_name: true,
       }
     );
-    console.log(data);
+
     expect(data.id).toBe(1);
     expect(data.first_name).toStrictEqual('test');
     expect(data.last_name).toStrictEqual('test');

@@ -38,25 +38,29 @@ export interface QueryUserData {
 class User {
   static async create(
     pool: Pool,
-    userCreateData: UserCreateData
-  ): Promise<number | Error> {
+    userCreateData: UserCreateData,
+    onError?: (err: Error) => void
+  ): Promise<number> {
     const query = `
     INSERT INTO users(gmail, first_name, last_name, login_ip, secure_key)
     VALUES
     ($1, $2, $3, $4, $5) RETURNING users.id;`;
 
     try {
-      const result = await pool.query(query, [
-        userCreateData.gmail,
-        userCreateData.first_name,
-        userCreateData.last_name,
-        userCreateData.login_ip,
-        userCreateData.secure_key,
-      ]);
-      return result.rows[0].id;
+      return (
+        await pool.query(query, [
+          userCreateData.gmail,
+          userCreateData.first_name,
+          userCreateData.last_name,
+          userCreateData.login_ip,
+          userCreateData.secure_key,
+        ])
+      ).rows[0].id;
     } catch (err) {
-      return err;
+      if (onError) onError(err);
     }
+
+    return undefined;
   }
 
   private static genQueryDataString(queryData: QueryUserData) {
@@ -76,7 +80,8 @@ class User {
   static async queryUserDataById(
     pool: Pool,
     id: number,
-    queryData: QueryUserData
+    queryData: QueryUserData,
+    onError?: (err: Error) => void
   ): Promise<UserData> {
     let query = '';
     if (queryData.all) {
@@ -88,13 +93,20 @@ class User {
       )} FROM users WHERE users.id = ($1);`;
     }
 
-    return (await pool.query(query, [id])).rows[0];
+    try {
+      return (await pool.query(query, [id])).rows[0];
+    } catch (err) {
+      if (onError) onError(err);
+    }
+
+    return undefined;
   }
 
   static async queryUserDataByGmail(
     pool: Pool,
     gmail: string,
-    queryData: QueryUserData
+    queryData: QueryUserData,
+    onError?: (err: Error) => void
   ): Promise<UserData> {
     let query = '';
     if (queryData.all) {
@@ -106,7 +118,12 @@ class User {
       )} FROM users WHERE users.gmail = ($1);`;
     }
 
-    return (await pool.query(query, [gmail])).rows[0];
+    try {
+      return (await pool.query(query, [gmail])).rows[0];
+    } catch (err) {
+      if (onError) onError(err);
+    }
+    return undefined;
   }
 }
 
