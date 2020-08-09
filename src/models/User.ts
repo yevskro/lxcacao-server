@@ -11,19 +11,19 @@ interface IdData {
   id?: number;
 }
 
-export interface CreateUserRecipeData {
-  user_id: number;
-  recipe_id: number;
+export interface CreateFromToData {
+  from_id: number;
+  to_id: number;
 }
 
-export interface UserRecipeData {
-  user_id: number;
-  recipe_id: number;
+export interface FromToData {
+  from_id: number;
+  to_id: number;
 }
 
-export interface ReadUserRecipeData {
-  user_id?: boolean;
-  recipe_id?: boolean;
+export interface ReadFromToData {
+  from_id?: boolean;
+  to_id?: boolean;
 }
 
 export interface CreateUserData {
@@ -74,10 +74,11 @@ interface CreateRecipeData {
   time: string;
   type: string;
   private: boolean;
+  user_id: number;
+  origin_user_id?: number;
+  origin_user_full_name?: string;
   ingredients?: string[];
   how_to_prepare?: string[];
-  from_id?: number;
-  from_full_name?: string;
   img_file_name?: string;
 }
 
@@ -89,8 +90,9 @@ interface ReadRecipeData {
   private?: boolean;
   ingredients?: boolean;
   how_to_prepare?: boolean;
-  from_id?: boolean;
-  from_full_name?: boolean;
+  origin_user_id?: boolean;
+  origin_user_full_name?: boolean;
+  user_id?: boolean;
   img_file_name?: boolean;
   create_date?: boolean;
   all?: boolean;
@@ -104,8 +106,9 @@ interface RecipeData {
   private?: boolean;
   ingredients?: string[];
   how_to_prepare?: string[];
-  from_id?: number;
-  from_full_name?: string;
+  origin_user_id?: number;
+  origin_user_full_name?: string;
+  user_id?: number;
   img_file_name?: string;
   create_date?: string;
 }
@@ -117,25 +120,34 @@ interface UpdateRecipeData {
   private?: boolean;
   ingredients?: string[];
   how_to_prepare?: string[];
-  from_id?: number;
-  from_full_name?: string;
   img_file_name?: string;
 }
 
 class User {
-  /* * * * * * Helper Methods * * * * * */
   private static pool = new Pool({
     connectionString: 'postgres://postgres@127.0.0.1:5432/testdb',
   });
+
+  /* * * * * * Utility Methods * * * * * */
+  static async setPool(conUrl: string): Promise<void> {
+    await User.pool.end();
+    User.pool = new Pool({
+      connectionString: conUrl,
+    });
+  }
+
+  static async poolEnd(): Promise<void> {
+    await User.pool.end();
+  }
 
   private static genFieldsFromData(
     queryData:
       | ReadRecipeData
       | ReadUserData
+      | ReadFromToData
       | UserData
       | RecipeData
-      | UserRecipeData
-      | ReadUserRecipeData
+      | FromToData
   ): string[] {
     const fields: string[] = [];
     const keys = Object.keys(queryData);
@@ -154,7 +166,7 @@ class User {
   }
 
   private static genFieldParamsAndValuesFromData(
-    data: RecipeData | UserData | UserRecipeData
+    data: RecipeData | UserData | FromToData
   ): [FieldParams, Values] {
     const values: Values = [];
     const fieldParams: FieldParams = [];
@@ -166,7 +178,7 @@ class User {
   }
 
   private static genFieldsAndValuesFromData(
-    data: RecipeData | UserData | UserRecipeData
+    data: RecipeData | UserData | FromToData
   ): [Fields, Values] {
     const values: Values = [];
     const fields: Fields = [];
@@ -179,7 +191,7 @@ class User {
 
   private static genCreateQueryAndValues(
     tableName: string,
-    createData: CreateRecipeData | CreateUserData | CreateUserRecipeData
+    createData: CreateRecipeData | CreateUserData | CreateFromToData
   ): [Query, Values] {
     const [fields, values]: [Fields, Values] = User.genFieldsAndValuesFromData(
       createData
@@ -254,16 +266,6 @@ class User {
   }
 
   /* * * * * * * * * * * * * * * * * * * * * */
-  static async setPool(conUrl: string): Promise<void> {
-    await User.pool.end();
-    User.pool = new Pool({
-      connectionString: conUrl,
-    });
-  }
-
-  static async poolEnd(): Promise<void> {
-    await User.pool.end();
-  }
 
   static async create(
     createData: CreateUserData,
@@ -316,19 +318,11 @@ class User {
   }
 
   static async createRecipe(
-    userId: number,
     createData: CreateRecipeData,
     onError?: (err: Error) => void
   ): Promise<IdData | undefined> {
-    let [query, values] = this.genCreateQueryAndValues('recipes', createData);
-    const recipeIdData: IdData = (await User.query(query, values, onError))[0];
-    if (recipeIdData === undefined) return undefined;
-    [query, values] = this.genCreateQueryAndValues('users_recipes', {
-      user_id: userId,
-      recipe_id: recipeIdData.id,
-    });
-    await User.query(query, values, onError);
-    return recipeIdData;
+    const [query, values] = this.genCreateQueryAndValues('recipes', createData);
+    return (await User.query(query, values, onError))[0];
   }
 }
 

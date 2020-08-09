@@ -110,7 +110,8 @@ describe('users model test suite', (): void => {
   });
 
   it('can create a recipe that belongs to a user', async (): Promise<void> => {
-    const result = await User.createRecipe(1, {
+    const result = await User.createRecipe({
+      user_id: 1,
       name: 'Beef Straganoff',
       time: '1hr 15m',
       type: 'Dinner Entree',

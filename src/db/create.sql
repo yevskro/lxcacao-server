@@ -53,17 +53,11 @@ CREATE TABLE recipes
     private BOOLEAN NOT NULL,
     ingredients TEXT[] NOT NULL DEFAULT '{}',
     how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
-    from_id INTEGER REFERENCES users(id) DEFAULT NULL,
-    from_full_name TEXT DEFAULT '',
+    user_id INTEGER REFERENCES users(id) DEFAULT NULL,
+    origin_user_id INTEGER REFERENCES users(id) DEFAULT NULL,
+    origin_user_full_name TEXT DEFAULT '',
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE users_recipes
-(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    recipe_id INTEGER NOT NULL REFERENCES recipes(id)
 );
 
 CREATE TABLE users_chats

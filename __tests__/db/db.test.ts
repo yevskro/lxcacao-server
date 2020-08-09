@@ -11,15 +11,14 @@
 */
 
 import { Pool } from 'pg';
+import queryErrorHelperTest from './helpers/queryErrorHelper.test';
+import queryErrorHelper from './helpers/queryErrorHelper';
 import usersTest from './tables/users.test';
 import usersFriendsTest from './tables/usersFriends.test';
 import usersBlocksTest from './tables/usersBlocks.test';
 import usersRequestsTest from './tables/usersRequests.test';
 import recipesTest from './tables/recipes.test';
-import usersRecipesTest from './tables/usersRecipes.test';
 import usersChatsTest from './tables/usersChats.test';
-import queryErrorHelperTest from './helpers/queryErrorHelper.test';
-import queryErrorHelper from './helpers/queryErrorHelper';
 
 describe('database test suite', (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -43,6 +42,5 @@ describe('database test suite', (): void => {
   describe('users_blocks table', usersBlocksTest);
   describe('users_requests', usersRequestsTest);
   describe('recipes table', recipesTest);
-  describe('users_recipes table', usersRecipesTest);
   describe('users_chats table', usersChatsTest);
 });

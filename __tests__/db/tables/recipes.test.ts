@@ -189,26 +189,28 @@ export default (): void => {
     expect(how_to_prepare).toStrictEqual([]);
   });
 
-  it('has a from_id', async (): Promise<void> => {
+  it('has a origin_user_id', async (): Promise<void> => {
     query = `
-    SELECT from_id FROM recipes WHERE recipes.id = 1;`;
+    SELECT origin_user_id FROM recipes WHERE recipes.id = 1;`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('has the default value of null in from_id', async (): Promise<void> => {
-    query = `
-    SELECT from_id FROM recipes WHERE recipes.id = 1 AND recipes.from_id IS NULL;`;
-
-    const { from_id } = (await pool.query(query)).rows[0];
-    expect(from_id).toBe(null);
-  });
-
-  it('cant create a recipe with an invalid from_id', async (): Promise<
+  it('has the default value of null in origin_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO recipes (name, type, time, private, from_id)
+    SELECT origin_user_id FROM recipes WHERE recipes.id = 1 AND recipes.origin_user_id IS NULL;`;
+
+    const { origin_user_id } = (await pool.query(query)).rows[0];
+    expect(origin_user_id).toBe(null);
+  });
+
+  it('cant create a recipe with an invalid origin_user_id', async (): Promise<
+    void
+  > => {
+    query = `
+    INSERT INTO recipes (name, type, time, private, origin_user_id)
       VALUES
     ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000');`;
 
@@ -217,22 +219,22 @@ export default (): void => {
     );
   });
 
-  it('has a from_full_name', async (): Promise<void> => {
+  it('has a origin_user_full_name', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, from_full_name)
+    INSERT INTO recipes (name, type, time, private, origin_user_full_name)
       VALUES
     ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', 'Jim Durran');`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('has a default value of an empty string for from_full_name', async (): Promise<
+  it('has a default value of an empty string for origin_user_full_name', async (): Promise<
     void
   > => {
     query = `
-    SELECT from_full_name FROM recipes WHERE recipes.id = 1;`;
+    SELECT origin_user_full_name FROM recipes WHERE recipes.id = 1;`;
 
-    const { from_full_name } = (await pool.query(query)).rows[0];
-    expect(from_full_name).toStrictEqual('');
+    const { origin_user_full_name } = (await pool.query(query)).rows[0];
+    expect(origin_user_full_name).toStrictEqual('');
   });
 };
