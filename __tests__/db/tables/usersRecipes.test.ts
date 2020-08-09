@@ -37,18 +37,22 @@ export default (): void => {
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('wont create a user with an invalid id', async (): Promise<void> => {
+  it('wont create a record with an invalid user id', async (): Promise<
+    void
+  > => {
     query = `
     INSERT INTO users_recipes (user_id, recipe_id)
       VALUES
-    (4, 2);`;
+    (400, 2);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.FOREIGN_KEY_VIOLATION
     );
   });
 
-  it('wont create a recipe with an invalid id', async (): Promise<void> => {
+  it('wont create a record with an invalid recipe id', async (): Promise<
+    void
+  > => {
     query = `
     INSERT INTO users_recipes (user_id, recipe_id)
       VALUES
