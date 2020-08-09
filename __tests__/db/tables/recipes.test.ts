@@ -15,8 +15,9 @@
     private BOOLEAN NOT NULL,
     ingredients TEXT[] NOT NULL DEFAULT '{}',
     how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
-    from_id INTEGER REFERENCES users(id) DEFAULT NULL,
-    from_full_name TEXT DEFAULT '',
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    origin_user_id INTEGER NOT NULL REFERENCES users(id),
+    origin_user_full_name TEXT NOT NULL CHECK (origin_user_full_name <> ''),
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 */
@@ -39,7 +40,7 @@ export default (): void => {
 
   it('can add a recipe', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, time, type, private, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, time, type, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('Beef Straganoff', '1hr 15m', 'Dinner Entree', 'false', 1, 'Yev Skro', 1);`;
 
@@ -66,9 +67,9 @@ export default (): void => {
 
   it('cant create a recipe without a name', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (type, time, private) 
+    INSERT INTO recipes (type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
-    ('Dinner Entree', '1hr 15m', 'false');`;
+    ('Dinner Entree', '1hr 15m', 'false', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.NOT_NULL_VIOLATION
@@ -77,9 +78,9 @@ export default (): void => {
 
   it('cant create a recipe without time', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, private) 
+    INSERT INTO recipes (name, type, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
-    ('Beef Straganoff', 'Dinner Entree', 'true');`;
+    ('Beef Straganoff', 'Dinner Entree', 'true', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.NOT_NULL_VIOLATION
@@ -88,9 +89,9 @@ export default (): void => {
 
   it('cant create a recipe without type', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, time, private) 
+    INSERT INTO recipes (name, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
-    ('Beef Straganoff', '55m', 'false');`;
+    ('Beef Straganoff', '55m', 'false', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.NOT_NULL_VIOLATION
@@ -99,9 +100,9 @@ export default (): void => {
 
   it('cant create a recipe without private', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, time, type) 
+    INSERT INTO recipes (name, time, type, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
-    ('Beef Straganoff', '44m 30s', 'Dinner Entree');`;
+    ('Beef Straganoff', '44m 30s', 'Dinner Entree', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.NOT_NULL_VIOLATION
@@ -110,7 +111,7 @@ export default (): void => {
 
   it('cant create recipe with empty name', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('', 'Dinner Entree', '25m', 'true', 1, 'Yev Skro', 1);`;
 
@@ -121,7 +122,7 @@ export default (): void => {
 
   it('cant create recipe with empty type', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('Beef Straganoff', '', '3hr', 'false', 1, 'Yev Skro', 1);`;
 
@@ -132,7 +133,7 @@ export default (): void => {
 
   it('cant create recipe with empty time', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '', 'false', 1, 'Yev Skro', 1);`;
 
@@ -143,7 +144,7 @@ export default (): void => {
 
   it('cant create recipe with empty private', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', '', 1, 'Yev Skro', 1);`;
 
@@ -154,7 +155,7 @@ export default (): void => {
 
   it('can save an array into ingredients', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, ingredients, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, type, time, private, ingredients, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['1 cucumber','2 pickles'], 1, 'Yev Skro', 1);`;
 
@@ -163,7 +164,7 @@ export default (): void => {
 
   it('can save an array into how_to_prepare', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, how_to_prepare, origin_user_id, origin_user_full_name, user_id) 
+    INSERT INTO recipes (name, type, time, private, how_to_prepare, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
     ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['cook beef','cook fries'], 1, 'Yev Skro', 1);`;
 
@@ -200,7 +201,7 @@ export default (): void => {
     void
   > => {
     query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id)
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id)
       VALUES
     ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000', 'Yev Skro', 1);`;
 

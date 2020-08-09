@@ -22,24 +22,24 @@ CREATE TABLE users
 CREATE TABLE users_friends
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    from_user_id INTEGER NOT NULL REFERENCES users(id),
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
+    peer_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_blocks
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    from_user_id INTEGER NOT NULL REFERENCES users(id),
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
+    peer_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_requests
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    from_user_id INTEGER NOT NULL REFERENCES users(id),
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
+    peer_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -52,7 +52,7 @@ CREATE TABLE recipes
     private BOOLEAN NOT NULL,
     ingredients TEXT[] NOT NULL DEFAULT '{}',
     how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
-    user_id INTEGER NOT NULL REFERENCES users(id),
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
     origin_user_id INTEGER NOT NULL REFERENCES users(id),
     origin_user_full_name TEXT NOT NULL CHECK (origin_user_full_name <> ''),
     img_file_name TEXT NOT NULL DEFAULT '',
@@ -62,8 +62,8 @@ CREATE TABLE recipes
 CREATE TABLE users_chats
 (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    from_user_id INTEGER NOT NULL REFERENCES users(id),
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
+    peer_user_id INTEGER NOT NULL REFERENCES users(id),
     msgs TEXT[] NOT NULL DEFAULT '{}',
     last_cache_update TIMESTAMP NOT NULL DEFAULT NOW()
 );

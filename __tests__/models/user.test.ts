@@ -111,7 +111,7 @@ describe('users model test suite', (): void => {
 
   it('can create a recipe that belongs to a user', async (): Promise<void> => {
     const result = await User.createRecipe({
-      user_id: 1,
+      main_user_id: 1,
       name: 'Beef Straganoff',
       time: '1hr 15m',
       type: 'Dinner Entree',
@@ -130,25 +130,27 @@ describe('users model test suite', (): void => {
   });
 
   it('can read a users recipe', async (): Promise<void> => {
-    const result = await User.readRecipe(1, { user_id: true });
+    const result = await User.readRecipe(1, { main_user_id: true });
     expect(result).not.toBe(undefined);
-    expect(result.user_id).toBe(1);
+    expect(result.main_user_id).toBe(1);
   });
 
   it('can delete a users recipe', async (): Promise<void> => {
     const onError = jest.fn();
     await User.deleteRecipe(2, onError);
     expect(onError).not.toBeCalled();
-    expect(await User.readRecipe(2, { user_id: true }, onError)).toBe(
+    expect(await User.readRecipe(2, { main_user_id: true }, onError)).toBe(
       undefined
     );
   });
 
   it('can get all users recipe', async (): Promise<void> => {
-    const amountOfRecipes = (await User.readAllRecipes(1, { user_id: true }))
-      .length;
+    const amountOfRecipes = (
+      await User.readAllRecipes(1, { main_user_id: true })
+    ).length;
+
     await User.createRecipe({
-      user_id: 1,
+      main_user_id: 1,
       name: 'Banana Icecream Pants',
       time: '1hr',
       type: 'Desert',
@@ -156,32 +158,35 @@ describe('users model test suite', (): void => {
       origin_user_id: 1,
       origin_user_full_name: 'Yev Skro',
     });
-    expect((await User.readAllRecipes(1, { user_id: true })).length).toBe(
+    expect((await User.readAllRecipes(1, { main_user_id: true })).length).toBe(
       amountOfRecipes + 1
     );
   });
 
   it('can create a friend request', async (): Promise<void> => {
     const onError = jest.fn();
-    await User.createFriendRequest({ user_id: 2, from_user_id: 1 }, onError);
+    await User.createFriendRequest(
+      { main_user_id: 2, peer_user_id: 1 },
+      onError
+    );
     expect(onError).not.toBeCalled();
   });
 
   it('can read all friend requests', async (): Promise<void> => {
     const ammountOfRequests = (
       await User.readAllFriendRequests(2, {
-        user_id: true,
-        from_user_id: true,
+        main_user_id: true,
+        peer_user_id: true,
       })
     ).length;
 
-    await User.createFriendRequest({ user_id: 2, from_user_id: 3 });
+    await User.createFriendRequest({ main_user_id: 2, peer_user_id: 3 });
 
     expect(
       (
         await User.readAllFriendRequests(2, {
-          user_id: true,
-          from_user_id: true,
+          main_user_id: true,
+          peer_user_id: true,
         })
       ).length
     ).toBe(ammountOfRequests + 1);
@@ -190,40 +195,40 @@ describe('users model test suite', (): void => {
   it('can delete a friend request', async (): Promise<void> => {
     const ids = await User.readAllFriendRequests(2, {
       id: true,
-      from_user_id: true,
+      peer_user_id: true,
     });
 
     const usersRequest = ids.find(
-      (requestData) => requestData.from_user_id === 3
+      (requestData) => requestData.peer_user_id === 3
     );
 
     await User.deleteFriendRequest(usersRequest.id);
     expect(
-      (await User.readAllFriendRequests(2, { user_id: true })).length
+      (await User.readAllFriendRequests(2, { main_user_id: true })).length
     ).toBe(ids.length - 1);
   });
 
   it('can create a friend', async (): Promise<void> => {
     const onError = jest.fn();
-    await User.createFriend({ user_id: 2, from_user_id: 1 }, onError);
+    await User.createFriend({ main_user_id: 2, peer_user_id: 1 }, onError);
     expect(onError).not.toBeCalled();
   });
 
   it('can read all friend requests', async (): Promise<void> => {
     const ammountOfRequests = (
       await User.readAllFriends(2, {
-        user_id: true,
-        from_user_id: true,
+        main_user_id: true,
+        peer_user_id: true,
       })
     ).length;
 
-    await User.createFriend({ user_id: 2, from_user_id: 3 });
+    await User.createFriend({ main_user_id: 2, peer_user_id: 3 });
 
     expect(
       (
         await User.readAllFriends(2, {
-          user_id: true,
-          from_user_id: true,
+          main_user_id: true,
+          peer_user_id: true,
         })
       ).length
     ).toBe(ammountOfRequests + 1);
@@ -232,38 +237,38 @@ describe('users model test suite', (): void => {
   it('can delete a friend request', async (): Promise<void> => {
     const ids = await User.readAllFriends(2, {
       id: true,
-      from_user_id: true,
+      peer_user_id: true,
     });
 
-    const usersFriend = ids.find((friendData) => friendData.from_user_id === 3);
+    const usersFriend = ids.find((friendData) => friendData.peer_user_id === 3);
 
     await User.deleteFriend(usersFriend.id);
-    expect((await User.readAllFriends(2, { user_id: true })).length).toBe(
+    expect((await User.readAllFriends(2, { main_user_id: true })).length).toBe(
       ids.length - 1
     );
   });
 
   it('can create a block', async (): Promise<void> => {
     const onError = jest.fn();
-    await User.createBlock({ user_id: 2, from_user_id: 1 }, onError);
+    await User.createBlock({ main_user_id: 2, peer_user_id: 1 }, onError);
     expect(onError).not.toBeCalled();
   });
 
   it('can read all blocks', async (): Promise<void> => {
     const ammountOfRequests = (
       await User.readAllBlocks(2, {
-        user_id: true,
-        from_user_id: true,
+        main_user_id: true,
+        peer_user_id: true,
       })
     ).length;
 
-    await User.createBlock({ user_id: 2, from_user_id: 3 });
+    await User.createBlock({ main_user_id: 2, peer_user_id: 3 });
 
     expect(
       (
         await User.readAllBlocks(2, {
-          user_id: true,
-          from_user_id: true,
+          main_user_id: true,
+          peer_user_id: true,
         })
       ).length
     ).toBe(ammountOfRequests + 1);
@@ -272,50 +277,14 @@ describe('users model test suite', (): void => {
   it('can delete a friend request', async (): Promise<void> => {
     const ids = await User.readAllBlocks(2, {
       id: true,
-      from_user_id: true,
+      peer_user_id: true,
     });
 
-    const usersBlock = ids.find((blockData) => blockData.from_user_id === 3);
+    const usersBlock = ids.find((blockData) => blockData.peer_user_id === 3);
 
     await User.deleteBlock(usersBlock.id);
-    expect((await User.readAllBlocks(2, { user_id: true })).length).toBe(
+    expect((await User.readAllBlocks(2, { main_user_id: true })).length).toBe(
       ids.length - 1
     );
-  });
-
-  xit('has a get users blocks method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has a copy recipe method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has a friend request method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has a delete friend request method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has an accept friend request method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has a block user method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has an unblock user method', (): void => {
-    console.log('stub');
-  });
-
-  xit('can update the profile image', (): void => {
-    console.log('stub');
-  });
-
-  xit('can update the last_udate', (): void => {
-    console.log('stub');
   });
 });

@@ -12,21 +12,21 @@ interface IdData {
 }
 
 export interface CreateFromToData {
-  user_id: number;
-  from_user_id: number;
+  main_user_id: number;
+  peer_user_id: number;
 }
 
 export interface FromToData {
   id?: number;
-  user_id?: number;
-  from_user_id?: number;
+  main_user_id?: number;
+  peer_user_id?: number;
   create_date?: string;
 }
 
 export interface ReadFromToData {
   id?: boolean;
-  user_id?: boolean;
-  from_user_id?: boolean;
+  main_user_id?: boolean;
+  peer_user_id?: boolean;
   create_date?: string;
 }
 
@@ -78,7 +78,7 @@ interface CreateRecipeData {
   time: string;
   type: string;
   private: boolean;
-  user_id: number;
+  main_user_id: number;
   origin_user_id: number;
   origin_user_full_name: string;
   ingredients?: string[];
@@ -94,9 +94,9 @@ interface ReadRecipeData {
   private?: boolean;
   ingredients?: boolean;
   how_to_prepare?: boolean;
+  main_user_id?: boolean;
   origin_user_id?: boolean;
   origin_user_full_name?: boolean;
-  user_id?: boolean;
   img_file_name?: boolean;
   create_date?: boolean;
   all?: boolean;
@@ -110,9 +110,9 @@ interface RecipeData {
   private?: boolean;
   ingredients?: string[];
   how_to_prepare?: string[];
+  main_user_id?: boolean;
   origin_user_id?: number;
   origin_user_full_name?: string;
-  user_id?: number;
   img_file_name?: string;
   create_date?: string;
 }
@@ -208,16 +208,16 @@ class User {
     return [query, values];
   }
 
-  private static genReadAllQueryAndValuesByUserId(
-    userId: number,
+  private static genReadAllQueryAndValuesByMainUserId(
+    mainUserId: number,
     tableName: string,
     readData: ReadRecipeData | ReadFromToData
   ): [Query, Values] {
     const query = `SELECT ${User.genFieldsFromData(
       readData
-    )} FROM ${tableName} WHERE user_id = ($1)`;
+    )} FROM ${tableName} WHERE main_user_id = ($1)`;
 
-    return [query, [userId]];
+    return [query, [mainUserId]];
   }
 
   private static genReadQueryAndValuesByIdOrGmail(
@@ -384,8 +384,7 @@ class User {
     readData: ReadRecipeData,
     onError?: (err: Error) => void
   ): Promise<RecipeData[] | undefined> {
-    // console.log(await User.pool.query('SELECT * FROM recipes;'));
-    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+    const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'recipes',
       readData
@@ -411,7 +410,7 @@ class User {
     readData: ReadFromToData,
     onError?: (err: Error) => void
   ): Promise<FromToData[]> {
-    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+    const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'users_requests',
       readData
@@ -446,7 +445,7 @@ class User {
     readData: ReadFromToData,
     onError?: (err: Error) => void
   ): Promise<FromToData[]> {
-    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+    const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'users_friends',
       readData
@@ -481,7 +480,7 @@ class User {
     readData: ReadFromToData,
     onError?: (err: Error) => void
   ): Promise<FromToData[]> {
-    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+    const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'users_blocks',
       readData

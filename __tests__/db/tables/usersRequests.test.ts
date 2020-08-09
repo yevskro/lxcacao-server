@@ -9,8 +9,8 @@
 
   Columns:
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    from_user_id INTEGER NOT NULL REFERENCES users(id),
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
+    peer_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 */
 
@@ -32,18 +32,18 @@ export default (): void => {
 
   it('can create a users_requests record', async (): Promise<void> => {
     query = `
-    INSERT INTO users_requests (from_user_id, user_id)
+    INSERT INTO users_requests (peer_user_id, main_user_id)
       VALUES
     (1, 2);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('wont create a record with an invalid from_user_id', async (): Promise<
+  it('wont create a record with an invalid peer_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_requests (from_user_id, user_id)
+    INSERT INTO users_requests (peer_user_id, main_user_id)
       VALUES
     (400, 2);`;
 
@@ -52,11 +52,11 @@ export default (): void => {
     );
   });
 
-  it('wont create a record with an invalid user_id', async (): Promise<
+  it('wont create a record with an invalid main_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_requests (from_user_id, user_id)
+    INSERT INTO users_requests (peer_user_id, main_user_id)
       VALUES
     (2, 400);`;
 
@@ -65,9 +65,9 @@ export default (): void => {
     );
   });
 
-  it('wont create a record without a user_id', async (): Promise<void> => {
+  it('wont create a record without a main_user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_requests (from_user_id)
+    INSERT INTO users_requests (peer_user_id)
       VALUES
     (1);`;
 
@@ -76,9 +76,9 @@ export default (): void => {
     );
   });
 
-  it('wont create a record without a from_user_id', async (): Promise<void> => {
+  it('wont create a record without a peer_user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_requests (user_id)
+    INSERT INTO users_requests (main_user_id)
       VALUES
     (1);`;
 
