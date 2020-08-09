@@ -177,12 +177,14 @@ describe('users model test suite', (): void => {
 
     await User.createFriendRequest({ user_id: 2, from_user_id: 3 });
 
-    const results = await User.readAllFriendRequests(2, {
-      user_id: true,
-      from_user_id: true,
-    });
-
-    expect(results.length).toBe(ammountOfRequests + 1);
+    expect(
+      (
+        await User.readAllFriendRequests(2, {
+          user_id: true,
+          from_user_id: true,
+        })
+      ).length
+    ).toBe(ammountOfRequests + 1);
   });
 
   it('can delete a friend request', async (): Promise<void> => {
