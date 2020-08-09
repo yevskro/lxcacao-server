@@ -29,6 +29,23 @@ describe('users model test suite', (): void => {
     ).toBe('number');
   });
 
+  it('can create a user with img_file_name', async (): Promise<void> => {
+    expect(
+      typeof (await User.create(pool, {
+        gmail: 'durran2@gmail.com',
+        first_name: 'durran',
+        last_name: 'durran',
+        login_ip: '127.0.0.1',
+        secure_key: '1338',
+        img_file_name: 'test.png',
+      }))
+    ).toBe('number');
+    const query = `SELECT img_file_name FROM users WHERE users.gmail = 'durran2@gmail.com'`;
+    expect((await pool.query(query)).rows[0].img_file_name).toStrictEqual(
+      'test.png'
+    );
+  });
+
   it('invokes on error callback when database throws on creation', async (): Promise<
     void
   > => {
