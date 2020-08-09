@@ -9,10 +9,10 @@
 
   Columns:
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id),
-    friend_id INTEGER NOT NULL REFERENCES users(id),
+    from_user_id INTEGER NOT NULL REFERENCES users(id),
+    to_user_id INTEGER NOT NULL REFERENCES users(id),
     msgs TEXT[] NOT NULL DEFAULT '{}',
-    last_update TIMESTAMP NOT NULL DEFAULT NOW()
+    last_cache_update TIMESTAMP NOT NULL DEFAULT NOW()
 */
 
 import { Pool } from 'pg';
@@ -31,20 +31,20 @@ export default (): void => {
 
   afterAll(async (): Promise<void> => pool.end());
 
-  it('can create a user and friend', async (): Promise<void> => {
+  it('can create a to user and from user', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (user_id, friend_id)
+    INSERT INTO users_chats (to_user_id, from_user_id)
       VALUES
     (1, 2);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('wont create a record with an invalid user id', async (): Promise<
+  it('wont create a record with an invalid to user id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_chats (user_id, friend_id)
+    INSERT INTO users_chats (to_user_id, from_user_id)
       VALUES
     (400, 2);`;
 
@@ -53,11 +53,11 @@ export default (): void => {
     );
   });
 
-  it('wont create a record with an invalid friend id', async (): Promise<
+  it('wont create a record with an invalid from_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_chats (user_id, friend_id)
+    INSERT INTO users_chats (to_user_id, from_user_id)
       VALUES
     (2, 400);`;
 
@@ -66,20 +66,9 @@ export default (): void => {
     );
   });
 
-  it('wont create a record without a friend_id', async (): Promise<void> => {
-    query = `
-    INSERT INTO users_chats (user_id)
-      VALUES
-    (1);`;
-
-    expect(await queryErrorHelper(pool, query)).toBe(
-      PostgresError.NOT_NULL_VIOLATION
-    );
-  });
-
   it('wont create a record without a user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (friend_id)
+    INSERT INTO users_chats (from_user_id)
       VALUES
     (1);`;
 
@@ -88,16 +77,27 @@ export default (): void => {
     );
   });
 
-  it('record has a last_update', async (): Promise<void> => {
+  it('wont create a record without a from_user_id', async (): Promise<void> => {
     query = `
-    SELECT last_update FROM users_chats WHERE users_chats.id = 1;`;
+    INSERT INTO users_chats (to_user_id)
+      VALUES
+    (1);`;
+
+    expect(await queryErrorHelper(pool, query)).toBe(
+      PostgresError.NOT_NULL_VIOLATION
+    );
+  });
+
+  it('record has a last_cache_update', async (): Promise<void> => {
+    query = `
+    SELECT last_cache_update FROM users_chats WHERE users_chats.id = 1;`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('last_update cannot be null', async (): Promise<void> => {
+  it('last_cache_update cannot be null', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (user_id, friend_id, last_update)
+    INSERT INTO users_chats (from_user_id, to_user_id, last_cache_update)
     VALUES
     ( 1, 1, null )`;
 
@@ -106,9 +106,9 @@ export default (): void => {
     );
   });
 
-  it('last_update can only be a timestamp', async (): Promise<void> => {
+  it('last_cache_update can only be a timestamp', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (user_id, friend_id, last_update)
+    INSERT INTO users_chats (from_user_id, to_user_id, last_cache_update)
     VALUES
     ( 1, 1, 1 )`;
 

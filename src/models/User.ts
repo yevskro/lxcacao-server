@@ -12,18 +12,20 @@ interface IdData {
 }
 
 export interface CreateFromToData {
-  from_id: number;
-  to_id: number;
+  from_user_id: number;
+  to_user_id: number;
 }
 
 export interface FromToData {
-  from_id: number;
-  to_id: number;
+  from_user_id?: number;
+  to_user_id?: number;
+  create_date?: string;
 }
 
 export interface ReadFromToData {
-  from_id?: boolean;
-  to_id?: boolean;
+  from_user_id?: boolean;
+  to_user_id?: boolean;
+  create_date?: string;
 }
 
 export interface CreateUserData {
@@ -370,6 +372,18 @@ class User {
       readData
     )} FROM recipes WHERE user_id = ($1)`;
     return User.query(query, [userId], onError);
+  }
+
+  static async createFriendRequest(
+    createData: CreateFromToData,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const [query, values] = User.genCreateQueryAndValues(
+      'users_requests',
+      createData
+    );
+    await User.query(query, values, onError);
+    return undefined;
   }
 }
 

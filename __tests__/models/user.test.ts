@@ -145,9 +145,8 @@ describe('users model test suite', (): void => {
   });
 
   it('can get all users recipe', async (): Promise<void> => {
-    expect(await (await User.readAllRecipes(1, { user_id: true })).length).toBe(
-      1
-    );
+    const amountOfRecipes = (await User.readAllRecipes(1, { user_id: true }))
+      .length;
     await User.createRecipe({
       user_id: 1,
       name: 'Banana Icecream Pants',
@@ -157,17 +156,15 @@ describe('users model test suite', (): void => {
       origin_user_id: 1,
       origin_user_full_name: 'Yev Skro',
     });
-    expect(await (await User.readAllRecipes(1, { user_id: true })).length).toBe(
-      2
+    expect((await User.readAllRecipes(1, { user_id: true })).length).toBe(
+      amountOfRecipes + 1
     );
   });
 
-  xit('has a get all recipes method', (): void => {
-    console.log('stub');
-  });
-
-  xit('has a get friend requests method', (): void => {
-    console.log('stub');
+  it('can create a friend request', async (): Promise<void> => {
+    const onError = jest.fn();
+    await User.createFriendRequest({ from_user_id: 1, to_user_id: 2 }, onError);
+    expect(onError).not.toBeCalled();
   });
 
   xit('has a get friends method', (): void => {
