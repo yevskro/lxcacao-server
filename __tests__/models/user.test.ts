@@ -19,26 +19,30 @@ describe('users model test suite', (): void => {
 
   it('can create a user', async (): Promise<void> => {
     expect(
-      typeof (await User.create(pool, {
-        gmail: 'durran@gmail.com',
-        first_name: 'durran',
-        last_name: 'durran',
-        login_ip: '127.0.0.1',
-        secure_key: '1337',
-      }))
+      typeof (
+        await User.create({
+          gmail: 'durran@gmail.com',
+          first_name: 'durran',
+          last_name: 'durran',
+          login_ip: '127.0.0.1',
+          secure_key: '1337',
+        })
+      ).id
     ).toBe('number');
   });
 
   it('can create a user with img_file_name', async (): Promise<void> => {
     expect(
-      typeof (await User.create(pool, {
-        gmail: 'durran2@gmail.com',
-        first_name: 'durran',
-        last_name: 'durran',
-        login_ip: '127.0.0.1',
-        secure_key: '1338',
-        img_file_name: 'test.png',
-      }))
+      typeof (
+        await User.create({
+          gmail: 'durran2@gmail.com',
+          first_name: 'durran',
+          last_name: 'durran',
+          login_ip: '127.0.0.1',
+          secure_key: '1338',
+          img_file_name: 'test.png',
+        })
+      ).id
     ).toBe('number');
     const query = `SELECT img_file_name FROM users WHERE users.gmail = 'durran2@gmail.com'`;
     expect((await pool.query(query)).rows[0].img_file_name).toStrictEqual(
@@ -51,7 +55,6 @@ describe('users model test suite', (): void => {
   > => {
     const onError = jest.fn();
     await User.create(
-      pool,
       {
         gmail: 'durran@gmail.com',
         first_name: 'durran',
@@ -65,7 +68,7 @@ describe('users model test suite', (): void => {
   });
 
   it('can query customizable user data by id', async (): Promise<void> => {
-    const data: UserData = await User.readUserDataById(pool, 1, {
+    const data: UserData = await User.readUserById(1, {
       gmail: true,
       first_name: true,
       last_name: true,
@@ -76,16 +79,12 @@ describe('users model test suite', (): void => {
   });
 
   it('can query customizable user data by gmail', async (): Promise<void> => {
-    const data: UserData = await User.readUserDataByGmail(
-      pool,
-      'root@gmail.com',
-      {
-        id: true,
-        first_name: true,
-        last_name: true,
-        img_file_name: true,
-      }
-    );
+    const data: UserData = await User.readUserByGmail('root@gmail.com', {
+      id: true,
+      first_name: true,
+      last_name: true,
+      img_file_name: true,
+    });
 
     expect(data.id).toBe(1);
     expect(data.first_name).toStrictEqual('test');

@@ -11,7 +11,7 @@
     "create-tables": "psql -h localhost -U postgres -d testdb -f src/db/create.sql",
     "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
     "setup-testdb": "yarn create-tables && yarn seed-database",
-    "test": "yarn setup-testdb && jest"
+    "test": "yarn setup-testdb && jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "pg": "^8.3.0",

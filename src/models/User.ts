@@ -1,13 +1,15 @@
 /* eslint-disable camelcase */
-import { Pool } from 'pg';
+import { Pool, QueryResultRow } from 'pg';
 
-type UserId = number;
-type RecipeId = number;
 type Fields = string[];
 type FieldParams = string[];
 type Params = string[];
 type Values = (string | number | boolean)[];
 type Query = string;
+
+interface IdData {
+  id?: number;
+}
 
 export interface CreateUserData {
   gmail: string;
@@ -107,6 +109,10 @@ interface UpdateRecipeData {
 
 class User {
   /* * * * * * Helper Methods * * * * * */
+  private static pool = new Pool({
+    connectionString: 'postgres://postgres@127.0.0.1:5432/testdb',
+  });
+
   private static genFieldsFromData(
     queryData: ReadRecipeData | ReadUserData | UserData | RecipeData
   ): string[] {
@@ -213,46 +219,42 @@ class User {
     return [query, [...values, id]];
   }
 
-  /* * * * * * * * * * * * * * * * * * * * * */
-  static async create(
-    pool: Pool,
-    createData: CreateUserData,
-    onError?: (err: Error) => void
-  ): Promise<UserId> {
-    const [query, values] = User.genCreateQueryAndValues('users', createData);
-
+  private static async query(
+    query: string,
+    values: Values,
+    onError: (err: Error) => void
+  ): Promise<QueryResultRow[]> {
     try {
-      return (await pool.query(query, [...values])).rows[0].id;
+      return (await User.pool.query(query, [...values])).rows;
     } catch (err) {
       if (onError) onError(err);
     }
-
-    return undefined;
+    return [];
   }
 
-  static async readUserDataById(
-    pool: Pool,
+  /* * * * * * * * * * * * * * * * * * * * * */
+  static async create(
+    createData: CreateUserData,
+    onError?: (err: Error) => void
+  ): Promise<IdData | undefined> {
+    const [query, values] = User.genCreateQueryAndValues('users', createData);
+    return (await User.query(query, values, onError))[0];
+  }
+
+  static async readUserById(
     id: number,
     readData: ReadUserData,
     onError?: (err: Error) => void
-  ): Promise<UserData> {
+  ): Promise<UserData | undefined> {
     const [query, values] = User.genReadQueryByIdOrGmail(id, 'users', readData);
-
-    try {
-      return (await pool.query(query, values)).rows[0];
-    } catch (err) {
-      if (onError) onError(err);
-    }
-
-    return undefined;
+    return (await User.query(query, values, onError))[0];
   }
 
-  static async readUserDataByGmail(
-    pool: Pool,
+  static async readUserByGmail(
     gmail: string,
     readData: ReadUserData,
     onError?: (err: Error) => void
-  ): Promise<UserData> {
+  ): Promise<UserData | undefined> {
     const [query, values] = User.genReadQueryByIdOrGmail(
       null,
       'users',
@@ -260,28 +262,17 @@ class User {
       gmail
     );
 
-    try {
-      return (await pool.query(query, values)).rows[0];
-    } catch (err) {
-      if (onError) onError(err);
-    }
-
-    return undefined;
+    return (await User.query(query, values, onError))[0];
   }
 
   static async updateUser(
-    pool: Pool,
     id: number,
     updateData: UpdateUserData,
     onError?: (err: Error) => void
-  ): Promise<void> {
+  ): Promise<undefined> {
     const [query, values] = this.genUpdateQueryById(id, 'users', updateData);
-
-    try {
-      await pool.query(query, [...values]);
-    } catch (err) {
-      if (err) onError(err);
-    }
+    await User.query(query, values, onError);
+    return undefined;
   }
   /*
   static async createRecipe(
