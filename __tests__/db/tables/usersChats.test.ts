@@ -40,22 +40,26 @@ export default (): void => {
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('wont create a user with an invalid id', async (): Promise<void> => {
+  it('wont create a record with an invalid user id', async (): Promise<
+    void
+  > => {
     query = `
     INSERT INTO users_chats (user_id, friend_id)
       VALUES
-    (4, 2);`;
+    (400, 2);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.FOREIGN_KEY_VIOLATION
     );
   });
 
-  it('wont create a friend with an invalid id', async (): Promise<void> => {
+  it('wont create a record with an invalid friend id', async (): Promise<
+    void
+  > => {
     query = `
     INSERT INTO users_chats (user_id, friend_id)
       VALUES
-    (2, 4);`;
+    (2, 400);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.FOREIGN_KEY_VIOLATION
