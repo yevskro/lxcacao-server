@@ -421,11 +421,47 @@ class User {
   }
 
   static async deleteFriendRequest(
-    usersRequestId: number,
+    usersRequestsRowId: number,
     onError?: (err: Error) => void
   ): Promise<void> {
     const query = 'DELETE FROM users_requests WHERE id = ($1)';
-    User.query(query, [usersRequestId], onError);
+    await User.query(query, [usersRequestsRowId], onError);
+    return undefined;
+  }
+
+  static async createFriend(
+    createData: CreateFromToData,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const [query, values] = User.genCreateQueryAndValues(
+      'users_friends',
+      createData
+    );
+    await User.query(query, values, onError);
+    return undefined;
+  }
+
+  static async readAllFriends(
+    userId: number,
+    readData: ReadFromToData,
+    onError?: (err: Error) => void
+  ): Promise<FromToData[]> {
+    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+      userId,
+      'users_friends',
+      readData
+    );
+
+    return User.query(query, values, onError);
+  }
+
+  static async deleteFriend(
+    usersFriendsRowId: number,
+    onError?: (err: Error) => void
+  ): Promise<void> {
+    const query = 'DELETE FROM users_friends WHERE id = ($1)';
+    await User.query(query, [usersFriendsRowId], onError);
+    return undefined;
   }
 }
 
