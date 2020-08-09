@@ -254,6 +254,12 @@ class User {
   }
 
   /* * * * * * * * * * * * * * * * * * * * * */
+  static async setPool(conUrl: string): Promise<void> {
+    User.pool = new Pool({
+      connectionString: conUrl,
+    });
+  }
+
   static async poolEnd(): Promise<void> {
     await User.pool.end();
   }
