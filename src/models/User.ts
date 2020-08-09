@@ -11,6 +11,21 @@ interface IdData {
   id?: number;
 }
 
+export interface CreateUserRecipeData {
+  user_id: number;
+  recipe_id: number;
+}
+
+export interface UserRecipeData {
+  user_id: number;
+  recipe_id: number;
+}
+
+export interface ReadUserRecipeData {
+  user_id?: boolean;
+  recipe_id?: boolean;
+}
+
 export interface CreateUserData {
   gmail: string;
   first_name: string;
@@ -114,7 +129,13 @@ class User {
   });
 
   private static genFieldsFromData(
-    queryData: ReadRecipeData | ReadUserData | UserData | RecipeData
+    queryData:
+      | ReadRecipeData
+      | ReadUserData
+      | UserData
+      | RecipeData
+      | UserRecipeData
+      | ReadUserRecipeData
   ): string[] {
     const fields: string[] = [];
     const keys = Object.keys(queryData);
@@ -133,7 +154,7 @@ class User {
   }
 
   private static genFieldParamsAndValuesFromData(
-    data: RecipeData | UserData
+    data: RecipeData | UserData | UserRecipeData
   ): [FieldParams, Values] {
     const values: Values = [];
     const fieldParams: FieldParams = [];
@@ -145,7 +166,7 @@ class User {
   }
 
   private static genFieldsAndValuesFromData(
-    data: RecipeData | UserData
+    data: RecipeData | UserData | UserRecipeData
   ): [Fields, Values] {
     const values: Values = [];
     const fields: Fields = [];
@@ -158,7 +179,7 @@ class User {
 
   private static genCreateQueryAndValues(
     tableName: string,
-    createData: CreateRecipeData | CreateUserData
+    createData: CreateRecipeData | CreateUserData | CreateUserRecipeData
   ): [Query, Values] {
     const [fields, values]: [Fields, Values] = User.genFieldsAndValuesFromData(
       createData
@@ -171,7 +192,7 @@ class User {
     return [query, values];
   }
 
-  private static genReadQueryByIdOrGmail(
+  private static genReadQueryAndValuesByIdOrGmail(
     id: number | null,
     tableName: string,
     readData: ReadRecipeData | ReadUserData,
@@ -202,7 +223,7 @@ class User {
     return [query, [value]];
   }
 
-  private static genUpdateQueryById(
+  private static genUpdateQueryAndValuesById(
     id: number,
     tableName: string,
     updateData: UpdateRecipeData | UpdateUserData
@@ -246,7 +267,11 @@ class User {
     readData: ReadUserData,
     onError?: (err: Error) => void
   ): Promise<UserData | undefined> {
-    const [query, values] = User.genReadQueryByIdOrGmail(id, 'users', readData);
+    const [query, values] = User.genReadQueryAndValuesByIdOrGmail(
+      id,
+      'users',
+      readData
+    );
     return (await User.query(query, values, onError))[0];
   }
 
@@ -255,7 +280,7 @@ class User {
     readData: ReadUserData,
     onError?: (err: Error) => void
   ): Promise<UserData | undefined> {
-    const [query, values] = User.genReadQueryByIdOrGmail(
+    const [query, values] = User.genReadQueryAndValuesByIdOrGmail(
       null,
       'users',
       readData,
@@ -270,39 +295,30 @@ class User {
     updateData: UpdateUserData,
     onError?: (err: Error) => void
   ): Promise<undefined> {
-    const [query, values] = this.genUpdateQueryById(id, 'users', updateData);
+    const [query, values] = this.genUpdateQueryAndValuesById(
+      id,
+      'users',
+      updateData
+    );
     await User.query(query, values, onError);
     return undefined;
   }
-  /*
+
   static async createRecipe(
     userId: number,
-    createRecipeData: CreateRecipeData,
-    onError: (err: Error) => void
-  ): Promise<RecipeId> {
-    const query = `
-    INSERT INTO recipes(${User.genQueryFromData(
-      (createRecipeData as unknown) as QueryRecipeData
-    )})
-    VALUES
-    ($1, $2, $3, $4, $5) RETURNING users.id;`;
-
-    try {
-      return (
-        await pool.query(query, [
-          createRecipeData.name,
-          createRecipeData.first_name,
-          createRecipeData.last_name,
-          createRecipeData.login_ip,
-          createRecipeData.secure_key,
-        ])
-      ).rows[0].id;
-    } catch (err) {
-      if (onError) onError(err);
-    }
-
-    return undefined;
-  } */
+    createData: CreateRecipeData,
+    onError?: (err: Error) => void
+  ): Promise<IdData | undefined> {
+    let [query, values] = this.genCreateQueryAndValues('recipes', createData);
+    const recipeIdData: IdData = (await User.query(query, values, onError))[0];
+    if (recipeIdData === undefined) return undefined;
+    [query, values] = this.genCreateQueryAndValues('users_recipes', {
+      user_id: userId,
+      recipe_id: recipeIdData.id,
+    });
+    await User.query(query, values, onError);
+    return recipeIdData;
+  }
 }
 
 export default User;

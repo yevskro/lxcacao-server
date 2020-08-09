@@ -104,8 +104,15 @@ describe('users model test suite', (): void => {
     expect(result.last_name).toStrictEqual('Skro');
   });
 
-  it('can create a recipe that belongs to a user', (): void => {
-    console.log('stub');
+  it('can create a recipe that belongs to a user', async (): Promise<void> => {
+    const result = await User.createRecipe(1, {
+      name: 'Beef Straganoff',
+      time: '1hr 15m',
+      type: 'Dinner Entree',
+      private: false,
+    });
+    expect(result).not.toBe(undefined);
+    expect(typeof result.id).toBe('number');
   });
 
   it('has a get all recipes method', (): void => {
