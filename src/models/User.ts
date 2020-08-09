@@ -3,6 +3,8 @@ import { Pool } from 'pg';
 
 type UserId = number;
 type RecipeId = number;
+type Fields = string[];
+type Values = string[];
 
 export interface CreateUserData {
   gmail: string;
@@ -25,7 +27,7 @@ export interface UserData {
   create_date?: string;
 }
 
-export interface QueryUserData {
+export interface ReadUserData {
   id?: boolean;
   gmail?: boolean;
   first_name?: boolean;
@@ -43,11 +45,40 @@ interface CreateRecipeData {
   time: string;
   type: string;
   private: boolean;
-  ingredients?: [string];
-  how_to_prepare?: [string];
+  ingredients?: string[];
+  how_to_prepare?: string[];
   from_id?: number;
   from_full_name?: string;
   img_file_name?: string;
+}
+
+interface ReadRecipeData {
+  id?: boolean;
+  name?: boolean;
+  time?: boolean;
+  type?: boolean;
+  private?: boolean;
+  ingredients?: boolean;
+  how_to_prepare?: boolean;
+  from_id?: boolean;
+  from_full_name?: boolean;
+  img_file_name?: boolean;
+  create_date?: boolean;
+  all?: boolean;
+}
+
+interface RecipeData {
+  id?: number;
+  name?: string;
+  time?: string;
+  type?: string;
+  private?: boolean;
+  ingredients?: string[];
+  how_to_prepare?: string[];
+  from_id?: number;
+  from_full_name?: string;
+  img_file_name?: string;
+  create_date?: string;
 }
 
 class User {
@@ -56,23 +87,16 @@ class User {
     createUserData: CreateUserData,
     onError?: (err: Error) => void
   ): Promise<UserId> {
+    const [fields, values] = User.genFieldsAndValuesFromData(createUserData);
+
+    const params: string[] = User.genParamsFromFieldsLength(fields.length);
     const query = `
-    INSERT INTO users(${User.genQueryUserDataString(
-      (createUserData as unknown) as QueryUserData
-    )})
+    INSERT INTO users(${fields.join(', ')})
     VALUES
-    ($1, $2, $3, $4, $5) RETURNING users.id;`;
+    (${params.join(', ')}) RETURNING users.id;`;
 
     try {
-      return (
-        await pool.query(query, [
-          createUserData.gmail,
-          createUserData.first_name,
-          createUserData.last_name,
-          createUserData.login_ip,
-          createUserData.secure_key,
-        ])
-      ).rows[0].id;
+      return (await pool.query(query, [...values])).rows[0].id;
     } catch (err) {
       if (onError) onError(err);
     }
@@ -80,24 +104,41 @@ class User {
     return undefined;
   }
 
-  private static genQueryUserDataString(queryData: QueryUserData) {
-    const dataFields = [];
-    if (queryData.id) dataFields.push('id');
-    if (queryData.gmail) dataFields.push('gmail');
-    if (queryData.first_name) dataFields.push('first_name');
-    if (queryData.last_name) dataFields.push('last_name');
-    if (queryData.create_date) dataFields.push('create_date');
-    if (queryData.img_file_name) dataFields.push('img_file_name');
-    if (queryData.last_update) dataFields.push('last_update');
-    if (queryData.login_ip) dataFields.push('login_ip');
-    if (queryData.secure_key) dataFields.push('secure_key');
-    return dataFields.join(', ');
+  private static genFieldsFromData(
+    queryData: ReadRecipeData | ReadUserData | UserData | RecipeData
+  ): string[] {
+    const fields: string[] = [];
+    const keys = Object.keys(queryData);
+    keys.forEach((key) => {
+      fields.push(key.toString());
+    });
+    return fields;
   }
 
-  static async queryUserDataById(
+  private static genParamsFromFieldsLength(len: number): string[] {
+    const params: string[] = [];
+    for (let i = 1; i <= len; i += 1) {
+      params.push(`$${i}`);
+    }
+    return params;
+  }
+
+  private static genFieldsAndValuesFromData(
+    data: RecipeData | UserData
+  ): [Fields, Values] {
+    const values: string[] = [];
+    const fields: string[] = [];
+    Object.entries(data).forEach((keyValuePair) => {
+      fields.push(keyValuePair[0]);
+      values.push(keyValuePair[1]);
+    });
+    return [fields, values];
+  }
+
+  static async readUserDataById(
     pool: Pool,
     id: UserId,
-    queryData: QueryUserData,
+    queryData: ReadUserData,
     onError?: (err: Error) => void
   ): Promise<UserData> {
     let query = '';
@@ -105,7 +146,7 @@ class User {
       query = `SELECT * FROM users WHERE users.id = ($1);`;
     } else {
       query = 'SELECT ';
-      query += `${User.genQueryUserDataString(
+      query += `${User.genFieldsFromData(
         queryData
       )} FROM users WHERE users.id = ($1);`;
     }
@@ -119,10 +160,10 @@ class User {
     return undefined;
   }
 
-  static async queryUserDataByGmail(
+  static async readUserDataByGmail(
     pool: Pool,
     gmail: string,
-    queryData: QueryUserData,
+    queryData: ReadUserData,
     onError?: (err: Error) => void
   ): Promise<UserData> {
     let query = '';
@@ -130,7 +171,7 @@ class User {
       query = 'SELECT * FROM users WHERE users.gmail = ($1);';
     } else {
       query = 'SELECT ';
-      query += `${User.genQueryUserDataString(
+      query += `${User.genFieldsFromData(
         queryData
       )} FROM users WHERE users.gmail = ($1);`;
     }
@@ -147,9 +188,32 @@ class User {
   /*
   static async createRecipe(
     userId: number,
-    recipeCreateData: CreateRecipeData,
+    createRecipeData: CreateRecipeData,
     onError: (err: Error) => void
-  ): Promise<RecipeId> {} */
+  ): Promise<RecipeId> {
+    const query = `
+    INSERT INTO recipes(${User.genQueryFromData(
+      (createRecipeData as unknown) as QueryRecipeData
+    )})
+    VALUES
+    ($1, $2, $3, $4, $5) RETURNING users.id;`;
+
+    try {
+      return (
+        await pool.query(query, [
+          createRecipeData.name,
+          createRecipeData.first_name,
+          createRecipeData.last_name,
+          createRecipeData.login_ip,
+          createRecipeData.secure_key,
+        ])
+      ).rows[0].id;
+    } catch (err) {
+      if (onError) onError(err);
+    }
+
+    return undefined;
+  } */
 }
 
 export default User;

@@ -48,7 +48,7 @@ describe('users model test suite', (): void => {
   });
 
   it('can query customizable user data by id', async (): Promise<void> => {
-    const data: UserData = await User.queryUserDataById(pool, 1, {
+    const data: UserData = await User.readUserDataById(pool, 1, {
       gmail: true,
       first_name: true,
       last_name: true,
@@ -59,7 +59,7 @@ describe('users model test suite', (): void => {
   });
 
   it('can query customizable user data by gmail', async (): Promise<void> => {
-    const data: UserData = await User.queryUserDataByGmail(
+    const data: UserData = await User.readUserDataByGmail(
       pool,
       'root@gmail.com',
       {
