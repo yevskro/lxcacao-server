@@ -50,20 +50,22 @@ describe('users model test suite', (): void => {
     );
   });
 
-  it('invokes on error callback when database throws on creation', async (): Promise<
+  it('invokes an error callback and returns undefined on error', async (): Promise<
     void
   > => {
     const onError = jest.fn();
-    await User.create(
-      {
-        gmail: 'durran@gmail.com',
-        first_name: 'durran',
-        last_name: 'durran',
-        login_ip: '127.0.0.1',
-        secure_key: '1337',
-      },
-      onError
-    );
+    expect(
+      await User.create(
+        {
+          gmail: 'durran@gmail.com',
+          first_name: 'durran',
+          last_name: 'durran',
+          login_ip: '127.0.0.1',
+          secure_key: '1337',
+        },
+        onError
+      )
+    ).toBe(undefined);
     expect(onError).toBeCalled();
   });
 
@@ -92,8 +94,14 @@ describe('users model test suite', (): void => {
     expect(data.img_file_name).toStrictEqual('test.png');
   });
 
-  it('can update users data', (): void => {
-    console.log('stub');
+  it('can update users data', async (): Promise<void> => {
+    await User.updateUser(1, { first_name: 'Yev', last_name: 'Skro' });
+    const result = await User.readUserById(1, {
+      first_name: true,
+      last_name: true,
+    });
+    expect(result.first_name).toStrictEqual('Yev');
+    expect(result.last_name).toStrictEqual('Skro');
   });
 
   it('can create a recipe that belongs to a user', (): void => {
