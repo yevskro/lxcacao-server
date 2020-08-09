@@ -123,6 +123,12 @@ describe('users model test suite', (): void => {
     expect(typeof result.id).toBe('number');
   });
 
+  it('can update a recipe', async (): Promise<void> => {
+    const onError = jest.fn();
+    await User.updateRecipe(1, { name: 'Bubblegum Jonie' }, onError);
+    expect(onError).not.toBeCalled();
+  });
+
   it('has a get all recipes method', (): void => {
     console.log('stub');
   });

@@ -39,9 +39,9 @@ export default (): void => {
 
   it('can add a recipe', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, time, type, private) 
+    INSERT INTO recipes (name, time, type, private, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('Beef Straganoff', '1hr 15m', 'Dinner Entree', 'false');`;
+    ('Beef Straganoff', '1hr 15m', 'Dinner Entree', 'false', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
@@ -110,9 +110,9 @@ export default (): void => {
 
   it('cant create recipe with empty name', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('', 'Dinner Entree', '25m', 'true');`;
+    ('', 'Dinner Entree', '25m', 'true', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.CHECK_VIOLATION
@@ -121,9 +121,9 @@ export default (): void => {
 
   it('cant create recipe with empty type', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('Beef Straganoff', '', '3hr', 'false');`;
+    ('Beef Straganoff', '', '3hr', 'false', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.CHECK_VIOLATION
@@ -132,9 +132,9 @@ export default (): void => {
 
   it('cant create recipe with empty time', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('Beef Straganoff', 'Dinner Entree', '', 'false');`;
+    ('Beef Straganoff', 'Dinner Entree', '', 'false', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.CHECK_VIOLATION
@@ -143,9 +143,9 @@ export default (): void => {
 
   it('cant create recipe with empty private', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private) 
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('Beef Straganoff', 'Dinner Entree', '45m', '');`;
+    ('Beef Straganoff', 'Dinner Entree', '45m', '', 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.INVALID_TEXT_REPRESENTATION
@@ -154,18 +154,18 @@ export default (): void => {
 
   it('can save an array into ingredients', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, ingredients) 
+    INSERT INTO recipes (name, type, time, private, ingredients, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['1 cucumber','2 pickles']);`;
+    ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['1 cucumber','2 pickles'], 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
   it('can save an array into how_to_prepare', async (): Promise<void> => {
     query = `
-    INSERT INTO recipes (name, type, time, private, how_to_prepare) 
+    INSERT INTO recipes (name, type, time, private, how_to_prepare, origin_user_id, origin_user_full_name, user_id) 
         VALUES
-    ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['cook beef','cook fries']);`;
+    ('Beef Straganoff', 'Dinner Entree', '45m', 'false', ARRAY['cook beef','cook fries'], 1, 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
@@ -196,45 +196,16 @@ export default (): void => {
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('has the default value of null in origin_user_id', async (): Promise<
-    void
-  > => {
-    query = `
-    SELECT origin_user_id FROM recipes WHERE recipes.id = 1 AND recipes.origin_user_id IS NULL;`;
-
-    const { origin_user_id } = (await pool.query(query)).rows[0];
-    expect(origin_user_id).toBe(null);
-  });
-
   it('cant create a recipe with an invalid origin_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_id)
+    INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, user_id)
       VALUES
-    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000');`;
+    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', '1000', 'Yev Skro', 1);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(
       PostgresError.FOREIGN_KEY_VIOLATION
     );
-  });
-
-  it('has a origin_user_full_name', async (): Promise<void> => {
-    query = `
-    INSERT INTO recipes (name, type, time, private, origin_user_full_name)
-      VALUES
-    ('Beef Straganoff', 'Dinner Entree', '1hr', 'true', 'Jim Durran');`;
-
-    expect(await queryErrorHelper(pool, query)).toBe(undefined);
-  });
-
-  it('has a default value of an empty string for origin_user_full_name', async (): Promise<
-    void
-  > => {
-    query = `
-    SELECT origin_user_full_name FROM recipes WHERE recipes.id = 1;`;
-
-    const { origin_user_full_name } = (await pool.query(query)).rows[0];
-    expect(origin_user_full_name).toStrictEqual('');
   });
 };

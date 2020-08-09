@@ -1,6 +1,5 @@
 /* prettier-ignore */
 DROP TABLE IF EXISTS users_chats;
-DROP TABLE IF EXISTS users_recipes;
 DROP TABLE IF EXISTS recipes;
 DROP TABLE IF EXISTS users_requests;
 DROP TABLE IF EXISTS users_blocks;
@@ -53,9 +52,9 @@ CREATE TABLE recipes
     private BOOLEAN NOT NULL,
     ingredients TEXT[] NOT NULL DEFAULT '{}',
     how_to_prepare TEXT[] NOT NULL DEFAULT '{}',
-    user_id INTEGER REFERENCES users(id) DEFAULT NULL,
-    origin_user_id INTEGER REFERENCES users(id) DEFAULT NULL,
-    origin_user_full_name TEXT DEFAULT '',
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    origin_user_id INTEGER NOT NULL REFERENCES users(id),
+    origin_user_full_name TEXT NOT NULL CHECK (origin_user_full_name <> ''),
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
