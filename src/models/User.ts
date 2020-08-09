@@ -255,7 +255,7 @@ class User {
   private static async query(
     query: Query,
     values: Values,
-    onError: (err: Error) => void
+    onError?: (err: Error) => void
   ): Promise<QueryResultRow[]> {
     try {
       return (await User.pool.query(query, [...values])).rows;
@@ -356,9 +356,20 @@ class User {
     id: number,
     onError?: (err: Error) => void
   ): Promise<undefined> {
-    const query = `DELETE FROM recipes WHERE id = ($1)`;
+    const query = `DELETE FROM recipes WHERE id = ($1);`;
     await User.query(query, [id], onError);
     return undefined;
+  }
+
+  static async readAllRecipes(
+    userId: number,
+    readData: ReadRecipeData,
+    onError?: (err: Error) => void
+  ): Promise<RecipeData[] | undefined> {
+    const query = `SELECT ${User.genFieldsFromData(
+      readData
+    )} FROM recipes WHERE user_id = ($1)`;
+    return User.query(query, [userId], onError);
   }
 }
 

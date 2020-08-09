@@ -123,77 +123,94 @@ describe('users model test suite', (): void => {
     expect(typeof result.id).toBe('number');
   });
 
-  it('can update a recipe', async (): Promise<void> => {
+  it('can update a users recipe', async (): Promise<void> => {
     const onError = jest.fn();
     await User.updateRecipe(1, { name: 'Bubblegum Jonie' }, onError);
     expect(onError).not.toBeCalled();
   });
 
-  it('has a get all recipes method', (): void => {
+  it('can read a users recipe', async (): Promise<void> => {
+    const result = await User.readRecipe(1, { user_id: true });
+    expect(result).not.toBe(undefined);
+    expect(result.user_id).toBe(1);
+  });
+
+  it('can delete a users recipe', async (): Promise<void> => {
+    const onError = jest.fn();
+    await User.deleteRecipe(2, onError);
+    expect(onError).not.toBeCalled();
+    expect(await User.readRecipe(2, { user_id: true }, onError)).toBe(
+      undefined
+    );
+  });
+
+  it('can get all users recipe', async (): Promise<void> => {
+    expect(await (await User.readAllRecipes(1, { user_id: true })).length).toBe(
+      1
+    );
+    await User.createRecipe({
+      user_id: 1,
+      name: 'Banana Icecream Pants',
+      time: '1hr',
+      type: 'Desert',
+      private: false,
+      origin_user_id: 1,
+      origin_user_full_name: 'Yev Skro',
+    });
+    expect(await (await User.readAllRecipes(1, { user_id: true })).length).toBe(
+      2
+    );
+  });
+
+  xit('has a get all recipes method', (): void => {
     console.log('stub');
   });
 
-  it('has a get friend requests method', (): void => {
+  xit('has a get friend requests method', (): void => {
     console.log('stub');
   });
 
-  it('has a get friends method', (): void => {
+  xit('has a get friends method', (): void => {
     console.log('stub');
   });
 
-  it('has a delete friend method', (): void => {
+  xit('has a delete friend method', (): void => {
     console.log('stub');
   });
 
-  it('has a get users blocks method', (): void => {
+  xit('has a get users blocks method', (): void => {
     console.log('stub');
   });
 
-  it('has a copy recipe method', (): void => {
+  xit('has a copy recipe method', (): void => {
     console.log('stub');
   });
 
-  it('has a delete recipe method', (): void => {
+  xit('has a friend request method', (): void => {
     console.log('stub');
   });
 
-  it('has an add recipe method', (): void => {
+  xit('has a delete friend request method', (): void => {
     console.log('stub');
   });
 
-  it('has an update recipe method', (): void => {
+  xit('has an accept friend request method', (): void => {
     console.log('stub');
   });
 
-  it('has a create recipe method', (): void => {
+  xit('has a block user method', (): void => {
     console.log('stub');
   });
 
-  it('has a friend request method', (): void => {
+  xit('has an unblock user method', (): void => {
     console.log('stub');
   });
 
-  it('has a delete friend request method', (): void => {
+  xit('can update the profile image', (): void => {
     console.log('stub');
   });
 
-  it('has an accept friend request method', (): void => {
-    console.log('stub');
-  });
-
-  it('has a block user method', (): void => {
-    console.log('stub');
-  });
-
-  it('has an unblock user method', (): void => {
-    console.log('stub');
-  });
-
-  it('can update the profile image', (): void => {
-    console.log('stub');
-  });
-
-  it('can update the last_udate', (): void => {
+  xit('can update the last_udate', (): void => {
     console.log('stub');
   });
 });
