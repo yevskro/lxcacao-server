@@ -93,6 +93,10 @@ describe('users model test suite', (): void => {
     expect(data.img_file_name).toStrictEqual('test.png');
   });
 
+  it('can update users data', (): void => {
+    console.log('stub');
+  });
+
   it('can create a recipe that belongs to a user', (): void => {
     console.log('stub');
   });
