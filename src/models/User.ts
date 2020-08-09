@@ -254,6 +254,10 @@ class User {
   }
 
   /* * * * * * * * * * * * * * * * * * * * * */
+  static async poolEnd(): Promise<void> {
+    await User.pool.end();
+  }
+
   static async create(
     createData: CreateUserData,
     onError?: (err: Error) => void

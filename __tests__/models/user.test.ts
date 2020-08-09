@@ -15,7 +15,12 @@ describe('users model test suite', (): void => {
     pool = new Pool({ connectionString: conString });
   });
 
-  afterAll(async (): Promise<void> => pool.end());
+  afterAll(
+    async (): Promise<void> => {
+      pool.end();
+      User.poolEnd();
+    }
+  );
 
   it('can create a user', async (): Promise<void> => {
     expect(
