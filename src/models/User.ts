@@ -371,11 +371,11 @@ class User {
   }
 
   static async deleteRecipe(
-    id: number,
+    recipeRowId: number,
     onError?: (err: Error) => void
   ): Promise<undefined> {
     const query = `DELETE FROM recipes WHERE id = ($1);`;
-    await User.query(query, [id], onError);
+    await User.query(query, [recipeRowId], onError);
     return undefined;
   }
 
@@ -461,6 +461,41 @@ class User {
   ): Promise<void> {
     const query = 'DELETE FROM users_friends WHERE id = ($1)';
     await User.query(query, [usersFriendsRowId], onError);
+    return undefined;
+  }
+
+  static async createBlock(
+    createData: CreateFromToData,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const [query, values] = User.genCreateQueryAndValues(
+      'users_blocks',
+      createData
+    );
+    await User.query(query, values, onError);
+    return undefined;
+  }
+
+  static async readAllBlocks(
+    userId: number,
+    readData: ReadFromToData,
+    onError?: (err: Error) => void
+  ): Promise<FromToData[]> {
+    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+      userId,
+      'users_blocks',
+      readData
+    );
+
+    return User.query(query, values, onError);
+  }
+
+  static async deleteBlock(
+    usersBlocksRowId: number,
+    onError?: (err: Error) => void
+  ): Promise<void> {
+    const query = 'DELETE FROM users_blocks WHERE id = ($1)';
+    await User.query(query, [usersBlocksRowId], onError);
     return undefined;
   }
 }

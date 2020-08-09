@@ -243,6 +243,46 @@ describe('users model test suite', (): void => {
     );
   });
 
+  it('can create a block', async (): Promise<void> => {
+    const onError = jest.fn();
+    await User.createBlock({ user_id: 2, from_user_id: 1 }, onError);
+    expect(onError).not.toBeCalled();
+  });
+
+  it('can read all blocks', async (): Promise<void> => {
+    const ammountOfRequests = (
+      await User.readAllBlocks(2, {
+        user_id: true,
+        from_user_id: true,
+      })
+    ).length;
+
+    await User.createBlock({ user_id: 2, from_user_id: 3 });
+
+    expect(
+      (
+        await User.readAllBlocks(2, {
+          user_id: true,
+          from_user_id: true,
+        })
+      ).length
+    ).toBe(ammountOfRequests + 1);
+  });
+
+  it('can delete a friend request', async (): Promise<void> => {
+    const ids = await User.readAllBlocks(2, {
+      id: true,
+      from_user_id: true,
+    });
+
+    const usersBlock = ids.find((blockData) => blockData.from_user_id === 3);
+
+    await User.deleteBlock(usersBlock.id);
+    expect((await User.readAllBlocks(2, { user_id: true })).length).toBe(
+      ids.length - 1
+    );
+  });
+
   xit('has a get users blocks method', (): void => {
     console.log('stub');
   });
