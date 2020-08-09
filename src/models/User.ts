@@ -11,23 +11,23 @@ interface IdData {
   id?: number;
 }
 
-export interface CreateFromToData {
+export interface CreateMainPeerData {
   main_user_id: number;
   peer_user_id: number;
 }
 
-export interface FromToData {
+export interface MainPeerData {
   id?: number;
   main_user_id?: number;
   peer_user_id?: number;
   create_date?: string;
 }
 
-export interface ReadFromToData {
+export interface ReadMainPeerData {
   id?: boolean;
   main_user_id?: boolean;
   peer_user_id?: boolean;
-  create_date?: string;
+  create_date?: boolean;
 }
 
 export interface CreateUserData {
@@ -148,10 +148,10 @@ class User {
     queryData:
       | ReadRecipeData
       | ReadUserData
-      | ReadFromToData
+      | ReadMainPeerData
       | UserData
       | RecipeData
-      | FromToData
+      | MainPeerData
   ): Fields {
     const fields: string[] = [];
     const keys = Object.keys(queryData);
@@ -170,7 +170,7 @@ class User {
   }
 
   private static genFieldParamsAndValuesFromData(
-    data: RecipeData | UserData | FromToData
+    data: RecipeData | UserData | MainPeerData
   ): [FieldParams, Values] {
     const values: Values = [];
     const fieldParams: FieldParams = [];
@@ -182,7 +182,7 @@ class User {
   }
 
   private static genFieldsAndValuesFromData(
-    data: RecipeData | UserData | FromToData
+    data: RecipeData | UserData | MainPeerData
   ): [Fields, Values] {
     const values: Values = [];
     const fields: Fields = [];
@@ -195,7 +195,7 @@ class User {
 
   private static genCreateQueryAndValues(
     tableName: string,
-    createData: CreateRecipeData | CreateUserData | CreateFromToData
+    createData: CreateRecipeData | CreateUserData | CreateMainPeerData
   ): [Query, Values] {
     const [fields, values]: [Fields, Values] = User.genFieldsAndValuesFromData(
       createData
@@ -211,7 +211,7 @@ class User {
   private static genReadAllQueryAndValuesByMainUserId(
     mainUserId: number,
     tableName: string,
-    readData: ReadRecipeData | ReadFromToData
+    readData: ReadRecipeData | ReadMainPeerData
   ): [Query, Values] {
     const query = `SELECT ${User.genFieldsFromData(
       readData
@@ -394,7 +394,7 @@ class User {
   }
 
   static async createFriendRequest(
-    createData: CreateFromToData,
+    createData: CreateMainPeerData,
     onError?: (err: Error) => void
   ): Promise<undefined> {
     const [query, values] = User.genCreateQueryAndValues(
@@ -407,9 +407,9 @@ class User {
 
   static async readAllFriendRequests(
     userId: number,
-    readData: ReadFromToData,
+    readData: ReadMainPeerData,
     onError?: (err: Error) => void
-  ): Promise<FromToData[]> {
+  ): Promise<MainPeerData[]> {
     const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'users_requests',
@@ -429,7 +429,7 @@ class User {
   }
 
   static async createFriend(
-    createData: CreateFromToData,
+    createData: CreateMainPeerData,
     onError?: (err: Error) => void
   ): Promise<undefined> {
     const [query, values] = User.genCreateQueryAndValues(
@@ -442,9 +442,9 @@ class User {
 
   static async readAllFriends(
     userId: number,
-    readData: ReadFromToData,
+    readData: ReadMainPeerData,
     onError?: (err: Error) => void
-  ): Promise<FromToData[]> {
+  ): Promise<MainPeerData[]> {
     const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'users_friends',
@@ -464,7 +464,7 @@ class User {
   }
 
   static async createBlock(
-    createData: CreateFromToData,
+    createData: CreateMainPeerData,
     onError?: (err: Error) => void
   ): Promise<undefined> {
     const [query, values] = User.genCreateQueryAndValues(
@@ -477,9 +477,9 @@ class User {
 
   static async readAllBlocks(
     userId: number,
-    readData: ReadFromToData,
+    readData: ReadMainPeerData,
     onError?: (err: Error) => void
-  ): Promise<FromToData[]> {
+  ): Promise<MainPeerData[]> {
     const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       userId,
       'users_blocks',
