@@ -55,15 +55,15 @@ export default (): void => {
     );
   });
 
-  it('last_update, create_date are identical timestamps', async (): Promise<
+  it('last_cache_update, create_date are identical timestamps', async (): Promise<
     void
   > => {
-    const { last_update, create_date } = (
+    const { last_cache_update, create_date } = (
       await pool.query('SELECT * FROM users WHERE users.id = 1;')
     ).rows[0];
-    expect(last_update.length).not.toBe(0);
+    expect(last_cache_update.length).not.toBe(0);
     expect(create_date.length).not.toBe(0);
-    expect(last_update).toStrictEqual(create_date);
+    expect(last_cache_update).toStrictEqual(create_date);
   });
 
   it('secure_key is a unique key', async (): Promise<void> => {
@@ -79,7 +79,7 @@ export default (): void => {
 
   it('last_update cannot be null', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_update) 
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_cache_update) 
         VALUES
     ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0005', null);`;
 
@@ -90,7 +90,7 @@ export default (): void => {
 
   it('last_update cannot be an empty string', async (): Promise<void> => {
     query = `
-    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_update) 
+    INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_cache_update) 
         VALUES
     ('test1@gmail.com', 'test1', 'test1', '127.0.0.1', '0005', '');`;
 
