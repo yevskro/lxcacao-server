@@ -163,12 +163,15 @@ describe('users model test suite', (): void => {
 
   it('can create a friend request', async (): Promise<void> => {
     const onError = jest.fn();
-    await User.createFriendRequest({ from_user_id: 1, to_user_id: 2 }, onError);
+    await User.createFriendRequest({ user_id: 2, from_user_id: 1 }, onError);
     expect(onError).not.toBeCalled();
   });
 
-  xit('has a get friends method', (): void => {
-    console.log('stub');
+  it('can read all friend requests', async (): Promise<void> => {
+    await User.createFriendRequest({ user_id: 2, from_user_id: 3 });
+    expect(
+      (await User.readAllFriendRequests(2, { user_id: true })).length
+    ).toBe(2);
   });
 
   xit('has a delete friend method', (): void => {

@@ -22,24 +22,24 @@ CREATE TABLE users
 CREATE TABLE users_friends
 (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
     from_user_id INTEGER NOT NULL REFERENCES users(id),
-    to_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_blocks
 (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
     from_user_id INTEGER NOT NULL REFERENCES users(id),
-    to_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_requests
 (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
     from_user_id INTEGER NOT NULL REFERENCES users(id),
-    to_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -62,8 +62,8 @@ CREATE TABLE recipes
 CREATE TABLE users_chats
 (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
     from_user_id INTEGER NOT NULL REFERENCES users(id),
-    to_user_id INTEGER NOT NULL REFERENCES users(id),
     msgs TEXT[] NOT NULL DEFAULT '{}',
     last_cache_update TIMESTAMP NOT NULL DEFAULT NOW()
 );

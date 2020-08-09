@@ -12,19 +12,19 @@ interface IdData {
 }
 
 export interface CreateFromToData {
+  user_id: number;
   from_user_id: number;
-  to_user_id: number;
 }
 
 export interface FromToData {
+  user_id?: number;
   from_user_id?: number;
-  to_user_id?: number;
   create_date?: string;
 }
 
 export interface ReadFromToData {
+  user_id?: boolean;
   from_user_id?: boolean;
-  to_user_id?: boolean;
   create_date?: string;
 }
 
@@ -206,6 +206,18 @@ class User {
     return [query, values];
   }
 
+  private static genReadAllQueryAndValuesByUserId(
+    userId: number,
+    tableName: string,
+    readData: ReadRecipeData | ReadFromToData
+  ): [Query, Values] {
+    const query = `SELECT ${User.genFieldsFromData(
+      readData
+    )} FROM ${tableName} WHERE user_id = ($1)`;
+
+    return [query, [userId]];
+  }
+
   private static genReadQueryAndValuesByIdOrGmail(
     id: number | null,
     tableName: string,
@@ -234,6 +246,7 @@ class User {
         readData
       )} FROM ${tableName} WHERE ${condition};`;
     }
+
     return [query, [value]];
   }
 
@@ -264,6 +277,7 @@ class User {
     } catch (err) {
       if (onError) onError(err);
     }
+
     return [];
   }
 
@@ -368,10 +382,14 @@ class User {
     readData: ReadRecipeData,
     onError?: (err: Error) => void
   ): Promise<RecipeData[] | undefined> {
-    const query = `SELECT ${User.genFieldsFromData(
+    // console.log(await User.pool.query('SELECT * FROM recipes;'));
+    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+      userId,
+      'recipes',
       readData
-    )} FROM recipes WHERE user_id = ($1)`;
-    return User.query(query, [userId], onError);
+    );
+    console.log(query);
+    return User.query(query, values, onError);
   }
 
   static async createFriendRequest(
@@ -384,6 +402,20 @@ class User {
     );
     await User.query(query, values, onError);
     return undefined;
+  }
+
+  static async readAllFriendRequests(
+    userId: number,
+    readData: ReadFromToData,
+    onError?: (err: Error) => void
+  ): Promise<FromToData[]> {
+    const [query, values] = User.genReadAllQueryAndValuesByUserId(
+      userId,
+      'users_requests',
+      readData
+    );
+
+    return User.query(query, values, onError);
   }
 }
 

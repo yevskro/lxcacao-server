@@ -9,8 +9,8 @@
 
   Columns:
     id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
     from_user_id INTEGER NOT NULL REFERENCES users(id),
-    to_user_id INTEGER NOT NULL REFERENCES users(id),
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
 */
 
@@ -32,18 +32,18 @@ export default (): void => {
 
   it('can create a users_blocks record', async (): Promise<void> => {
     query = `
-    INSERT INTO users_blocks (to_user_id, from_user_id)
+    INSERT INTO users_blocks (from_user_id, user_id)
       VALUES
     (1, 2);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('wont create a record with an invalid to_user_id', async (): Promise<
+  it('wont create a record with an invalid from_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_blocks (to_user_id, from_user_id)
+    INSERT INTO users_blocks (from_user_id, user_id)
       VALUES
     (400, 2);`;
 
@@ -52,11 +52,11 @@ export default (): void => {
     );
   });
 
-  it('wont create a record with an invalid from_user_id', async (): Promise<
+  it('wont create a record with an invalid user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_blocks (to_user_id, from_user_id)
+    INSERT INTO users_blocks (from_user_id, user_id)
       VALUES
     (2, 400);`;
 
@@ -65,9 +65,9 @@ export default (): void => {
     );
   });
 
-  it('wont create a record without a from_user_id', async (): Promise<void> => {
+  it('wont create a record without a user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_blocks (to_user_id)
+    INSERT INTO users_blocks (from_user_id)
       VALUES
     (1);`;
 
@@ -76,9 +76,9 @@ export default (): void => {
     );
   });
 
-  it('wont create a record without a to_user_id', async (): Promise<void> => {
+  it('wont create a record without a from_user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_blocks (from_user_id)
+    INSERT INTO users_blocks (user_id)
       VALUES
     (1);`;
 

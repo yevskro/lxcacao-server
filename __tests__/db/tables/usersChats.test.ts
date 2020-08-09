@@ -9,8 +9,8 @@
 
   Columns:
     id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
     from_user_id INTEGER NOT NULL REFERENCES users(id),
-    to_user_id INTEGER NOT NULL REFERENCES users(id),
     msgs TEXT[] NOT NULL DEFAULT '{}',
     last_cache_update TIMESTAMP NOT NULL DEFAULT NOW()
 */
@@ -33,18 +33,18 @@ export default (): void => {
 
   it('can create a to user and from user', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (to_user_id, from_user_id)
+    INSERT INTO users_chats (from_user_id, user_id)
       VALUES
     (1, 2);`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('wont create a record with an invalid to user id', async (): Promise<
+  it('wont create a record with an invalid from_user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_chats (to_user_id, from_user_id)
+    INSERT INTO users_chats (from_user_id, user_id)
       VALUES
     (400, 2);`;
 
@@ -53,11 +53,11 @@ export default (): void => {
     );
   });
 
-  it('wont create a record with an invalid from_user_id', async (): Promise<
+  it('wont create a record with an invalid user_id', async (): Promise<
     void
   > => {
     query = `
-    INSERT INTO users_chats (to_user_id, from_user_id)
+    INSERT INTO users_chats (from_user_id, user_id)
       VALUES
     (2, 400);`;
 
@@ -68,7 +68,7 @@ export default (): void => {
 
   it('wont create a record without a user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (from_user_id)
+    INSERT INTO users_chats (user_id)
       VALUES
     (1);`;
 
@@ -77,9 +77,9 @@ export default (): void => {
     );
   });
 
-  it('wont create a record without a from_user_id', async (): Promise<void> => {
+  it('wont create a record without a user_id', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (to_user_id)
+    INSERT INTO users_chats (from_user_id)
       VALUES
     (1);`;
 
@@ -97,7 +97,7 @@ export default (): void => {
 
   it('last_cache_update cannot be null', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (from_user_id, to_user_id, last_cache_update)
+    INSERT INTO users_chats (user_id, from_user_id, last_cache_update)
     VALUES
     ( 1, 1, null )`;
 
@@ -108,7 +108,7 @@ export default (): void => {
 
   it('last_cache_update can only be a timestamp', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (from_user_id, to_user_id, last_cache_update)
+    INSERT INTO users_chats (user_id, from_user_id, last_cache_update)
     VALUES
     ( 1, 1, 1 )`;
 
