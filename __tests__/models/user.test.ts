@@ -168,14 +168,37 @@ describe('users model test suite', (): void => {
   });
 
   it('can read all friend requests', async (): Promise<void> => {
+    const ammountOfRequests = (
+      await User.readAllFriendRequests(2, {
+        user_id: true,
+        from_user_id: true,
+      })
+    ).length;
+
     await User.createFriendRequest({ user_id: 2, from_user_id: 3 });
-    expect(
-      (await User.readAllFriendRequests(2, { user_id: true })).length
-    ).toBe(2);
+
+    const results = await User.readAllFriendRequests(2, {
+      user_id: true,
+      from_user_id: true,
+    });
+
+    expect(results.length).toBe(ammountOfRequests + 1);
   });
 
-  xit('has a delete friend method', (): void => {
-    console.log('stub');
+  it('can delete a friend request', async (): Promise<void> => {
+    const ids = await User.readAllFriendRequests(2, {
+      id: true,
+      from_user_id: true,
+    });
+
+    const usersRequest = ids.find(
+      (requestData) => requestData.from_user_id === 3
+    );
+
+    await User.deleteFriendRequest(usersRequest.id);
+    expect(
+      (await User.readAllFriendRequests(2, { user_id: true })).length
+    ).toBe(ids.length - 1);
   });
 
   xit('has a get users blocks method', (): void => {

@@ -17,12 +17,14 @@ export interface CreateFromToData {
 }
 
 export interface FromToData {
+  id?: number;
   user_id?: number;
   from_user_id?: number;
   create_date?: string;
 }
 
 export interface ReadFromToData {
+  id?: boolean;
   user_id?: boolean;
   from_user_id?: boolean;
   create_date?: string;
@@ -388,7 +390,7 @@ class User {
       'recipes',
       readData
     );
-    console.log(query);
+
     return User.query(query, values, onError);
   }
 
@@ -416,6 +418,14 @@ class User {
     );
 
     return User.query(query, values, onError);
+  }
+
+  static async deleteFriendRequest(
+    usersRequestId: number,
+    onError?: (err: Error) => void
+  ): Promise<void> {
+    const query = 'DELETE FROM users_requests WHERE id = ($1)';
+    User.query(query, [usersRequestId], onError);
   }
 }
 
