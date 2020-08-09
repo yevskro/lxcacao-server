@@ -116,6 +116,8 @@ describe('users model test suite', (): void => {
       time: '1hr 15m',
       type: 'Dinner Entree',
       private: false,
+      origin_user_id: 1,
+      origin_user_full_name: 'Yev Skro',
     });
     expect(result).not.toBe(undefined);
     expect(typeof result.id).toBe('number');

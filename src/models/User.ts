@@ -75,8 +75,8 @@ interface CreateRecipeData {
   type: string;
   private: boolean;
   user_id: number;
-  origin_user_id?: number;
-  origin_user_full_name?: string;
+  origin_user_id: number;
+  origin_user_full_name: string;
   ingredients?: string[];
   how_to_prepare?: string[];
   img_file_name?: string;
@@ -148,7 +148,7 @@ class User {
       | UserData
       | RecipeData
       | FromToData
-  ): string[] {
+  ): Fields {
     const fields: string[] = [];
     const keys = Object.keys(queryData);
     keys.forEach((key) => {
@@ -253,7 +253,7 @@ class User {
   }
 
   private static async query(
-    query: string,
+    query: Query,
     values: Values,
     onError: (err: Error) => void
   ): Promise<QueryResultRow[]> {
@@ -323,6 +323,42 @@ class User {
   ): Promise<IdData | undefined> {
     const [query, values] = this.genCreateQueryAndValues('recipes', createData);
     return (await User.query(query, values, onError))[0];
+  }
+
+  static async readRecipe(
+    id: number,
+    readData: ReadRecipeData,
+    onError?: (err: Error) => void
+  ): Promise<RecipeData | undefined> {
+    const [query, values] = this.genReadQueryAndValuesByIdOrGmail(
+      id,
+      'recipes',
+      readData
+    );
+    return (await User.query(query, values, onError))[0];
+  }
+
+  static async updateRecipe(
+    id: number,
+    updateData: UpdateRecipeData,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const [query, values] = this.genUpdateQueryAndValuesById(
+      id,
+      'recipes',
+      updateData
+    );
+    await User.query(query, values, onError);
+    return undefined;
+  }
+
+  static async deleteRecipe(
+    id: number,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const query = `DELETE FROM recipes WHERE id = ($1)`;
+    await User.query(query, [id], onError);
+    return undefined;
   }
 }
 
