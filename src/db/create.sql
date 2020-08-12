@@ -65,5 +65,13 @@ CREATE TABLE users_chats
     main_user_id INTEGER NOT NULL REFERENCES users(id),
     peer_user_id INTEGER NOT NULL REFERENCES users(id),
     msgs TEXT[] NOT NULL DEFAULT '{}',
-    last_cache_update TIMESTAMP NOT NULL DEFAULT NOW()
+    last_chat_update TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE users_messages_queue {
+    id SERIAL PRIMARY KEY,
+    main_user_id INTEGER NOT NULL REFERENCES users(id),
+    peer_user_id INTEGER NOT NULL REFERENCES users(id),
+    msgs TEXT NOT NULL DEFAULT '',
+    create_date TIMESTAMP DEFAULT NOW()
+}

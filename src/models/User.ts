@@ -11,6 +11,25 @@ interface IdData {
   id?: number;
 }
 
+export interface CreateMessageData {
+  main_user_id: number;
+  peer_user_id: number;
+  message: string;
+}
+
+export interface ReadMessageData {
+  id?: boolean;
+  main_user_id?: boolean;
+  peer_user_id?: boolean;
+  message?: boolean;
+  all?: boolean;
+}
+export interface MessageData {
+  id?: number;
+  main_user_id?: number;
+  peer_user_id?: number;
+  message?: string;
+}
 export interface CreateMainPeerData {
   main_user_id: number;
   peer_user_id: number;
@@ -28,6 +47,7 @@ export interface ReadMainPeerData {
   main_user_id?: boolean;
   peer_user_id?: boolean;
   create_date?: boolean;
+  all?: boolean;
 }
 
 export interface CreateUserData {
@@ -149,9 +169,11 @@ class User {
       | ReadRecipeData
       | ReadUserData
       | ReadMainPeerData
+      | ReadMessageData
       | UserData
       | RecipeData
       | MainPeerData
+      | MessageData
   ): Fields {
     const fields: string[] = [];
     const keys = Object.keys(queryData);
@@ -170,7 +192,7 @@ class User {
   }
 
   private static genFieldParamsAndValuesFromData(
-    data: RecipeData | UserData | MainPeerData
+    data: RecipeData | UserData | MainPeerData | MessageData
   ): [FieldParams, Values] {
     const values: Values = [];
     const fieldParams: FieldParams = [];
@@ -182,7 +204,7 @@ class User {
   }
 
   private static genFieldsAndValuesFromData(
-    data: RecipeData | UserData | MainPeerData
+    data: RecipeData | UserData | MainPeerData | MessageData
   ): [Fields, Values] {
     const values: Values = [];
     const fields: Fields = [];
@@ -195,7 +217,11 @@ class User {
 
   private static genCreateQueryAndValues(
     tableName: string,
-    createData: CreateRecipeData | CreateUserData | CreateMainPeerData
+    createData:
+      | CreateRecipeData
+      | CreateUserData
+      | CreateMainPeerData
+      | CreateMessageData
   ): [Query, Values] {
     const [fields, values]: [Fields, Values] = User.genFieldsAndValuesFromData(
       createData
@@ -211,7 +237,7 @@ class User {
   private static genReadAllQueryAndValuesByMainUserId(
     mainUserId: number,
     tableName: string,
-    readData: ReadRecipeData | ReadMainPeerData
+    readData: ReadRecipeData | ReadMainPeerData | ReadMessageData
   ): [Query, Values] {
     const query = `SELECT ${User.genFieldsFromData(
       readData
@@ -220,10 +246,22 @@ class User {
     return [query, [mainUserId]];
   }
 
+  private static genReadAllQueryAndValuesByPeerUserId(
+    mainUserId: number,
+    tableName: string,
+    readData: ReadMainPeerData | ReadMessageData
+  ): [Query, Values] {
+    const query = `SELECT ${User.genFieldsFromData(
+      readData
+    )} FROM ${tableName} WHERE peer_user_id = ($1)`;
+
+    return [query, [mainUserId]];
+  }
+
   private static genReadQueryAndValuesByIdOrGmail(
     id: number | null,
     tableName: string,
-    readData: ReadRecipeData | ReadUserData,
+    readData: ReadRecipeData | ReadUserData | ReadMessageData,
     gmail?: string
   ): [Query, Values] {
     if (id === null && gmail === undefined)
@@ -496,6 +534,40 @@ class User {
     const query = 'DELETE FROM users_blocks WHERE id = ($1)';
     await User.query(query, [usersBlocksRowId], onError);
     return undefined;
+  }
+
+  static async createAndAddMessageToQueue(
+    createData: CreateMessageData,
+    onError?: (err: Error) => void
+  ): Promise<void> {
+    const [query, values] = this.genCreateQueryAndValues(
+      'users_messages_queue',
+      createData
+    );
+    await User.query(query, values, onError);
+    return undefined;
+  }
+
+  static async deleteMessageFromQueue(
+    messageRowId: number,
+    onError?: (err: Error) => void
+  ): Promise<void> {
+    const query = 'DELETE FROM users_messages WHERE id = ($1)';
+    await User.query(query, [messageRowId], onError);
+    return undefined;
+  }
+
+  static async readMessageFromQueue(
+    mainUserId: number,
+    readData: ReadMessageData,
+    onError?: (err: Error) => void
+  ): Promise<MessageData> {
+    const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
+      mainUserId,
+      'users_messages',
+      readData
+    );
+    return (await User.query(query, values, onError))[0];
   }
 }
 

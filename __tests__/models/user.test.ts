@@ -158,6 +158,7 @@ describe('users model test suite', (): void => {
       origin_user_id: 1,
       origin_user_full_name: 'Yev Skro',
     });
+
     expect((await User.readAllRecipes(1, { main_user_id: true })).length).toBe(
       amountOfRecipes + 1
     );
