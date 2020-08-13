@@ -386,7 +386,4 @@ describe('users model test suite', (): void => {
     });
     expect(chat).toBe(undefined);
   });
-  /*
-     deleteChat
-  */
 });
