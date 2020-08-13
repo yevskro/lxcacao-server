@@ -8,6 +8,11 @@ INSERT INTO users
 VALUES
   ('admin@gmail.com', 'test', 'test', '127.0.0.1', '0002');
 
+INSERT INTO users
+  (gmail, first_name, last_name, login_ip, secure_key, img_file_name)
+VALUES
+  ('rt@gmail.com', 'test', 'test', '127.0.0.1', '0010', 'test.png');
+
 INSERT INTO recipes 
   (name, time, type, private, main_user_id, origin_user_id, origin_user_full_name) 
 VALUES

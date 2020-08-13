@@ -4,7 +4,7 @@
 */
 
 import { Pool } from 'pg';
-import User, { UserData } from '../../src/models/User';
+import User, { UserData, SQLNow } from '../../src/models/User';
 
 describe('users model test suite', (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -289,12 +289,6 @@ describe('users model test suite', (): void => {
     );
   });
 
-  /* 
-   createAndAddMessageToQueue
-   deleteMessageFromQueue
-   readMessageFromQueue 
-  */
-
   it('can create and add message to message queue', async (): Promise<void> => {
     await User.createAndAddMessageToQueue({
       message: 'hi',
@@ -316,4 +310,83 @@ describe('users model test suite', (): void => {
     const result = await User.readMessageFromQueue(1, { message: true });
     expect(result).toBe(undefined);
   });
+
+  it('can create a chat between users', async (): Promise<void> => {
+    const result = await User.createChat({ main_user_id: 1, peer_user_id: 2 });
+    const queriedId = (
+      await pool.query(`SELECT id FROM users_chats WHERE id = ${result.id}`)
+    ).rows[0].id;
+    expect(queriedId).toBe(result.id);
+  });
+
+  it('can read a chat between users', async (): Promise<void> => {
+    const result = await User.readChat(1, { msgs: true });
+    expect(result.msgs).toStrictEqual([]);
+  });
+
+  it('can read all chats that a main user has', async (): Promise<void> => {
+    await User.createChat({ main_user_id: 1, peer_user_id: 3 });
+    const result = await User.readAllChatsByUserId(1, {
+      peer_user_id: true,
+    });
+    expect(result[0].peer_user_id).toBe(2);
+    expect(result[1].peer_user_id).toBe(3);
+  });
+
+  it('can read messages betweeen a user and peer', async (): Promise<void> => {
+    const result = await User.readChatByMainPeerId(1, 2, { msgs: true });
+    expect(result.msgs).toStrictEqual([]);
+  });
+
+  it('can update messages betweeen a user and peer by user ids', async (): Promise<
+    void
+  > => {
+    const result = await User.updateChatByMainPeerId(1, 2, {
+      msgs: ['durran'],
+      last_chat_update: SQLNow.query,
+    });
+    const readData = await User.readChatByMainPeerId(1, 2, {
+      last_chat_update: true,
+      msgs: true,
+    });
+    expect(readData.last_chat_update).not.toStrictEqual('');
+    expect(readData.msgs).toStrictEqual(['durran']);
+  });
+
+  it('can update messages betweeen a user and peer by row id', async (): Promise<
+    void
+  > => {
+    const result = await User.readChatByMainPeerId(1, 2, { id: true });
+    await User.updateChat(result.id, {
+      msgs: ['hey dude', 'whats up?'],
+      last_chat_update: SQLNow.query,
+    });
+    const readData = await User.readChat(result.id, { msgs: true });
+    expect(readData.msgs.length).toBe(2);
+    expect(readData.msgs[0]).toStrictEqual('hey dude');
+    expect(readData.msgs[1]).toStrictEqual('whats up?');
+  });
+
+  it('can delete a chat', async (): Promise<void> => {
+    await User.deleteChat(1);
+    const result = await User.readChat(1, { msgs: true });
+    expect(result).toBe(undefined);
+  });
+
+  it('can delete a chat by user and peer id', async (): Promise<void> => {
+    const allChats = await User.readAllChatsByUserId(1, { id: true });
+    let chat = await User.readChat(allChats[0].id, {
+      main_user_id: true,
+      peer_user_id: true,
+    });
+    await User.deleteChatByMainPeerId(chat.main_user_id, chat.peer_user_id);
+    chat = await User.readChat(allChats[0].id, {
+      main_user_id: true,
+      peer_user_id: true,
+    });
+    expect(chat).toBe(undefined);
+  });
+  /*
+     deleteChat
+  */
 });
