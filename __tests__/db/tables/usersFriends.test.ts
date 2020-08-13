@@ -38,6 +38,9 @@ export default (): void => {
   afterAll(async (): Promise<void> => pool.end());
 
   it('can create a users_friends record', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined 
+    */
     query = `
     INSERT INTO users_friends (peer_user_id, main_user_id)
       VALUES
@@ -49,6 +52,9 @@ export default (): void => {
   it('wont create a record with an invalid peer_user_id', async (): Promise<
     void
   > => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_friends (peer_user_id, main_user_id)
       VALUES
@@ -62,6 +68,9 @@ export default (): void => {
   it('wont create a record with an invalid main_user_id', async (): Promise<
     void
   > => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_friends (peer_user_id, main_user_id)
       VALUES
@@ -73,6 +82,9 @@ export default (): void => {
   });
 
   it('wont create a record without a main_user_id', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_friends (peer_user_id)
       VALUES
@@ -84,6 +96,9 @@ export default (): void => {
   });
 
   it('wont create a record without a peer_user_id', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_friends (main_user_id)
       VALUES
@@ -95,6 +110,9 @@ export default (): void => {
   });
 
   it('record has a create_date', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined 
+    */
     query = `
     SELECT create_date FROM users_friends WHERE users_friends.id = 1;`;
 
