@@ -7,6 +7,9 @@
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
 
+  The tests are error driven from the database. We assert on the
+  database errors to check for constraints.
+
   Columns:
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL CHECK (name <> ''),

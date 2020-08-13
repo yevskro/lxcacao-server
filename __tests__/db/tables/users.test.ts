@@ -7,6 +7,12 @@
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
 
+  The tests are error driven from the database. Assertions are made on
+  database throwing errors when checking constraints. 
+
+  And for default value assertions we read the field from a database 
+  and assert it to the default value the database should have.
+
   Columns:
     id SERIAL PRIMARY KEY,
     gmail TEXT UNIQUE NOT NULL CHECK (gmail <> ''),
