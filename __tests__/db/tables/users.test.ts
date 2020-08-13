@@ -43,6 +43,9 @@ export default (): void => {
   afterAll(async (): Promise<void> => pool.end());
 
   it('can add a user', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined 
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -52,6 +55,9 @@ export default (): void => {
   });
 
   it('cannot create a duplicate user', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -65,8 +71,13 @@ export default (): void => {
   it('last_cache_update, create_date are identical timestamps', async (): Promise<
     void
   > => {
+    /* read last_cache_update and create_date and compare them on first creation
+      of a record they are to be identical
+    */
     const { last_cache_update, create_date } = (
-      await pool.query('SELECT * FROM users WHERE users.id = 1;')
+      await pool.query(
+        'SELECT last_cache_update, create_date FROM users WHERE users.id = 1;'
+      )
     ).rows[0];
     expect(last_cache_update.length).not.toBe(0);
     expect(create_date.length).not.toBe(0);
@@ -74,6 +85,9 @@ export default (): void => {
   });
 
   it('secure_key is a unique key', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -85,6 +99,9 @@ export default (): void => {
   });
 
   it('last_update cannot be null', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_cache_update) 
         VALUES
@@ -96,6 +113,9 @@ export default (): void => {
   });
 
   it('last_update cannot be an empty string', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key, last_cache_update) 
         VALUES
@@ -109,6 +129,7 @@ export default (): void => {
   it('img_file_name has a default value of an empty string', async (): Promise<
     void
   > => {
+    /* read field from the database and assert it for the default value */
     const { img_file_name } = (
       await pool.query(
         `SELECT * FROM users WHERE users.gmail = 'test@gmail.com';`
@@ -118,6 +139,9 @@ export default (): void => {
   });
 
   it('cant create a user without secure_key', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip) 
         VALUES
@@ -129,6 +153,9 @@ export default (): void => {
   });
 
   it('cant create a user without login_ip', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, secure_key) 
         VALUES
@@ -140,6 +167,9 @@ export default (): void => {
   });
 
   it('cant create a user without last_name', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, first_name, login_ip, secure_key) 
         VALUES
@@ -151,6 +181,9 @@ export default (): void => {
   });
 
   it('cant create a user without first_name', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, last_name, login_ip, secure_key) 
         VALUES
@@ -162,6 +195,9 @@ export default (): void => {
   });
 
   it('cant create a user without gmail', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -173,6 +209,9 @@ export default (): void => {
   });
 
   it('cant create user with empty secure_key', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, login_ip, secure_key) 
         VALUES
@@ -184,6 +223,9 @@ export default (): void => {
   });
 
   it('cant create user with empty login_ip', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, first_name, last_name, secure_key, login_ip) 
         VALUES
@@ -195,6 +237,9 @@ export default (): void => {
   });
 
   it('cant create user with empty last_name', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, first_name, login_ip, secure_key, last_name) 
         VALUES
@@ -206,6 +251,9 @@ export default (): void => {
   });
 
   it('cant create user with empty first_name', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (gmail, last_name, login_ip, secure_key, first_name) 
         VALUES
@@ -217,6 +265,9 @@ export default (): void => {
   });
 
   it('cant create user with empty gmail', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users (first_name, last_name, login_ip, secure_key, gmail) 
         VALUES

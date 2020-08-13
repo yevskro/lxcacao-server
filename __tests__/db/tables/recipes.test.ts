@@ -79,7 +79,7 @@ export default (): void => {
 
   it('cant create a recipe without a name', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -93,7 +93,7 @@ export default (): void => {
 
   it('cant create a recipe without time', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, type, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -107,7 +107,7 @@ export default (): void => {
 
   it('cant create a recipe without type', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, time, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -121,7 +121,7 @@ export default (): void => {
 
   it('cant create a recipe without private', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, time, type, origin_user_id, origin_user_full_name, main_user_id) 
@@ -135,7 +135,7 @@ export default (): void => {
 
   it('cant create recipe with empty name', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -149,7 +149,7 @@ export default (): void => {
 
   it('cant create recipe with empty type', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -163,7 +163,7 @@ export default (): void => {
 
   it('cant create recipe with empty time', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -177,7 +177,7 @@ export default (): void => {
 
   it('cant create recipe with empty private', async (): Promise<void> => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
@@ -245,7 +245,7 @@ export default (): void => {
     void
   > => {
     /* expect the database to error when going through its constraints
-      on a specific field
+      on a specific invalid field
     */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id)
