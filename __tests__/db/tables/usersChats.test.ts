@@ -39,6 +39,9 @@ export default (): void => {
   afterAll(async (): Promise<void> => pool.end());
 
   it('can create a main_user_id and peer_user_id', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined 
+    */
     query = `
     INSERT INTO users_chats (peer_user_id, main_user_id)
       VALUES
@@ -50,6 +53,9 @@ export default (): void => {
   it('wont create a record with an invalid peer_user_id', async (): Promise<
     void
   > => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_chats (peer_user_id, main_user_id)
       VALUES
@@ -63,6 +69,9 @@ export default (): void => {
   it('wont create a record with an invalid main_user_id', async (): Promise<
     void
   > => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_chats (peer_user_id, main_user_id)
       VALUES
@@ -74,6 +83,9 @@ export default (): void => {
   });
 
   it('wont create a record without a peer_user_id', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_chats (main_user_id)
       VALUES
@@ -85,6 +97,9 @@ export default (): void => {
   });
 
   it('wont create a record without a main_user_id', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_chats (peer_user_id)
       VALUES
@@ -96,6 +111,9 @@ export default (): void => {
   });
 
   it('record has a last_chat_update', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined 
+    */
     query = `
     SELECT last_chat_update FROM users_chats WHERE users_chats.id = 1;`;
 
@@ -103,6 +121,9 @@ export default (): void => {
   });
 
   it('last_chat_update cannot be null', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_chats (main_user_id, peer_user_id, last_chat_update)
     VALUES
@@ -114,6 +135,9 @@ export default (): void => {
   });
 
   it('last_chat_update can only be a timestamp', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+    on a specific invalid field
+    */
     query = `
     INSERT INTO users_chats (main_user_id, peer_user_id, last_chat_update)
     VALUES
