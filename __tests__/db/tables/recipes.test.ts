@@ -46,6 +46,8 @@ export default (): void => {
   afterAll(async (): Promise<void> => pool.end());
 
   it('can add a recipe', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined */
     query = `
     INSERT INTO recipes (name, time, type, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -55,6 +57,8 @@ export default (): void => {
   });
 
   it('has a create_date', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+    the query was sucessful and queryError helper returns undefined */
     query = `
     SELECT create_date FROM recipes WHERE recipes.name = 'Beef Straganoff';`;
 
@@ -64,6 +68,7 @@ export default (): void => {
   it('img_file_name has a default value of an empty string', async (): Promise<
     void
   > => {
+    /* read field from the database and assert it for the default value */
     const { img_file_name } = (
       await pool.query(
         "SELECT * FROM recipes WHERE recipes.name = 'Beef Straganoff';"
@@ -73,6 +78,9 @@ export default (): void => {
   });
 
   it('cant create a recipe without a name', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -84,6 +92,9 @@ export default (): void => {
   });
 
   it('cant create a recipe without time', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, type, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -95,6 +106,9 @@ export default (): void => {
   });
 
   it('cant create a recipe without type', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -106,6 +120,9 @@ export default (): void => {
   });
 
   it('cant create a recipe without private', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, time, type, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -117,6 +134,9 @@ export default (): void => {
   });
 
   it('cant create recipe with empty name', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -128,6 +148,9 @@ export default (): void => {
   });
 
   it('cant create recipe with empty type', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -139,6 +162,9 @@ export default (): void => {
   });
 
   it('cant create recipe with empty time', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -150,6 +176,9 @@ export default (): void => {
   });
 
   it('cant create recipe with empty private', async (): Promise<void> => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -161,6 +190,8 @@ export default (): void => {
   });
 
   it('can save an array into ingredients', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+      the query was sucessful and queryError helper returns undefined */
     query = `
     INSERT INTO recipes (name, type, time, private, ingredients, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -170,6 +201,8 @@ export default (): void => {
   });
 
   it('can save an array into how_to_prepare', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+      the query was sucessful and queryError helper returns undefined */
     query = `
     INSERT INTO recipes (name, type, time, private, how_to_prepare, origin_user_id, origin_user_full_name, main_user_id) 
         VALUES
@@ -181,6 +214,7 @@ export default (): void => {
   it('has a default value of an empty array in ingredients', async (): Promise<
     void
   > => {
+    /* read field from the database and assert it for the default value */
     query = `
       SELECT ingredients FROM recipes WHERE recipes.id = 1;`;
 
@@ -191,6 +225,7 @@ export default (): void => {
   it('has a default value of an empty array in how_to_prepare', async (): Promise<
     void
   > => {
+    /* read field from the database and assert it for the default value */
     query = `
     SELECT how_to_prepare FROM recipes WHERE recipes.id = 1;`;
     const { how_to_prepare } = (await pool.query(query)).rows[0];
@@ -198,6 +233,8 @@ export default (): void => {
   });
 
   it('has a origin_user_id', async (): Promise<void> => {
+    /* if the database processes the query without an error 
+      the query was sucessful and queryError helper returns undefined */
     query = `
     SELECT origin_user_id FROM recipes WHERE recipes.id = 1;`;
 
@@ -207,6 +244,9 @@ export default (): void => {
   it('cant create a recipe with an invalid origin_user_id', async (): Promise<
     void
   > => {
+    /* expect the database to error when going through its constraints
+      on a specific field
+    */
     query = `
     INSERT INTO recipes (name, type, time, private, origin_user_id, origin_user_full_name, main_user_id)
       VALUES
