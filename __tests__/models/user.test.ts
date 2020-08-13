@@ -100,7 +100,7 @@ describe('users model test suite', (): void => {
     /* we are checkin that we can query by userId and using a Data interface which
       generates a query string based on what fields are true to query
     */
-    const data: UserData = await User.readUserById(1, {
+    const data: UserData = await User.readUser(1, {
       gmail: true,
       first_name: true,
       last_name: true,
@@ -132,7 +132,7 @@ describe('users model test suite', (): void => {
   it('can update users data', async (): Promise<void> => {
     /* update user, reread the field, and check changes are matching */
     await User.updateUser(1, { first_name: 'Yev', last_name: 'Skro' });
-    const result = await User.readUserById(1, {
+    const result = await User.readUser(1, {
       first_name: true,
       last_name: true,
     });
@@ -396,7 +396,7 @@ describe('users model test suite', (): void => {
 
     await User.deleteMessageQueue(readData[0].id);
 
-    const result = await User.readMessageQueueById(readData[0].id, {
+    const result = await User.readMessageQueue(readData[0].id, {
       message: true,
     });
     expect(result).toBe(undefined);

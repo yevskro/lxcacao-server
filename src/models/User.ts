@@ -1,10 +1,30 @@
 /* eslint-disable camelcase */
 /* camelCase have been disabled because sql names are snake cased */
 /**
-    There are helper methods that generate a query string based on 
-    the type of query and values based on parametized values to secure 
-    from sql injections.
+ * Author: Yevgeniy Skroznikov
+ * Date: August 13 2020
+ * Description:
+ * This tests the query utility methods our server will be using
+ * to create/read/update/delete our resources from a User data
+ * model perspective. Authorization methods are left out and will
+ * be implemented by server middleware. Which makes the model
+ * unopinionated and leaves it up to the developer how the methods
+ * will be used.
+ *
+ * The database tables that are queried through the User model are:
+ * users
+ * users_recipes
+ * users_friends
+ * users_blocks
+ * users_requests
+ * users_chats
+ * users_messages_queue
+ *
+ * There are helper methods that generate a query string based on
+ * the type of query and values based on parametized values to secure
+ * from sql injections.
  */
+
 import { Pool, QueryResultRow } from 'pg';
 
 type Fields = string[];
@@ -342,13 +362,13 @@ class User {
     return (await User.query(query, values, onError))[0];
   }
 
-  static async readUserById(
-    id: number,
+  static async readUser(
+    userRowId: number,
     readData: ReadUserData,
     onError?: (err: Error) => void
   ): Promise<UserData | undefined> {
     const [query, values] = User.genReadQueryAndValuesByIdOrGmail(
-      id,
+      userRowId,
       'users',
       readData
     );
@@ -578,7 +598,7 @@ class User {
     return User.query(query, values, onError);
   }
 
-  static async readMessageQueueById(
+  static async readMessageQueue(
     messageRowId: number,
     readData: ReadMessageData,
     onError?: (err: Error) => void
