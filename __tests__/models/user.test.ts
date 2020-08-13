@@ -341,7 +341,7 @@ describe('users model test suite', (): void => {
   it('can update messages betweeen a user and peer by user ids', async (): Promise<
     void
   > => {
-    const result = await User.updateChatByMainPeerId(1, 2, {
+    await User.updateChatByMainPeerId(1, 2, {
       msgs: ['durran'],
       last_chat_update: SQLNow.query,
     });
