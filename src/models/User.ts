@@ -1,4 +1,9 @@
 /* eslint-disable camelcase */
+/**
+    There are helper methods that generate a query string based on 
+    the type of query and values based on parametized values to secure 
+    from sql injections.
+ */
 import { Pool, QueryResultRow } from 'pg';
 
 type Fields = string[];
