@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* camelCase have been disabled because sql names are snake cased */
 /*
   Author: Yevgeniy Skroznikov
   Date: August 7 2020
@@ -7,8 +8,11 @@
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
 
-  The tests are error driven from the database. We assert on the
-  database errors to check for constraints.
+  The tests are error driven from the database. Assertions are made on
+  database throwing errors when checking constraints. 
+
+  And for default value assertions we read the field from a database 
+  and assert it to the default value the database should have.
 
   Columns:
     id SERIAL PRIMARY KEY,

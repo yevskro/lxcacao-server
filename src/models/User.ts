@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* camelCase have been disabled because sql names are snake cased */
 /**
     There are helper methods that generate a query string based on 
     the type of query and values based on parametized values to secure 

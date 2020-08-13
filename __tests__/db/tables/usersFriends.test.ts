@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* camelCase have been disabled because sql names are snake cased */
 /*
   Author: Yevgeniy Skroznikov
   Date: August 7 2020
