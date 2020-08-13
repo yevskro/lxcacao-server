@@ -6,28 +6,44 @@ type FieldParams = string[];
 type Params = string[];
 type Values = (string | number | boolean)[];
 type Query = string;
+type SQLTimeStamp = string;
+
+enum SQLQueryTimeStamp {
+  now = 'NOW()',
+}
 
 interface IdData {
   id?: number;
 }
 
-export interface CreateMessageData {
-  main_user_id: number;
-  peer_user_id: number;
+export interface UpdateChatData {
+  msgs: string[];
+  last_chat_update: SQLQueryTimeStamp;
+}
+
+export interface CreateChatData extends CreateMainPeerData {
+  msgs: string[];
+  last_chat_update: SQLQueryTimeStamp;
+}
+
+export interface ReadChatData extends ReadMainPeerData {
+  msgs?: boolean;
+  last_chat_update?: boolean;
+}
+
+export interface ChatData extends MainPeerData {
+  msgs?: string[];
+  last_chat_update?: SQLTimeStamp;
+}
+export interface CreateMessageData extends CreateMainPeerData {
   message: string;
 }
 
-export interface ReadMessageData {
-  id?: boolean;
-  main_user_id?: boolean;
-  peer_user_id?: boolean;
+export interface ReadMessageData extends ReadMainPeerData {
   message?: boolean;
   all?: boolean;
 }
-export interface MessageData {
-  id?: number;
-  main_user_id?: number;
-  peer_user_id?: number;
+export interface MessageData extends MainPeerData {
   message?: string;
 }
 export interface CreateMainPeerData {
@@ -39,14 +55,14 @@ export interface MainPeerData {
   id?: number;
   main_user_id?: number;
   peer_user_id?: number;
-  create_date?: string;
+  create_date?: SQLTimeStamp;
 }
 
 export interface ReadMainPeerData {
   id?: boolean;
   main_user_id?: boolean;
   peer_user_id?: boolean;
-  create_date?: boolean;
+  create_date?: SQLTimeStamp;
   all?: boolean;
 }
 
@@ -67,8 +83,8 @@ export interface UserData {
   login_ip?: string;
   secure_key?: string;
   img_file_name?: string; // file name of the users profile image
-  last_update?: string;
-  create_date?: string;
+  last_update?: SQLTimeStamp;
+  create_date?: SQLTimeStamp;
 }
 
 export interface ReadUserData {
@@ -90,7 +106,7 @@ export interface UpdateUserData {
   login_ip?: string;
   secure_key?: string;
   img_file_name?: string; // file name of the users profile image
-  last_update?: string;
+  last_update?: SQLQueryTimeStamp;
 }
 
 interface CreateRecipeData {
@@ -134,7 +150,7 @@ interface RecipeData {
   origin_user_id?: number;
   origin_user_full_name?: string;
   img_file_name?: string;
-  create_date?: string;
+  create_date?: SQLTimeStamp;
 }
 
 interface UpdateRecipeData {
@@ -174,6 +190,7 @@ class User {
       | RecipeData
       | MainPeerData
       | MessageData
+      | ChatData
   ): Fields {
     const fields: string[] = [];
     const keys = Object.keys(queryData);
@@ -192,7 +209,7 @@ class User {
   }
 
   private static genFieldParamsAndValuesFromData(
-    data: RecipeData | UserData | MainPeerData | MessageData
+    data: RecipeData | UserData | MainPeerData | MessageData | ChatData
   ): [FieldParams, Values] {
     const values: Values = [];
     const fieldParams: FieldParams = [];
@@ -204,7 +221,7 @@ class User {
   }
 
   private static genFieldsAndValuesFromData(
-    data: RecipeData | UserData | MainPeerData | MessageData
+    data: RecipeData | UserData | MainPeerData | MessageData | ChatData
   ): [Fields, Values] {
     const values: Values = [];
     const fields: Fields = [];
@@ -222,6 +239,7 @@ class User {
       | CreateUserData
       | CreateMainPeerData
       | CreateMessageData
+      | CreateChatData
   ): [Query, Values] {
     const [fields, values]: [Fields, Values] = User.genFieldsAndValuesFromData(
       createData
@@ -242,18 +260,6 @@ class User {
     const query = `SELECT ${User.genFieldsFromData(
       readData
     )} FROM ${tableName} WHERE main_user_id = ($1)`;
-
-    return [query, [mainUserId]];
-  }
-
-  private static genReadAllQueryAndValuesByPeerUserId(
-    mainUserId: number,
-    tableName: string,
-    readData: ReadMainPeerData | ReadMessageData
-  ): [Query, Values] {
-    const query = `SELECT ${User.genFieldsFromData(
-      readData
-    )} FROM ${tableName} WHERE peer_user_id = ($1)`;
 
     return [query, [mainUserId]];
   }
@@ -293,7 +299,7 @@ class User {
   private static genUpdateQueryAndValuesById(
     id: number,
     tableName: string,
-    updateData: UpdateRecipeData | UpdateUserData
+    updateData: UpdateRecipeData | UpdateUserData | UpdateChatData
   ): [Query, Values] {
     const [fieldParams, values] = this.genFieldParamsAndValuesFromData(
       updateData
@@ -301,8 +307,7 @@ class User {
     const query = `
     UPDATE ${tableName}
     SET ${fieldParams.join(', ')}
-    WHERE id = ($${values.length + 1})
-    ;`;
+    WHERE id = ($${values.length + 1});`;
 
     return [query, [...values, id]];
   }
@@ -539,7 +544,7 @@ class User {
   static async createAndAddMessageToQueue(
     createData: CreateMessageData,
     onError?: (err: Error) => void
-  ): Promise<void> {
+  ): Promise<undefined> {
     const [query, values] = this.genCreateQueryAndValues(
       'users_messages_queue',
       createData
@@ -551,8 +556,8 @@ class User {
   static async deleteMessageFromQueue(
     messageRowId: number,
     onError?: (err: Error) => void
-  ): Promise<void> {
-    const query = 'DELETE FROM users_messages WHERE id = ($1)';
+  ): Promise<undefined> {
+    const query = 'DELETE FROM users_messages_queue WHERE id = ($1)';
     await User.query(query, [messageRowId], onError);
     return undefined;
   }
@@ -564,10 +569,70 @@ class User {
   ): Promise<MessageData> {
     const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       mainUserId,
-      'users_messages',
+      'users_messages_queue',
       readData
     );
     return (await User.query(query, values, onError))[0];
+  }
+
+  static async createChat(
+    createData: CreateChatData,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const [query, values] = User.genCreateQueryAndValues(
+      'users_chats',
+      createData
+    );
+    await User.query(query, values, onError);
+    return undefined;
+  }
+
+  static async deleteChat(
+    chatRowId: number,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const query = 'DELETE FROM users_chats WHERE id = ($1);';
+    await User.query(query, [chatRowId], onError);
+    return undefined;
+  }
+
+  static async readChat(
+    chatRowId: number,
+    readData: ReadChatData,
+    onError?: (err: Error) => void
+  ): Promise<ChatData> {
+    const [query, values] = User.genReadQueryAndValuesByIdOrGmail(
+      chatRowId,
+      'users_chat',
+      readData
+    );
+    return (await User.query(query, values, onError))[0];
+  }
+
+  static async readAllChatsByUserId(
+    userId: number,
+    readData: ReadChatData,
+    onError: (err: Error) => void
+  ): Promise<ChatData[]> {
+    const query = `SELECT ${User.genFieldsFromData(
+      readData
+    )} FROM users_chats WHERE peer_user_id = ($1) OR main_user_id = ($1)`;
+
+    return User.query(query, [userId], onError);
+  }
+
+  static async updateChat(
+    chatRowId: number,
+    updateData: UpdateChatData,
+    onError?: (err: Error) => void
+  ): Promise<undefined> {
+    const [query, values] = User.genUpdateQueryAndValuesById(
+      chatRowId,
+      'users_chats',
+      updateData
+    );
+    await User.query(query, values, onError);
+    return undefined;
   }
 }
 

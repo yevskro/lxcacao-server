@@ -288,4 +288,32 @@ describe('users model test suite', (): void => {
       ids.length - 1
     );
   });
+
+  /* 
+   createAndAddMessageToQueue
+   deleteMessageFromQueue
+   readMessageFromQueue 
+  */
+
+  it('can create and add message to message queue', async (): Promise<void> => {
+    await User.createAndAddMessageToQueue({
+      message: 'hi',
+      main_user_id: 1,
+      peer_user_id: 2,
+    });
+    const query = 'SELECT message FROM users_messages_queue WHERE id = 1;';
+    const result = (await pool.query(query)).rows[0];
+    expect(result.message).toStrictEqual('hi');
+  });
+
+  it('can read message from message queue', async (): Promise<void> => {
+    const result = await User.readMessageFromQueue(1, { message: true });
+    expect(result.message).toStrictEqual('hi');
+  });
+
+  it('can delete message from message queue', async (): Promise<void> => {
+    await User.deleteMessageFromQueue(1);
+    const result = await User.readMessageFromQueue(1, { message: true });
+    expect(result).toBe(undefined);
+  });
 });

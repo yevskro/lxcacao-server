@@ -88,16 +88,16 @@ export default (): void => {
     );
   });
 
-  it('record has a last_cache_update', async (): Promise<void> => {
+  it('record has a last_chat_update', async (): Promise<void> => {
     query = `
-    SELECT last_cache_update FROM users_chats WHERE users_chats.id = 1;`;
+    SELECT last_chat_update FROM users_chats WHERE users_chats.id = 1;`;
 
     expect(await queryErrorHelper(pool, query)).toBe(undefined);
   });
 
-  it('last_cache_update cannot be null', async (): Promise<void> => {
+  it('last_chat_update cannot be null', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (main_user_id, peer_user_id, last_cache_update)
+    INSERT INTO users_chats (main_user_id, peer_user_id, last_chat_update)
     VALUES
     ( 1, 1, null )`;
 
@@ -106,9 +106,9 @@ export default (): void => {
     );
   });
 
-  it('last_cache_update can only be a timestamp', async (): Promise<void> => {
+  it('last_chat_update can only be a timestamp', async (): Promise<void> => {
     query = `
-    INSERT INTO users_chats (main_user_id, peer_user_id, last_cache_update)
+    INSERT INTO users_chats (main_user_id, peer_user_id, last_chat_update)
     VALUES
     ( 1, 1, 1 )`;
 
