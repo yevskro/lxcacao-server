@@ -193,6 +193,8 @@ describe('users model test suite', (): void => {
       await User.readAllRecipes(1, { main_user_id: true })
     ).length;
 
+    //    console.log(amountOfRecipes);
+
     await User.createRecipe({
       main_user_id: 1,
       name: 'Banana Icecream Pants',
@@ -326,9 +328,8 @@ describe('users model test suite', (): void => {
     /* compare the length of requests with the length of requests after
       adding a block row
     */
-    const ammountOfRequests = (
-      await User.readAllBlocks(2, {
-        main_user_id: true,
+    const ammountOfBlocks = (
+      await User.readAllBlocksByMainUserId(2, {
         peer_user_id: true,
       })
     ).length;
@@ -337,18 +338,17 @@ describe('users model test suite', (): void => {
 
     expect(
       (
-        await User.readAllBlocks(2, {
-          main_user_id: true,
+        await User.readAllBlocksByMainUserId(2, {
           peer_user_id: true,
         })
       ).length
-    ).toBe(ammountOfRequests + 1);
+    ).toBe(ammountOfBlocks + 1);
   });
 
-  it('can delete a friend request', async (): Promise<void> => {
+  it('can delete a block', async (): Promise<void> => {
     /* read all blocks, delete a user block, compare the length 
      of before and after */
-    const ids = await User.readAllBlocks(2, {
+    const ids = await User.readAllBlocksByMainUserId(2, {
       id: true, // row id
       peer_user_id: true,
     });
@@ -357,9 +357,9 @@ describe('users model test suite', (): void => {
     // users block holds the row id and peer_user_id
 
     await User.deleteBlock(usersBlock.id); // delete by row id
-    expect((await User.readAllBlocks(2, { main_user_id: true })).length).toBe(
-      ids.length - 1
-    );
+    expect(
+      (await User.readAllBlocksByMainUserId(2, { peer_user_id: true })).length
+    ).toBe(ids.length - 1);
   });
 
   it('can create and add message to message queue', async (): Promise<void> => {
