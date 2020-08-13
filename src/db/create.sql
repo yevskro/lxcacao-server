@@ -65,7 +65,7 @@ CREATE TABLE users_chats
     id SERIAL PRIMARY KEY,
     main_user_id INTEGER NOT NULL REFERENCES users(id),
     peer_user_id INTEGER NOT NULL REFERENCES users(id),
-    msgs TEXT[] NOT NULL DEFAULT '{}',
+    messages TEXT[] NOT NULL DEFAULT '{}',
     last_chat_update TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

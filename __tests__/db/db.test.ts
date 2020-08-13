@@ -19,6 +19,7 @@ import usersBlocksTest from './tables/usersBlocks.test';
 import usersRequestsTest from './tables/usersRequests.test';
 import recipesTest from './tables/recipes.test';
 import usersChatsTest from './tables/usersChats.test';
+import usersMessagesQueue from './tables/usersMessagesQueue.test';
 
 describe('database test suite', (): void => {
   const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -42,5 +43,6 @@ describe('database test suite', (): void => {
   describe('users_blocks table', usersBlocksTest);
   describe('users_requests', usersRequestsTest);
   describe('recipes table', recipesTest);
+  describe('users_messages_queue', usersMessagesQueue);
   describe('users_chats table', usersChatsTest);
 });

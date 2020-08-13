@@ -17,22 +17,22 @@ interface IdData {
 }
 
 export interface UpdateChatData {
-  msgs: string[];
+  messages: string[];
   last_chat_update: SQLNow;
 }
 
 export interface CreateChatData extends CreateMainPeerData {
-  msgs?: string[];
+  messages?: string[];
   last_chat_update?: SQLNow;
 }
 
 export interface ReadChatData extends ReadMainPeerData {
-  msgs?: boolean;
+  messages?: boolean;
   last_chat_update?: boolean;
 }
 
 export interface ChatData extends MainPeerData {
-  msgs?: string[];
+  messages?: string[];
   last_chat_update?: SQLTimeStamp;
 }
 export interface CreateMessageData extends CreateMainPeerData {
@@ -439,13 +439,12 @@ class User {
   static async createFriendRequest(
     createData: CreateMainPeerData,
     onError?: (err: Error) => void
-  ): Promise<undefined> {
+  ): Promise<IdData> {
     const [query, values] = User.genCreateQueryAndValues(
       'users_requests',
       createData
     );
-    await User.query(query, values, onError);
-    return undefined;
+    return (await User.query(query, values, onError))[0];
   }
 
   static async readAllFriendRequests(
@@ -474,13 +473,12 @@ class User {
   static async createFriend(
     createData: CreateMainPeerData,
     onError?: (err: Error) => void
-  ): Promise<undefined> {
+  ): Promise<IdData> {
     const [query, values] = User.genCreateQueryAndValues(
       'users_friends',
       createData
     );
-    await User.query(query, values, onError);
-    return undefined;
+    return (await User.query(query, values, onError))[0];
   }
 
   static async readAllFriends(
@@ -509,13 +507,13 @@ class User {
   static async createBlock(
     createData: CreateMainPeerData,
     onError?: (err: Error) => void
-  ): Promise<undefined> {
+  ): Promise<IdData> {
     const [query, values] = User.genCreateQueryAndValues(
       'users_blocks',
       createData
     );
-    await User.query(query, values, onError);
-    return undefined;
+
+    return (await User.query(query, values, onError))[0];
   }
 
   static async readAllBlocks(
@@ -541,19 +539,18 @@ class User {
     return undefined;
   }
 
-  static async createAndAddMessageToQueue(
+  static async createMessageQueue(
     createData: CreateMessageData,
     onError?: (err: Error) => void
-  ): Promise<undefined> {
+  ): Promise<IdData> {
     const [query, values] = this.genCreateQueryAndValues(
       'users_messages_queue',
       createData
     );
-    await User.query(query, values, onError);
-    return undefined;
+    return (await User.query(query, values, onError))[0];
   }
 
-  static async deleteMessageFromQueue(
+  static async deleteMessageQueue(
     messageRowId: number,
     onError?: (err: Error) => void
   ): Promise<undefined> {
@@ -562,13 +559,26 @@ class User {
     return undefined;
   }
 
-  static async readMessageFromQueue(
+  static async readAllMessagesQueueByMainUserId(
     mainUserId: number,
     readData: ReadMessageData,
     onError?: (err: Error) => void
-  ): Promise<MessageData> {
+  ): Promise<MessageData[]> {
     const [query, values] = User.genReadAllQueryAndValuesByMainUserId(
       mainUserId,
+      'users_messages_queue',
+      readData
+    );
+    return User.query(query, values, onError);
+  }
+
+  static async readMessageQueueById(
+    messageRowId: number,
+    readData: ReadMessageData,
+    onError?: (err: Error) => void
+  ): Promise<MessageData> {
+    const [query, values] = User.genReadQueryAndValuesByIdOrGmail(
+      messageRowId,
       'users_messages_queue',
       readData
     );

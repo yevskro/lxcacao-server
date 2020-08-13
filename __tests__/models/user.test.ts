@@ -290,24 +290,34 @@ describe('users model test suite', (): void => {
   });
 
   it('can create and add message to message queue', async (): Promise<void> => {
-    await User.createAndAddMessageToQueue({
+    const idData = await User.createMessageQueue({
       message: 'hi',
       main_user_id: 1,
       peer_user_id: 2,
     });
-    const query = 'SELECT message FROM users_messages_queue WHERE id = 1;';
+    expect(idData).not.toBe(undefined);
+    const query = `SELECT message FROM users_messages_queue WHERE id = ${idData.id};`;
     const result = (await pool.query(query)).rows[0];
     expect(result.message).toStrictEqual('hi');
   });
 
   it('can read message from message queue', async (): Promise<void> => {
-    const result = await User.readMessageFromQueue(1, { message: true });
-    expect(result.message).toStrictEqual('hi');
+    const result = await User.readAllMessagesQueueByMainUserId(1, {
+      message: true,
+    });
+    expect(result[0].message).toStrictEqual('hi');
   });
 
   it('can delete message from message queue', async (): Promise<void> => {
-    await User.deleteMessageFromQueue(1);
-    const result = await User.readMessageFromQueue(1, { message: true });
+    const readData = await User.readAllMessagesQueueByMainUserId(1, {
+      id: true,
+    });
+
+    await User.deleteMessageQueue(readData[0].id);
+
+    const result = await User.readMessageQueueById(readData[0].id, {
+      message: true,
+    });
     expect(result).toBe(undefined);
   });
 
@@ -320,8 +330,8 @@ describe('users model test suite', (): void => {
   });
 
   it('can read a chat between users', async (): Promise<void> => {
-    const result = await User.readChat(1, { msgs: true });
-    expect(result.msgs).toStrictEqual([]);
+    const result = await User.readChat(1, { messages: true });
+    expect(result.messages).toStrictEqual([]);
   });
 
   it('can read all chats that a main user has', async (): Promise<void> => {
@@ -334,23 +344,23 @@ describe('users model test suite', (): void => {
   });
 
   it('can read messages betweeen a user and peer', async (): Promise<void> => {
-    const result = await User.readChatByMainPeerId(1, 2, { msgs: true });
-    expect(result.msgs).toStrictEqual([]);
+    const result = await User.readChatByMainPeerId(1, 2, { messages: true });
+    expect(result.messages).toStrictEqual([]);
   });
 
   it('can update messages betweeen a user and peer by user ids', async (): Promise<
     void
   > => {
     await User.updateChatByMainPeerId(1, 2, {
-      msgs: ['durran'],
+      messages: ['durran'],
       last_chat_update: SQLNow.query,
     });
     const readData = await User.readChatByMainPeerId(1, 2, {
       last_chat_update: true,
-      msgs: true,
+      messages: true,
     });
     expect(readData.last_chat_update).not.toStrictEqual('');
-    expect(readData.msgs).toStrictEqual(['durran']);
+    expect(readData.messages).toStrictEqual(['durran']);
   });
 
   it('can update messages betweeen a user and peer by row id', async (): Promise<
@@ -358,18 +368,18 @@ describe('users model test suite', (): void => {
   > => {
     const result = await User.readChatByMainPeerId(1, 2, { id: true });
     await User.updateChat(result.id, {
-      msgs: ['hey dude', 'whats up?'],
+      messages: ['hey dude', 'whats up?'],
       last_chat_update: SQLNow.query,
     });
-    const readData = await User.readChat(result.id, { msgs: true });
-    expect(readData.msgs.length).toBe(2);
-    expect(readData.msgs[0]).toStrictEqual('hey dude');
-    expect(readData.msgs[1]).toStrictEqual('whats up?');
+    const readData = await User.readChat(result.id, { messages: true });
+    expect(readData.messages.length).toBe(2);
+    expect(readData.messages[0]).toStrictEqual('hey dude');
+    expect(readData.messages[1]).toStrictEqual('whats up?');
   });
 
   it('can delete a chat', async (): Promise<void> => {
     await User.deleteChat(1);
-    const result = await User.readChat(1, { msgs: true });
+    const result = await User.readChat(1, { messages: true });
     expect(result).toBe(undefined);
   });
 
