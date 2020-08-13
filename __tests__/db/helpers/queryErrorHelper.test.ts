@@ -22,6 +22,8 @@ export default (): void => {
   afterAll(async (): Promise<void> => pool.end());
 
   it('can test an error from a query', async (): Promise<void> => {
+    /* there is no nonestingtable and the query error helper
+    should return a PostgresError enumeration type */
     query = 'SELECT * FROM nonexistingtable;';
 
     expect(await queryErrorHelper(pool, query)).toBe(

@@ -3,6 +3,9 @@
   Author: Yevgeniy Skroznikov
   Date: August 7 2020
   Description:
+  The tests are done to run in order because other tests depend
+  on the preceding test.
+
   Test suite for the server's PostgreSQL test database(testdb).
   Tests for uniqueness, checks for invalid null fields, invalid empty strings,
   valid foreign keys, and valid timestamp types.
