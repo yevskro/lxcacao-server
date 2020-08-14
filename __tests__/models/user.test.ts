@@ -505,4 +505,27 @@ describe('users model test suite', (): void => {
     });
     expect(chat).toBe(undefined);
   });
+
+  it('can check if a user owns a recipe', async (): Promise<void> => {
+    /* db/src/seed.sql has created references from the first user to the 
+      first recipe, therefore the user with the first id does have
+      a recipe with the row id of 1 and it should be returning true
+    */
+    expect(await User.isOwnerOfRecipe(1, 1)).toBe(true);
+  });
+
+  it('can check if a user is a friend of another peer', async (): Promise<
+    void
+  > => {
+    /* from the previous tests user at main_user_id 2 is friends with
+      peer_user_id 1, we expect the user to be friends with the peer
+    */
+    expect(await User.isFriendsWith(2, 1)).toBe(true);
+  });
+
+  it('can check if a user is blocked by another peer', async (): Promise<
+    void
+  > => {
+    expect(await User.isBlockedBy(2, 1)).toBe(true);
+  });
 });
