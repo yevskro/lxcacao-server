@@ -194,7 +194,7 @@ interface RecipeData {
   private?: boolean;
   ingredients?: string[];
   how_to_prepare?: string[];
-  main_user_id?: boolean;
+  main_user_id?: number;
   origin_user_id?: number;
   origin_user_full_name?: string;
   img_file_name?: string;
@@ -858,6 +858,54 @@ class User {
     await User.query(query, [mainUserId, peerUserId], onError);
     return undefined;
   }
+
+  /* * Authorization Utility Methods * */
+
+  static async isOwnerOfRecipe(
+    userId: number,
+    recipeRowId: number
+  ): Promise<boolean> {
+    /* returns true if the recipe refers to the user id in the main_user_id field
+      else it doesn't belong to the user and returns false 
+    */
+    const data = await User.readRecipe(recipeRowId, {
+      main_user_id: true,
+    });
+
+    if (data && data.main_user_id === userId) return true;
+    return false;
+  }
+
+  static async isFriendsWith(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<boolean> {
+    /* if a main_user_id and peer_user_id record match a record then user is friends
+    with the peer and we return true, else if no record is found return false */
+    const query = `SELECT id FROM users_requests WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
+    const data = (await User.pool.query(query, [mainUserId, peerUserId]))
+      .rows[0];
+
+    if (data.length !== 0) return true;
+    return false;
+  }
+
+  static async isBlockedBy(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<boolean> {
+    /* find  matching row where the the main_user_id is blocking the peer_user_id
+      if found return true if non found return false 
+    */
+    const query = `SELECT id FROM users_blocks WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
+    const data = (await User.pool.query(query, [mainUserId, peerUserId]))
+      .rows[0];
+
+    if (data.length !== 0) return true;
+    return false;
+  }
+
+  /* * * * * * * * * * * * * * * * * * */
 }
 
 export default User;
