@@ -40,7 +40,7 @@ export enum SQLNow { // enum for NOW() query used in create data for time stamps
   query = 'NOW()',
 }
 
-interface IdData {
+export interface IdData {
   // an object returned from create queries
   id?: number;
 }
@@ -154,7 +154,7 @@ export interface UpdateUserData {
   last_update?: SQLNow;
 }
 
-interface CreateRecipeData {
+export interface CreateRecipeData {
   // data that is mandatory to create a row in recipes table
   name: string;
   time: string;
@@ -168,7 +168,7 @@ interface CreateRecipeData {
   img_file_name?: string;
 }
 
-interface ReadRecipeData {
+export interface ReadRecipeData {
   // data that can be read from a row in recipes table
   id?: boolean;
   name?: boolean;
@@ -185,7 +185,7 @@ interface ReadRecipeData {
   all?: boolean;
 }
 
-interface RecipeData {
+export interface RecipeData {
   // data that can be accessed from recipes table
   id?: number;
   name?: string;
@@ -201,7 +201,7 @@ interface RecipeData {
   create_date?: SQLTimeStamp;
 }
 
-interface UpdateRecipeData {
+export interface UpdateRecipeData {
   // data that can be updated in recipes table
   name?: string;
   time?: string;
