@@ -827,10 +827,8 @@ class User {
     updateData: UpdateChatData,
     onError?: (err: Error) => void
   ): Promise<undefined> {
-    /* updates users_chats where the main user and peer users are connected
-      we couldn't use the genCreate.. because that creates only a one where
-      clause where here we have two for the main user and peer user.
-      since this is the only time there's no need to refactor and DRY it up. 
+    /* generates field = placeholders and params and then we
+    create our own query from it
     */
     const [
       fieldsPlaceholders,
