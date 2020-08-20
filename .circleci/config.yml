@@ -50,6 +50,7 @@ jobs:
               sleep 2
             done
             echo Failed waiting for Postgres && exit 1
+
       - run:
           name: Creating tables
           command: psql -h localhost -U postgres -d testdb -f src/db/create.sql
@@ -57,6 +58,21 @@ jobs:
       - run:
           name: Seeding database
           command: psql -h localhost -U postgres -d testdb -f src/db/seed.sql
+
+      - run:
+          name: Starting server
+          command: yarn start-server
+
+      - run:
+          name: Waiting for server to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 80 && echo Success && exit 0
+              echo -n .
+              sleep 2
+            done
+            echo Failed waiting for Server && exit 1
 
       - run:
           name: Running tests
