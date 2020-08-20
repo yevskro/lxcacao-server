@@ -24,12 +24,13 @@ import { Pool } from 'pg';
 import User, { UserData, SQLNow } from '../../src/models/User';
 
 describe('users model test suite', (): void => {
-  const conString = 'postgres://postgres@127.0.0.1:5432/testdb';
+  const conTestString = 'postgres://postgres@127.0.0.1:5432/testdb';
 
   let pool: Pool;
 
   beforeAll((): void => {
-    pool = new Pool({ connectionString: conString });
+    pool = new Pool({ connectionString: conTestString });
+    User.setPool(conTestString);
   });
 
   afterAll(

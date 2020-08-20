@@ -214,7 +214,7 @@ export interface UpdateRecipeData {
 
 class User {
   private static pool = new Pool({
-    connectionString: 'postgres://postgres@127.0.0.1:5432/testdb',
+    connectionString: 'postgres://postgres@db:5432/testdb',
   });
 
   /* * * * * * Utility Methods * * * * * */

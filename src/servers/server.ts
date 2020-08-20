@@ -1,15 +1,23 @@
 import express from 'express';
+import User from '../models/User';
 
 const app = express();
 
-app.get('/user/:id/recipe/:id', (_, res) => res.send('user id recipes id'));
-app.patch('/user/:id/recipe/:id', (_, res) => res.send('edit users recipes'));
-app.delete('/user/:id/recipe/:id', (_, res) => res.send('delete recipe'));
-app.post('/user/:id/recipe', (_, res) => res.send('create new recipe'));
+app.get('/user/:id/recipes/:id', (req, res) => {
+  /* User.pool
+    .query('select * from users;')
+    .then((value) => console.log({ value }))
+    .catch((err) => console.log({ err })); */
+  User.readRecipe(Number(req.params.id), { name: true }).then((data) => {
+    console.log({ data });
+    res.send(data);
+  });
+});
+app.patch('/user/:id/recipes/:id', (_, res) => res.send('edit users recipes'));
+app.delete('/user/:id/recipes/:id', (_, res) => res.send('delete recipe'));
+app.post('/user/:id/recipes', (_, res) => res.send('create new recipe'));
 
-app.get('/user/:id', (_, res) => res.send('user id'));
-
-app.get('/user', (_, res) => res.send('user'));
+app.get('/user', (_, res) => res.send('all recipes'));
 app.patch('/user', (_, res) => res.send('edit user(image)'));
 
 app.listen(80, () => {
