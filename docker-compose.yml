@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile
     image: server
     ports:
-      - "80:80"
+      - "3000:3000"
     volumes: 
       - .:/lxcacao-server
       - node_modules:/lxcacao-server/node_modules

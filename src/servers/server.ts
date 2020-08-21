@@ -48,5 +48,5 @@ app.patch('/user', (_, res) => res.send('edit user(image)'));
 
 app.listen(80, () => {
   // eslint-disable-next-line no-console
-  console.log('Server is up and running.\nListening on port 80');
+  console.log('Server is up and running.\nListening on port 3000');
 });
