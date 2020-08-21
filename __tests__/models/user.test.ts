@@ -56,7 +56,8 @@ describe('users model test suite', (): void => {
   });
 
   it('can create a user with img_file_name', async (): Promise<void> => {
-    /* if there is no error a record will be created with a new id */
+    /* if the database does not throw an 
+    error a record will be created with a new id */
     expect(
       typeof (
         await User.create({
@@ -74,27 +75,6 @@ describe('users model test suite', (): void => {
     expect((await pool.query(query)).rows[0].img_file_name).toStrictEqual(
       'test.png'
     );
-  });
-
-  it('invokes an error callback and returns undefined on error', async (): Promise<
-    void
-  > => {
-    const onError = jest.fn(); // create a mock function
-    /* this should error and return undefined */
-    expect(
-      await User.create(
-        {
-          gmail: 'durran@gmail.com',
-          first_name: 'durran',
-          last_name: 'durran',
-          login_ip: '127.0.0.1',
-          secure_key: '1337',
-        },
-        onError
-      )
-    ).toBe(undefined);
-    /* if onError was called then houston we have a problem */
-    expect(onError).toBeCalled();
   });
 
   it('can query customizable user data by id', async (): Promise<void> => {
@@ -157,13 +137,8 @@ describe('users model test suite', (): void => {
   });
 
   it('can update a users recipe', async (): Promise<void> => {
-    /* create a mock error function, 
-       update recipe with the mock function, 
-       expect error not invoke which means all is well
-    */
-    const onError = jest.fn();
-    await User.updateRecipe(1, { name: 'Bubblegum Jonie' }, onError);
-    expect(onError).not.toBeCalled();
+    /* expecting the database not to throw an error */
+    await User.updateRecipe(1, { name: 'Bubblegum Jonie' });
   });
 
   it('can read a users recipe', async (): Promise<void> => {
@@ -176,13 +151,9 @@ describe('users model test suite', (): void => {
   });
 
   it('can delete a users recipe', async (): Promise<void> => {
-    const onError = jest.fn(); // mock error fn
-    await User.deleteRecipe(2, onError); // a recipe with id 2 was created from src/db/seed.sql
-    expect(onError).not.toBeCalled();
+    await User.deleteRecipe(2); // a recipe with id 2 was created from src/db/seed.sql
     /* try to read from a record that doesn't exist should return undefined */
-    expect(await User.readRecipe(2, { main_user_id: true }, onError)).toBe(
-      undefined
-    );
+    expect(await User.readRecipe(2, { main_user_id: true })).toBe(undefined);
   });
 
   it('can get all users recipe', async (): Promise<void> => {
@@ -212,15 +183,10 @@ describe('users model test suite', (): void => {
   });
 
   it('can create a friend request', async (): Promise<void> => {
-    /* testing through database error, if the database didn't through
+    /* if the database didn't throw error
        anything on a insert query than success
     */
-    const onError = jest.fn();
-    await User.createFriendRequest(
-      { main_user_id: 2, peer_user_id: 1 },
-      onError
-    );
-    expect(onError).not.toBeCalled();
+    await User.createFriendRequest({ main_user_id: 2, peer_user_id: 1 });
   });
 
   it('can read all friend requests', async (): Promise<void> => {
@@ -267,12 +233,10 @@ describe('users model test suite', (): void => {
   });
 
   it('can create a friend', async (): Promise<void> => {
-    /* if the error function wasn't called then the database
+    /* if no error is thronw function then the database
       successfully parsed an insert query 
     */
-    const onError = jest.fn();
-    await User.createFriend({ main_user_id: 2, peer_user_id: 1 }, onError);
-    expect(onError).not.toBeCalled();
+    await User.createFriend({ main_user_id: 2, peer_user_id: 1 });
   });
 
   it('can read all friend requests', async (): Promise<void> => {
@@ -317,12 +281,10 @@ describe('users model test suite', (): void => {
   });
 
   it('can create a block', async (): Promise<void> => {
-    /* if the error function method was not invoked then the insert query
+    /* if no error was thrown method was not invoked then the insert query
       was successful 
     */
-    const onError = jest.fn();
-    await User.createBlock({ main_user_id: 2, peer_user_id: 1 }, onError);
-    expect(onError).not.toBeCalled();
+    await User.createBlock({ main_user_id: 1, peer_user_id: 1 });
   });
 
   it('can read all blocks', async (): Promise<void> => {
@@ -527,6 +489,7 @@ describe('users model test suite', (): void => {
   it('can check if a user is blocked by another peer', async (): Promise<
     void
   > => {
-    expect(await User.isBlockedBy(2, 1)).toBe(true);
+    await User.createBlock({ main_user_id: 1, peer_user_id: 2 });
+    expect(await User.isBlockedBy(1, 2)).toBe(true);
   });
 });

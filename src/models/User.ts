@@ -213,7 +213,7 @@ export interface UpdateRecipeData {
 }
 
 class User {
-  private static pool = new Pool({
+  public static pool = new Pool({
     connectionString: 'postgres://postgres@db:5432/testdb',
   });
 
@@ -399,37 +399,27 @@ class User {
 
   private static async query(
     query: Query,
-    params: Param[],
-    onError?: (err: Error) => void
+    params: Param[]
   ): Promise<QueryResultRow[]> {
-    /* this query is a wrapper around the pool query 
-       we use to call onError callback if there is an error thrown */
-    try {
-      return (await User.pool.query(query, [...params])).rows;
-    } catch (err) {
-      if (onError) onError(err);
-    }
-
-    return [];
+    /* this query is a wrapper around the pool query to return the rows */
+    return (await User.pool.query(query, [...params])).rows;
   }
 
   /* * * * * * * * * * * * * * * * * * * * * */
 
   static async create(
-    createData: CreateUserData,
-    onError?: (err: Error) => void
+    createData: CreateUserData
   ): Promise<IdData | NothingCreated> {
     /* create a user row in the users table */
     const [query, params] = User.genCreateQueryAndParams('users', createData);
     /* a sql query will return a query result of rows if we are not expecting
     for multiple rows than the result will still be in the array at the first index */
-    return (await User.query(query, params, onError))[0];
+    return (await User.query(query, params))[0];
   }
 
   static async readUser(
     userRowId: number,
-    readData: ReadUserData,
-    onError?: (err: Error) => void
+    readData: ReadUserData
   ): Promise<UserData | NothingFound> {
     /* read users from users_table by the row id */
     const [query, values] = User.genReadQueryAndParamsByIdOrGmail(
@@ -439,13 +429,12 @@ class User {
     );
     /* a sql query will return a query result of rows if we are not expecting
     for multiple rows than the result will still be in the array at the first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async readUserByGmail(
     gmail: string,
-    readData: ReadUserData,
-    onError?: (err: Error) => void
+    readData: ReadUserData
   ): Promise<UserData | NothingFound> {
     /* read from users table by gmail */
     const [query, values] = User.genReadQueryAndParamsByIdOrGmail(
@@ -457,38 +446,35 @@ class User {
 
     /* a sql query will return a query result of rows if we are not expecting
     for multiple rows than the result will still be in the array at the first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async updateUser(
     userRowId: number,
-    updateData: UpdateUserData,
-    onError?: (err: Error) => void
+    updateData: UpdateUserData
   ): Promise<undefined> {
     const [query, values] = this.genUpdateQueryAndParamsById(
       userRowId,
       'users',
       updateData
     );
-    await User.query(query, values, onError);
+    await User.query(query, values);
     return undefined;
   }
 
   static async createRecipe(
-    createData: CreateRecipeData,
-    onError?: (err: Error) => void
+    createData: CreateRecipeData
   ): Promise<IdData | NothingCreated> {
     const [query, values] = this.genCreateQueryAndParams('recipes', createData);
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async readRecipe(
     recipeRowId: number,
-    readData: ReadRecipeData,
-    onError?: (err: Error) => void
+    readData: ReadRecipeData
   ): Promise<RecipeData | NothingFound> {
     /* reads the recipe from a database */
     const [query, values] = this.genReadQueryAndParamsByIdOrGmail(
@@ -499,13 +485,12 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async updateRecipe(
     recipeRowId: number,
-    updateData: UpdateRecipeData,
-    onError?: (err: Error) => void
+    updateData: UpdateRecipeData
   ): Promise<undefined> {
     /* updates the recipe in the sql database */
     const [query, values] = this.genUpdateQueryAndParamsById(
@@ -513,35 +498,30 @@ class User {
       'recipes',
       updateData
     );
-    await User.query(query, values, onError);
+    await User.query(query, values);
     return undefined;
   }
 
-  static async deleteRecipe(
-    recipeRowId: number,
-    onError?: (err: Error) => void
-  ): Promise<undefined> {
+  static async deleteRecipe(recipeRowId: number): Promise<undefined> {
     /* delete a recipe from postgresql database */
     const query = `DELETE FROM recipes WHERE id = ($1);`;
-    await User.query(query, [recipeRowId], onError);
+    await User.query(query, [recipeRowId]);
     return undefined;
   }
 
   static async readAllRecipes(
     mainUserId: number,
-    readData: ReadRecipeData,
-    onError?: (err: Error) => void
+    readData: ReadRecipeData
   ): Promise<RecipeData[] | NothingFound> {
     /* reads all recipes from the postgresql db that belong to a user id */
     const query = `SELECT ${User.genFieldsFromData(readData).join(
       ', '
     )} FROM recipes WHERE main_user_id = ($1);`;
-    return User.query(query, [mainUserId], onError);
+    return User.query(query, [mainUserId]);
   }
 
   static async createFriendRequest(
-    createData: CreateMainPeerData,
-    onError?: (err: Error) => void
+    createData: CreateMainPeerData
   ): Promise<IdData | NothingCreated> {
     /* create a friend request if it fails undefined is returned */
     const [query, values] = User.genCreateQueryAndParams(
@@ -551,13 +531,12 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async readAllFriendRequests(
     mainUserId: number,
-    readData: ReadMainPeerData,
-    onError?: (err: Error) => void
+    readData: ReadMainPeerData
   ): Promise<MainPeerData[] | NothingFound> {
     /* read all friend requests that belong to a user. (main_user_id) 
       returns undefined is nothing found
@@ -565,22 +544,20 @@ class User {
     const query = `SELECT ${User.genFieldsFromData(readData).join(', ')} FROM 
     users_requests WHERE main_user_id = ($1)`;
 
-    return User.query(query, [mainUserId], onError);
+    return User.query(query, [mainUserId]);
   }
 
   static async deleteFriendRequest(
-    usersRequestsRowId: number,
-    onError?: (err: Error) => void
+    usersRequestsRowId: number
   ): Promise<undefined> {
     /* delete friend request from the friend_requests table in the postgresql db */
     const query = 'DELETE FROM users_requests WHERE id = ($1)';
-    await User.query(query, [usersRequestsRowId], onError);
+    await User.query(query, [usersRequestsRowId]);
     return undefined;
   }
 
   static async createFriend(
-    createData: CreateMainPeerData,
-    onError?: (err: Error) => void
+    createData: CreateMainPeerData
   ): Promise<IdData | NothingCreated> {
     /* create a row in users_friends in the postgresql db */
     const [query, values] = User.genCreateQueryAndParams(
@@ -590,13 +567,12 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async readAllFriends(
     mainUserId: number,
-    readData: ReadMainPeerData,
-    onError?: (err: Error) => void
+    readData: ReadMainPeerData
   ): Promise<MainPeerData[] | NothingFound> {
     /* read all friends that belong to a user. (main_user_id)
       undefined if nothing is found
@@ -604,22 +580,18 @@ class User {
     const query = `SELECT ${User.genFieldsFromData(readData).join(
       ', '
     )} FROM users_friends WHERE main_user_id = ($1);`;
-    return User.query(query, [mainUserId], onError);
+    return User.query(query, [mainUserId]);
   }
 
-  static async deleteFriend(
-    usersFriendsRowId: number,
-    onError?: (err: Error) => void
-  ): Promise<undefined> {
+  static async deleteFriend(usersFriendsRowId: number): Promise<undefined> {
     /* deletes a friend from users_friends table from the psql db */
     const query = 'DELETE FROM users_friends WHERE id = ($1)';
-    await User.query(query, [usersFriendsRowId], onError);
+    await User.query(query, [usersFriendsRowId]);
     return undefined;
   }
 
   static async createBlock(
-    createData: CreateMainPeerData,
-    onError?: (err: Error) => void
+    createData: CreateMainPeerData
   ): Promise<IdData | NothingCreated> {
     /* create users_blocks main_user_id blocks the peer_user_id */
     const [query, values] = User.genCreateQueryAndParams(
@@ -630,46 +602,40 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
   static async readAllBlocksByMainUserId(
     mainUserId: number,
-    readData: ReadMainPeerData,
-    onError?: (err: Error) => void
+    readData: ReadMainPeerData
   ): Promise<MainPeerData[] | NothingFound> {
     /* read all blocks a user has given */
     const query = `SELECT ${User.genFieldsFromData(readData).join(
       ', '
     )} FROM users_blocks WHERE main_user_id = ($1)`;
-    return User.query(query, [mainUserId], onError);
+    return User.query(query, [mainUserId]);
   }
 
   static async readAllBlocksByPeerUserId(
     peerUserId: number,
-    readData: ReadMainPeerData,
-    onError?: (err: Error) => void
+    readData: ReadMainPeerData
   ): Promise<MainPeerData[] | NothingFound> {
     /* read all blocks a user has received */
     const query = `SELECT ${User.genFieldsFromData(readData).join(
       ', '
     )} FROM users_blocks WHERE peer_user_id = ($1)`;
-    return User.query(query, [peerUserId], onError);
+    return User.query(query, [peerUserId]);
   }
 
-  static async deleteBlock(
-    usersBlocksRowId: number,
-    onError?: (err: Error) => void
-  ): Promise<undefined> {
+  static async deleteBlock(usersBlocksRowId: number): Promise<undefined> {
     /* delete a block from the users_blocks table from the postgresql db */
     const query = 'DELETE FROM users_blocks WHERE id = ($1)';
-    await User.query(query, [usersBlocksRowId], onError);
+    await User.query(query, [usersBlocksRowId]);
     return undefined;
   }
 
   static async createMessageQueue(
-    createData: CreateMessageData,
-    onError?: (err: Error) => void
+    createData: CreateMessageData
   ): Promise<IdData | NothingCreated> {
     /* create a message on the users_message_queue table */
     const [query, params] = this.genCreateQueryAndParams(
@@ -680,45 +646,39 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, params, onError))[0];
+    return (await User.query(query, params))[0];
   }
 
-  static async deleteMessageQueue(
-    messageRowId: number,
-    onError?: (err: Error) => void
-  ): Promise<undefined> {
+  static async deleteMessageQueue(messageRowId: number): Promise<undefined> {
     /* delete a row from the users_message_queue table */
     const query = 'DELETE FROM users_messages_queue WHERE id = ($1)';
-    await User.query(query, [messageRowId], onError);
+    await User.query(query, [messageRowId]);
     return undefined;
   }
 
   static async readAllMessagesQueueByMainUserId(
     mainUserId: number,
-    readData: ReadMessageData,
-    onError?: (err: Error) => void
+    readData: ReadMessageData
   ): Promise<MessageData[] | NothingFound> {
     /* read all messages that are in queue from the sender */
     const query = `SELECT ${User.genFieldsFromData(readData).join(', ')} FROM 
     users_messages_queue WHERE main_user_id = ($1);`;
-    return User.query(query, [mainUserId], onError);
+    return User.query(query, [mainUserId]);
   }
 
   static async readAllMessagesQueueByPeerUserId(
     peerUserId: number,
-    readData: ReadMessageData,
-    onError?: (err: Error) => void
+    readData: ReadMessageData
   ): Promise<MessageData[] | NothingFound> {
     /* read all messages that are in queue for the reciever */
     const query = `SELECT ${User.genFieldsFromData(readData).join(', ')} FROM 
     users_messages_queue WHERE main_user_id = ($1);`;
-    return User.query(query, [peerUserId], onError);
+    return User.query(query, [peerUserId]);
   }
 
   static async readMessageQueue(
     messageRowId: number,
-    readData: ReadMessageData,
-    onError?: (err: Error) => void
+    readData: ReadMessageData
   ): Promise<MessageData | NothingFound> {
     /* read users_message_queue by the row id */
     const [query, params] = User.genReadQueryAndParamsByIdOrGmail(
@@ -730,12 +690,11 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, params, onError))[0];
+    return (await User.query(query, params))[0];
   }
 
   static async createChat(
-    createData: CreateChatData,
-    onError?: (err: Error) => void
+    createData: CreateChatData
   ): Promise<IdData | NothingCreated> {
     /* create a chat row in users_chats returns undefined 
     and callers onError if there was an error */
@@ -747,23 +706,19 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, values, onError))[0];
+    return (await User.query(query, values))[0];
   }
 
-  static async deleteChat(
-    chatRowId: number,
-    onError?: (err: Error) => void
-  ): Promise<undefined> {
+  static async deleteChat(chatRowId: number): Promise<undefined> {
     /* deletes a row from users_chats from by the chat row id */
     const query = 'DELETE FROM users_chats WHERE id = ($1);';
-    await User.query(query, [chatRowId], onError);
+    await User.query(query, [chatRowId]);
     return undefined;
   }
 
   static async readChat(
     chatRowId: number,
-    readData: ReadChatData,
-    onError?: (err: Error) => void
+    readData: ReadChatData
   ): Promise<ChatData | NothingFound> {
     const [query, params] = User.genReadQueryAndParamsByIdOrGmail(
       chatRowId,
@@ -773,14 +728,13 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, params, onError))[0];
+    return (await User.query(query, params))[0];
   }
 
   static async readChatByMainPeerId(
     mainUserId: number,
     peerUserId: number,
-    readData: ReadChatData,
-    onError?: (err: Error) => void
+    readData: ReadChatData
   ): Promise<ChatData | NothingFound> {
     /* read a users_chats row by the sender(main user) and reciever(peer user) */
     const query = `SELECT ${User.genFieldsFromData(
@@ -790,26 +744,24 @@ class User {
     /* a sql query will return a query result of rows if we are not expecting
     multiple rows than the result will still be an array, we have to look at the 
     first index */
-    return (await User.query(query, [mainUserId, peerUserId], onError))[0];
+    return (await User.query(query, [mainUserId, peerUserId]))[0];
   }
 
   static async readAllChatsByUserId(
     id: number,
-    readData: ReadChatData,
-    onError?: (err: Error) => void
+    readData: ReadChatData
   ): Promise<ChatData[] | NothingFound> {
     /* read all chats that belong to a user */
     const query = `SELECT ${User.genFieldsFromData(
       readData
     )} FROM users_chats WHERE main_user_id = ($1)`;
 
-    return User.query(query, [id], onError);
+    return User.query(query, [id]);
   }
 
   static async updateChat(
     chatRowId: number,
-    updateData: UpdateChatData,
-    onError?: (err: Error) => void
+    updateData: UpdateChatData
   ): Promise<undefined> {
     /* update the users_chats table by the row id */
     const [query, values] = User.genUpdateQueryAndParamsById(
@@ -817,15 +769,14 @@ class User {
       'users_chats',
       updateData
     );
-    await User.query(query, values, onError);
+    await User.query(query, values);
     return undefined;
   }
 
   static async updateChatByMainPeerId(
     mainUserId: number,
     peerUserId: number,
-    updateData: UpdateChatData,
-    onError?: (err: Error) => void
+    updateData: UpdateChatData
   ): Promise<undefined> {
     /* generates field = placeholders and params and then we
     create our own query from it
@@ -840,20 +791,19 @@ class User {
     WHERE main_user_id = ($${params.length + 1}) AND peer_user_id = ($${
       params.length + 2
     });`;
-    await User.query(query, [...params, mainUserId, peerUserId], onError);
+    await User.query(query, [...params, mainUserId, peerUserId]);
     return undefined;
   }
 
   static async deleteChatByMainPeerId(
     mainUserId: number,
-    peerUserId: number,
-    onError?: (err: Error) => void
+    peerUserId: number
   ): Promise<undefined> {
     /* delete a row from users_chats by main_users_id and peer_user_id */
     const query = `
     DELETE FROM users_chats
     WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
-    await User.query(query, [mainUserId, peerUserId], onError);
+    await User.query(query, [mainUserId, peerUserId]);
     return undefined;
   }
 
@@ -881,10 +831,9 @@ class User {
     /* if a main_user_id and peer_user_id record match a record then user is friends
     with the peer and we return true, else if no record is found return false */
     const query = `SELECT id FROM users_requests WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
-    const data = (await User.pool.query(query, [mainUserId, peerUserId]))
-      .rows[0];
+    const data = (await User.query(query, [mainUserId, peerUserId]))[0];
 
-    if (data.length !== 0) return true;
+    if (data && data.length !== 0) return true;
     return false;
   }
 
@@ -896,10 +845,9 @@ class User {
       if found return true if non found return false 
     */
     const query = `SELECT id FROM users_blocks WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
-    const data = (await User.pool.query(query, [mainUserId, peerUserId]))
-      .rows[0];
+    const data = await User.query(query, [mainUserId, peerUserId]);
 
-    if (data.length !== 0) return true;
+    if (data && data.length !== 0) return true;
     return false;
   }
 
