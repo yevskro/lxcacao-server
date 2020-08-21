@@ -37,6 +37,7 @@ app.get('/user/:userId/recipes', (req, res) => {
       res.send(data);
     }
   ); */
+  res.status(200).send('edit user(image)');
 });
 
 app.get('/user/recipes/:id', (_, res) => res.send('all recipes'));
@@ -44,9 +45,6 @@ app.patch('/user/recipes/:id', (_, res) => res.send('edit a users recipes'));
 app.post('/user/recipes', (_, res) => res.send('create a users recipes'));
 app.delete('/user/recipes/:id', (_, res) => res.send('delete recipe'));
 
-app.patch('/user', (_, res) => res.send('edit user(image)'));
+app.patch('/user', (_, res) => res.status(200).send('edit user(image)'));
 
-app.listen(3000, () => {
-  // eslint-disable-next-line no-console
-  console.log('Server is up and running.\nListening on port 3000');
-});
+export default app;
