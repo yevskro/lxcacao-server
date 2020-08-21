@@ -46,7 +46,7 @@ app.delete('/user/recipes/:id', (_, res) => res.send('delete recipe'));
 
 app.patch('/user', (_, res) => res.send('edit user(image)'));
 
-app.listen(3000, () => {
+app.listen(80, () => {
   // eslint-disable-next-line no-console
-  console.log('Server is up and running.\nListening on port 3000');
+  console.log('Server is up and running.\nListening on port 80');
 });
