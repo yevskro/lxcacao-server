@@ -35,7 +35,7 @@ jobs:
           name: Install postgresql-client
           command: |
             sudo apt-get install postgresql-client
-
+            
       - run:
           name: Installing dependencies
           command: yarn install
@@ -61,6 +61,14 @@ jobs:
       - run:
           name: Seeding database
           command: psql -h localhost -U postgres -d testdb -f src/db/seed.sql
+
+      - run:
+          name: Starting server
+          command: yarn ci-test-server &
+
+      - run:
+          name: Waiting for server to be ready
+          command: dockerize -wait tcp://localhost:3000 -timeout 1m
 
       - run:
           name: Running tests
