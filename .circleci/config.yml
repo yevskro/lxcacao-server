@@ -61,7 +61,7 @@ jobs:
 
       - run:
           name: Starting server
-          command: yarn start-server
+          command: yarn start-server && yarn ci:test
 
       - run:
           name: Waiting for server to be ready
