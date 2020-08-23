@@ -1,6 +1,8 @@
+import { AddressInfo } from 'net';
 import httpApp from './httpApp';
 
-httpApp.listen(3000, () => {
+const httpServer = httpApp.listen(3000, () => {
+  const { port } = httpServer.address() as AddressInfo;
   // eslint-disable-next-line no-console
-  console.log('Server is up and running.\nListening on port 3000');
+  console.log(`Server is up and running.\nListening on port`, port);
 });
