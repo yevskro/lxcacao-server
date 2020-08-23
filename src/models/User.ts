@@ -583,10 +583,23 @@ class User {
     return User.query(query, [mainUserId]);
   }
 
-  static async deleteFriend(usersFriendsRowId: number): Promise<undefined> {
+  static async deleteFriendByRowId(
+    usersFriendsRowId: number
+  ): Promise<undefined> {
     /* deletes a friend from users_friends table from the psql db */
     const query = 'DELETE FROM users_friends WHERE id = ($1)';
     await User.query(query, [usersFriendsRowId]);
+    return undefined;
+  }
+
+  static async deleteFriendByMainPeerId(
+    main_user_id: number,
+    peer_user_id: number
+  ): Promise<undefined> {
+    /* deletes a friend from users_friends table from the psql db */
+    const query =
+      'DELETE FROM users_friends WHERE main_user_id = ($1) AND peer_user_id = ($2)';
+    await User.query(query, [main_user_id, peer_user_id]);
     return undefined;
   }
 
