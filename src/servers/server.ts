@@ -3,31 +3,16 @@ import User from '../models/User';
 
 const app = express();
 
-app.get('/user/:userId/recipes/:recipeId', (req, res) => {
-  /* User.pool
-    .query('SELECT id FROM users_blocks WHERE main_user_id = 2')
-    .then((result) => res.send(result)); */
-  // User.readAllFriends(2, { id: true }).then((data) => res.send({ data }))
-  User.isBlockedBy(2, Number(req.params.userId))
-    .then((value) => res.send({ value }))
-    .catch((errr) => res.send({ errr }));
-  // User.readAllRecipes(1, { id: true }).then((data) => res.send(data));
-  // User.isBlockedBy(2, 1).then((data) => console.log(data));
-  /* User.isBlockedBy(2, Number(req.params.userId)).then((isBlocked) => {
-    if (!isBlocked) {
-      console.log('bastard');
-      User.isFriendsWith(2, 1).then((isFriends) => {
-        if (isFriends) {
-          User.readRecipe(Number(req.params.recipeId), { name: true }).then(
-            (data) => {
-              console.log({ data });
-              res.send(data);
-            }
-          );
-        }
-      });
-    }
-  }); */
+app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
+  const userId = Number(req.params.userId);
+  const recipeId = Number(req.params.recipeId);
+
+  const isBlocked = await User.isBlockedBy(1, userId);
+  const isFriends = await User.isFriendsWith(1, userId);
+  if (!isBlocked && isFriends) {
+    const readData = await User.readRecipe(recipeId, { name: true });
+    res.status(200).json(readData);
+  } else res.status(401).json({ authorized: false });
 });
 
 app.get('/user/:userId/recipes', (req, res) => {
