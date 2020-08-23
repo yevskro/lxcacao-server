@@ -3,31 +3,29 @@ import User from '../models/User';
 
 const app = express();
 
-app.get(
-  '/user/:userId/recipes/:recipeId',
-  async (req, res): Promise<void> => {
-    const userId = Number(req.params.userId);
-    const recipeId = Number(req.params.recipeId);
+app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
+  const userId = Number(req.params.userId);
+  const recipeId = Number(req.params.recipeId);
 
-    const isBlocked =
-      (await User.isBlockedBy(1, userId)) ||
-      (await User.isBlockedBy(userId, 1));
-    const isFriends = await User.isFriendsWith(1, userId);
-    if (!isBlocked && isFriends) {
-      const readData = await User.readRecipe(recipeId, { all: true });
-      res.status(200).json(readData);
-    } else res.status(401).json({ authorized: false });
+  const authorized = await User.isAuthorized(1, userId);
+  if (!authorized) {
+    return res.status(401).json({ authorized: false });
   }
-);
+  const readData = await User.readRecipe(recipeId, { all: true });
+  return res.status(200).json(readData);
+});
 
-app.get('/user/:userId/recipes', (req, res) => {
-  /* User.readAllRecipes(Number(req.params.userId), { name: true }).then(
-    (data) => {
-      console.log({ data });
-      res.send(data);
-    }
-  ); */
-  res.status(200).send('edit user(image)');
+app.get('/user/:userId/recipes', async (req, res) => {
+  const userId = Number(req.params.userId);
+
+  const authorized = await User.isAuthorized(1, userId);
+  if (!authorized) {
+    return res.status(401).json({ authorized: false });
+  }
+  const readData = await User.readAllRecipes(Number(req.params.userId), {
+    all: true,
+  });
+  return res.status(200).json(readData);
 });
 
 app.get('/user/recipes/:id', (_, res) => res.send('all recipes'));

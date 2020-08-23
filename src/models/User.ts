@@ -864,6 +864,21 @@ class User {
     return false;
   }
 
+  static async isAuthorized(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<boolean> {
+    const isBlockedBy = await User.isBlockedBy(mainUserId, peerUserId);
+    if (isBlockedBy) return false;
+
+    const isBlocked = await User.isBlockedBy(peerUserId, mainUserId);
+    if (isBlocked) return false;
+
+    const isFriends = await User.isFriendsWith(mainUserId, peerUserId);
+    if (!isFriends) return false;
+
+    return true;
+  }
   /* * * * * * * * * * * * * * * * * * */
 }
 
