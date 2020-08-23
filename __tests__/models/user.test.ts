@@ -22,7 +22,7 @@
 
 import { Pool } from 'pg';
 import User, { UserData, SQLNow } from '../../src/models/User';
-import setupDbHelper from '../db/helpers/setupDbHelper';
+import testSetupDbHelper from '../helpers/testSetupDbHelper';
 
 describe('users model test suite', (): void => {
   const conTestString = 'postgres://postgres@127.0.0.1:5432/testdb';
@@ -41,7 +41,7 @@ describe('users model test suite', (): void => {
   );
 
   it('can clear and setup a testdb', async () =>
-    expect(await setupDbHelper()).toBe(true));
+    expect(await testSetupDbHelper()).toBe(true));
 
   it('can create a user', async (): Promise<void> => {
     /* if the user is created then a id will be returned */

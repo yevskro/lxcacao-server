@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import app, { User } from '../../src/servers/httpApp';
-import setupDbHelper from '../db/helpers/setupDbHelper';
+import testSetupDbHelper from '../helpers/testSetupDbHelper';
 
 describe('get /user', () => {
   afterAll(async () => {
@@ -8,7 +8,7 @@ describe('get /user', () => {
   });
 
   it('can clear and setup a testdb', async () =>
-    expect(await setupDbHelper()).toBe(true));
+    expect(await testSetupDbHelper()).toBe(true));
 
   it('can get a friends recipe', async () => {
     await User.createFriend({ main_user_id: 1, peer_user_id: 2 });
