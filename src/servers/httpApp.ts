@@ -9,7 +9,9 @@ app.get(
     const userId = Number(req.params.userId);
     const recipeId = Number(req.params.recipeId);
 
-    const isBlocked = await User.isBlockedBy(1, userId);
+    const isBlocked =
+      (await User.isBlockedBy(1, userId)) ||
+      (await User.isBlockedBy(userId, 1));
     const isFriends = await User.isFriendsWith(1, userId);
     if (!isBlocked && isFriends) {
       const readData = await User.readRecipe(recipeId, { all: true });

@@ -44,4 +44,17 @@ describe('/user routes', () => {
 
     expect(res.status).toBe(401);
   });
+
+  it('cannot get a blocked friends recipe', async () => {
+    await User.createFriend({ main_user_id: 1, peer_user_id: 2 });
+    await User.createFriend({ main_user_id: 2, peer_user_id: 1 });
+
+    await User.createBlock({ main_user_id: 1, peer_user_id: 2 });
+
+    const res = await supertest(app)
+      .get('/user/2/recipes/1')
+      .set('Accept', 'application/json');
+
+    expect(res.status).toBe(401);
+  });
 });

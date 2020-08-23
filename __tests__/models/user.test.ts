@@ -277,7 +277,7 @@ describe('users model test suite', (): void => {
     const usersFriend = ids.find((friendData) => friendData.peer_user_id === 3);
     // userFriend holds the row id and the peer_user_id
 
-    await User.deleteFriend(usersFriend.id); // deleting by the row id
+    await User.deleteFriendByRowId(usersFriend.id); // deleting by the row id
     expect((await User.readAllFriends(2, { main_user_id: true })).length).toBe(
       ids.length - 1
     );
