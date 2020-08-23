@@ -36,33 +36,17 @@ app.get('/user/:userId/recipes', async (req, res) => {
   return res.status(200).json(readData);
 });
 
-app.get('/user/recipes/:id', async (req, res) => {
-  const ownerId = 1;
+app.patch('/user/:userId/recipes/:id', (_, res) =>
+  res.send('edit a users recipes')
+);
 
-  const readData = await User.readRecipe(ownerId, {
-    all: true,
-  });
+app.post('/user/:userId/recipes', async (req, res) => res.send('dur'));
 
-  return res.status(200).json(readData);
-});
+app.delete('/user/:userId/recipes/:id', (_, res) => res.send('delete recipe'));
 
-app.get('/user/recipes', async (req, res) => {
-  const ownerId = 1;
-
-  const readData = await User.readAllRecipes(ownerId, {
-    all: true,
-  });
-
-  return res.status(200).json(readData);
-});
-
-app.patch('/user/recipes/:id', (_, res) => res.send('edit a users recipes'));
-
-app.post('/user/recipes', async (req, res) => res.send('dur'));
-
-app.delete('/user/recipes/:id', (_, res) => res.send('delete recipe'));
-
-app.patch('/user', (_, res) => res.status(200).send('edit user(image)'));
+app.patch('/user/:userId/recipes/:id', (_, res) =>
+  res.status(200).send('edit user(image)')
+);
 
 export default app;
 export { User };

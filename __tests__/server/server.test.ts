@@ -64,8 +64,6 @@ describe('/user routes', () => {
       origin_user_full_name: 'Jim Carrey',
     });
 
-    // const readData = await User.readAllRecipes(2, { name: true });
-    // console.log({ readData });
     expect(typeof idData.id).toBe('number');
     const res = await supertest(app)
       .get('/user/2/recipes')
