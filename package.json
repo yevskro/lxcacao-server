@@ -7,7 +7,7 @@
   "author": "Yevgeniy Skroznikov <yevskro@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "ci:test": "cross-env NODE_ENV=test jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit",
+    "ci:test": "cross-env NODE_ENV=test LOCAL=true jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit",
     "create-tables": "psql -h localhost -U postgres -d testdb -f src/db/create.sql",
     "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
     "setup-testdb": "yarn create-tables && yarn seed-database",
