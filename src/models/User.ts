@@ -892,6 +892,8 @@ class User {
     mainUserId: number,
     peerUserId: number
   ): Promise<boolean> {
+    if (mainUserId === peerUserId) return true;
+
     const isBlockedBy = await User.isBlockedBy(mainUserId, peerUserId);
     if (isBlockedBy) return false;
 

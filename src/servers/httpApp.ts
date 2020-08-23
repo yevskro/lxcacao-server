@@ -4,11 +4,12 @@ import User from '../models/User';
 const app = express();
 
 app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
+  const ownerId = 1;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
 
   try {
-    const authorized = await User.isAuthorized(1, userId);
+    const authorized = await User.isAuthorized(ownerId, userId);
     if (!authorized) {
       return res.status(401).json({ authorized: false });
     }
@@ -20,15 +21,15 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
 });
 
 app.get('/user/:userId/recipes', async (req, res) => {
+  const ownerId = 1;
   const userId = Number(req.params.userId);
-  const authorized = await User.isAuthorized(1, userId);
+  const authorized = await User.isAuthorized(ownerId, userId);
 
   if (!authorized) {
     return res.status(401).json({ authorized: false });
   }
-  let readData = await User.readAllRecipes(userId, { name: true });
 
-  readData = await User.readAllRecipes(userId, {
+  const readData = await User.readAllRecipes(userId, {
     all: true,
   });
 
