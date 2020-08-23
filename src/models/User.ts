@@ -212,9 +212,14 @@ export interface UpdateRecipeData {
   img_file_name?: string;
 }
 
+let conString = '';
+if (process.env.NODE_ENV === 'test') {
+  conString = 'postgres://postgres@127.0.0.1:5432/testdb';
+} else conString = 'postgres://postgres@db:5432/testdb';
+
 class User {
   public static pool = new Pool({
-    connectionString: 'postgres://postgres@127.0.0.1:5432/testdb',
+    connectionString: conString,
   });
 
   /* * * * * * Utility Methods * * * * * */
