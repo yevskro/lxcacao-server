@@ -7,13 +7,12 @@
   "author": "Yevgeniy Skroznikov <yevskro@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "ci:test": "cross-env NODE_ENV=test LOCAL=true jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit",
+    "ci:test": "cross-env NODE_ENV=test jest --passWithNoTests --ci --runInBand --detectOpenHandles --forceExit",
     "create-tables": "psql -h localhost -U postgres -d testdb -f src/db/create.sql",
     "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
     "setup-testdb": "yarn create-tables && yarn seed-database",
     "start-server": "nodemon src/servers/index.ts",
-    "test": "yarn setup-testdb && LOCAL=true jest --runInBand --detectOpenHandles",
-    "test-local": "yarn setup-testdb && LOCAL=true jest --runInBand --detectOpenHandles"
+    "test": "jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -61,7 +60,8 @@
     "*.{ts,js,tsx,jsx}": [
       "eslint --fix",
       "prettier --write",
-      "yarn test-local"
+      "yarn setup-testdb",
+      "jest --findRelatedTests"
     ]
   }
 }
