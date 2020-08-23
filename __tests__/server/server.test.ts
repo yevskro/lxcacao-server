@@ -1,10 +1,9 @@
 import supertest from 'supertest';
-/* make sure a local docker containerized instance of the server is running */
-describe('get /user', () => {
-  const server = 'localhost:3000';
+import httpServer from '../../src/servers/server';
 
+describe('get /user', () => {
   it('dfd', (done) => {
-    supertest(server)
+    supertest(httpServer)
       .get('/user/1/recipes/1')
       .set('Accept', 'application/json')
       .expect(401)
