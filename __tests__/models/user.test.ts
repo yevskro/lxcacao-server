@@ -30,7 +30,6 @@ describe('users model test suite', (): void => {
 
   beforeAll((): void => {
     pool = new Pool({ connectionString: conTestString });
-    User.setPool(conTestString);
   });
 
   afterAll(
