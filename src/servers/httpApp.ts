@@ -12,7 +12,7 @@ app.get(
     const isBlocked = await User.isBlockedBy(1, userId);
     const isFriends = await User.isFriendsWith(1, userId);
     if (!isBlocked && isFriends) {
-      const readData = await User.readRecipe(recipeId, { name: true });
+      const readData = await User.readRecipe(recipeId, { all: true });
       res.status(200).json(readData);
     } else res.status(401).json({ authorized: false });
   }

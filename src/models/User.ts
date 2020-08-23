@@ -830,8 +830,8 @@ class User {
   ): Promise<boolean> {
     /* if a main_user_id and peer_user_id record match a record then user is friends
     with the peer and we return true, else if no record is found return false */
-    const query = `SELECT id FROM users_requests WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
-    const data = (await User.query(query, [mainUserId, peerUserId]))[0];
+    const query = `SELECT id FROM users_friends WHERE main_user_id = ($1) AND peer_user_id = ($2);`;
+    const data = await User.query(query, [mainUserId, peerUserId]);
 
     if (data && data.length !== 0) return true;
     return false;
