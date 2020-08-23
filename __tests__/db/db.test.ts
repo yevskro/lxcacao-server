@@ -14,6 +14,7 @@
 */
 
 import { Pool } from 'pg';
+import setupDbHelper from './helpers/setupDbHelper';
 import queryErrorHelperTest from './helpers/queryErrorHelper.test';
 import queryErrorHelper from './helpers/queryErrorHelper';
 import usersTest from './tables/users.test';
@@ -36,6 +37,9 @@ describe('database test suite', (): void => {
   afterAll(async (): Promise<void> => pool.end());
 
   describe('query error helper', queryErrorHelperTest);
+
+  it('can clear and setup a testdb', async () =>
+    expect(await setupDbHelper()).toBe(true));
 
   it('can query database', async (): Promise<void> => {
     expect(await queryErrorHelper(pool, 'SELECT NOW();')).toBe(undefined);
