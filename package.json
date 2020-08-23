@@ -12,7 +12,7 @@
     "seed-database": "psql -h localhost -U postgres -d testdb -f src/db/seed.sql",
     "setup-testdb": "yarn create-tables && yarn seed-database",
     "start-server": "nodemon src/servers/index.ts",
-    "test": "yarn setup-testdb && jest --runInBand --detectOpenHandles",
+    "test": "yarn setup-testdb && LOCAL=true jest --runInBand --detectOpenHandles",
     "test-local": "yarn setup-testdb && LOCAL=true jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
