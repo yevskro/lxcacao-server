@@ -9,11 +9,6 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: testdb
       
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: testdb
-      NODE_ENV: test
     working_directory: ~/lxcacao-server
 
     steps:
