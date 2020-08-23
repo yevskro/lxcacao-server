@@ -21,14 +21,17 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
 
 app.get('/user/:userId/recipes', async (req, res) => {
   const userId = Number(req.params.userId);
-
   const authorized = await User.isAuthorized(1, userId);
+
   if (!authorized) {
     return res.status(401).json({ authorized: false });
   }
-  const readData = await User.readAllRecipes(Number(req.params.userId), {
+  let readData = await User.readAllRecipes(userId, { name: true });
+
+  readData = await User.readAllRecipes(userId, {
     all: true,
   });
+
   return res.status(200).json(readData);
 });
 

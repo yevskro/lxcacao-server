@@ -40,6 +40,10 @@ export enum SQLNow { // enum for NOW() query used in create data for time stamps
   query = 'NOW()',
 }
 
+export interface AllReadData {
+  all?: boolean;
+}
+
 export interface IdData {
   // an object returned from create queries
   id?: number;
@@ -252,6 +256,8 @@ class User {
       and be returned where the developer can join it with commas
       or do something else that is more appropriate for the query case
     */
+    if ((queryData as AllReadData).all) return ['*']; // account for read interfaces with the all flag
+
     const fields: Field[] = [];
     const keys = Object.keys(queryData);
     keys.forEach((key) => {
@@ -645,10 +651,23 @@ class User {
     return User.query(query, [peerUserId]);
   }
 
-  static async deleteBlock(usersBlocksRowId: number): Promise<undefined> {
+  static async deleteBlockByRowId(
+    usersBlocksRowId: number
+  ): Promise<undefined> {
     /* delete a block from the users_blocks table from the postgresql db */
     const query = 'DELETE FROM users_blocks WHERE id = ($1)';
     await User.query(query, [usersBlocksRowId]);
+    return undefined;
+  }
+
+  static async deleteBlockByMainPeerId(
+    main_user_id: number,
+    peer_user_id: number
+  ): Promise<undefined> {
+    /* delete a block from the users_blocks table from the postgresql db */
+    const query =
+      'DELETE FROM users_blocks WHERE main_user_id = ($1) AND peer_user_id = ($2)';
+    await User.query(query, [main_user_id, peer_user_id]);
     return undefined;
   }
 

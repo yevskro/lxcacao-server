@@ -22,13 +22,7 @@ describe('/user routes', () => {
     expect(res.status).toBe(200);
     expect(res.body.id).toBe(1);
     expect(res.body.name).toStrictEqual('Banana Split');
-    expect(res.body.time).toStrictEqual('35m');
-    expect(res.body.private).toBe(false);
-    expect(res.body.ingredients).toStrictEqual([]);
-    expect(res.body.how_to_prepare).toStrictEqual([]);
-    expect(res.body.main_user_id).toBe(1);
-    expect(res.body.origin_user_id).toBe(1);
-    expect(res.body.origin_user_full_name).toStrictEqual('Yev Skro');
+    expect(Object.keys(res.body).length).toBe(12);
   });
 
   it('cannot get a non friends recipe', async () => {
@@ -56,5 +50,31 @@ describe('/user routes', () => {
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(401);
+  });
+
+  it('can get a nonblocked friends all recipes', async () => {
+    await User.deleteBlockByMainPeerId(1, 2);
+    const idData = await User.createRecipe({
+      name: 'Apple Split',
+      time: '35m',
+      type: 'Desert',
+      private: false,
+      main_user_id: 2,
+      origin_user_id: 2,
+      origin_user_full_name: 'Jim Carrey',
+    });
+
+    // const readData = await User.readAllRecipes(2, { name: true });
+    // console.log({ readData });
+    expect(typeof idData.id).toBe('number');
+    const res = await supertest(app)
+      .get('/user/2/recipes')
+      .set('Accept', 'application/json');
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].id).toBe(2);
+    expect(res.body[0].name).toStrictEqual('Apple Split');
+    expect(Object.keys(res.body[0]).length).toBe(12);
   });
 });

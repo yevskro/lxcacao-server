@@ -322,7 +322,7 @@ describe('users model test suite', (): void => {
     const usersBlock = ids.find((blockData) => blockData.peer_user_id === 3);
     // users block holds the row id and peer_user_id
 
-    await User.deleteBlock(usersBlock.id); // delete by row id
+    await User.deleteBlockByRowId(usersBlock.id); // delete by row id
     expect(
       (await User.readAllBlocksByMainUserId(2, { peer_user_id: true })).length
     ).toBe(ids.length - 1);
