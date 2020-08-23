@@ -36,9 +36,30 @@ app.get('/user/:userId/recipes', async (req, res) => {
   return res.status(200).json(readData);
 });
 
-app.get('/user/recipes/:id', (_, res) => res.send('all recipes'));
+app.get('/user/recipes/:id', async (req, res) => {
+  const ownerId = 1;
+
+  const readData = await User.readRecipe(ownerId, {
+    all: true,
+  });
+
+  return res.status(200).json(readData);
+});
+
+app.get('/user/recipes', async (req, res) => {
+  const ownerId = 1;
+
+  const readData = await User.readAllRecipes(ownerId, {
+    all: true,
+  });
+
+  return res.status(200).json(readData);
+});
+
 app.patch('/user/recipes/:id', (_, res) => res.send('edit a users recipes'));
-app.post('/user/recipes', (_, res) => res.send('create a users recipes'));
+
+app.post('/user/recipes', async (req, res) => res.send('dur'));
+
 app.delete('/user/recipes/:id', (_, res) => res.send('delete recipe'));
 
 app.patch('/user', (_, res) => res.status(200).send('edit user(image)'));
