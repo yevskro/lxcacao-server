@@ -42,7 +42,7 @@ app.patch('/user/:userId/recipes/:recipeId', async (req, res) => {
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
-  const authorized = await User.isAuthorized(ownerId, userId);
+  const authorized = ownerId === userId;
 
   if (!authorized) {
     return res.status(401).contentType('json').json({ authorized: false });

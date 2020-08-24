@@ -108,5 +108,14 @@ describe('/user routes', () => {
     done();
   });
 
+  it('can not edit not owned recipe', async (done) => {
+    const res = await supertest(app)
+      .patch('/user/1/recipes/1')
+      .send({ time: '40m' })
+      .set('Accept', 'application/json');
+
+    expect(res.status).toBe(401);
+    done();
+  });
   // it('can not get a friends private recipe', async () => {});
 });
