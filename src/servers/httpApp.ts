@@ -72,7 +72,6 @@ app.delete('/user/:userId/recipes/:recipeId', async (req, res) => {
   const authorized = ownerId === userId;
 
   if (!authorized) return res.sendStatus(401);
-
   await User.deleteRecipe(recipeId);
 
   return res.sendStatus(204);

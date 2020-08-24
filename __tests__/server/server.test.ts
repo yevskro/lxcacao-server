@@ -196,4 +196,10 @@ describe('/user routes', () => {
     expect(res.status).toBe(401);
     done();
   });
+
+  it('can delete an owners recipe', async (done) => {
+    const res = await supertest(app).delete('/user/2/recipes/2');
+    expect(res.status).toBe(204);
+    done();
+  });
 });
