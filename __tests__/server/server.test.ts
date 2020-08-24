@@ -1,5 +1,10 @@
 import supertest from 'supertest';
-import { UpdateRecipeData, RecipeData, IdData } from 'src/models/User';
+import {
+  UpdateRecipeData,
+  RecipeData,
+  IdData,
+  CreateRecipeData,
+} from 'src/models/User';
 import app, { User } from '../../src/servers/httpApp';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 /* this test is not testing authorized gmail users yet */
@@ -151,6 +156,25 @@ describe('/user routes', () => {
 
     expect(foundPrivateRecipe).toBe(undefined);
     expect(foundPublicRecipe).not.toBe(undefined);
+    done();
+  });
+
+  it('can create a recipe', async (done) => {
+    const createRecipeData: CreateRecipeData = {
+      name: 'Eggs',
+      origin_user_full_name: 'Jim Carrey',
+      time: '15m',
+      private: false,
+      origin_user_id: 2,
+      main_user_id: 2,
+      type: 'Breakfast',
+    };
+
+    const res = await supertest(app)
+      .post('/user/2/recipes')
+      .send(createRecipeData);
+
+    expect(res.status).toBe(201);
     done();
   });
 });

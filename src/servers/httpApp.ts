@@ -1,5 +1,5 @@
 import express from 'express';
-import User, { RecipeData } from '../models/User';
+import User, { RecipeData, CreateRecipeData } from '../models/User';
 
 const app = express();
 
@@ -52,7 +52,19 @@ app.patch('/user/:userId/recipes/:recipeId', async (req, res) => {
   return res.sendStatus(204);
 });
 
-app.post('/user/:userId/recipes', async (req, res) => res.send('dur'));
+app.post('/user/:userId/recipes', async (req, res) => {
+  const ownerId = 2;
+  const userId = Number(req.params.userId);
+  const createRecipeData: CreateRecipeData = req.body;
+  const authorized = ownerId === userId;
+
+  if (!authorized) return res.sendStatus(401);
+
+  console.log({ createRecipeData });
+  await User.createRecipe(createRecipeData);
+
+  return res.sendStatus(201);
+});
 
 app.delete('/user/:userId/recipes/:id', (_, res) => res.send('delete recipe'));
 
