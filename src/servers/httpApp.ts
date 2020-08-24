@@ -9,14 +9,22 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   const ownerId = 1;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
+  let error: Error;
 
-  const authorized = await User.isAuthorized(ownerId, userId);
+  const authorized = await User.isAuthorized(ownerId, userId).catch(() => {
+    error = new Error('failed to process authorization');
+  });
+  if (error) return next(error);
 
   if (!authorized) return res.sendStatus(403);
 
   const readData = await User.readRecipe(recipeId, {
     all: true,
+  }).catch(() => {
+    error = new Error('failed to read recipe');
   });
+  if (error) return next(error);
+
   if (!readData) return res.sendStatus(404);
   if (readData.private && ownerId !== userId) return res.sendStatus(403);
   return res.status(200).json(readData);
@@ -25,7 +33,10 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res, next) => {
 app.get('/user/:userId/recipes', async (req, res) => {
   const ownerId = 1;
   const userId = Number(req.params.userId);
-  const authorized = await User.isAuthorized(ownerId, userId);
+  const authorized = await User.isAuthorized(ownerId, userId).catch(() => {
+    error = new Error('failed to process authorization');
+  });
+  if (error) return next(error);
 
   if (!authorized) return res.sendStatus(403);
 
