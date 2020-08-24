@@ -232,4 +232,11 @@ describe('/user routes', () => {
     expect(res.status).toBe(404);
     done();
   });
+
+  it('can handle globale errors', async (done) => {
+    const res = await supertest(app).get('/error');
+    expect(res.status).toBe(500);
+    expect(res.text).toStrictEqual('testing error route');
+    done();
+  });
 });

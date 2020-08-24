@@ -5,21 +5,21 @@ const app = express();
 
 app.use(express.json());
 
-app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
+app.get('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   const ownerId = 1;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
 
-  try {
-    const authorized = await User.isAuthorized(ownerId, userId);
-    if (!authorized) return res.sendStatus(403);
-    const readData = await User.readRecipe(recipeId, { all: true });
-    if (!readData) return res.sendStatus(404);
-    if (readData.private && ownerId !== userId) return res.sendStatus(403);
-    return res.status(200).json(readData);
-  } catch (err) {
-    return res.status(301).json(err);
-  }
+  const authorized = await User.isAuthorized(ownerId, userId);
+
+  if (!authorized) return res.sendStatus(403);
+
+  const readData = await User.readRecipe(recipeId, {
+    all: true,
+  });
+  if (!readData) return res.sendStatus(404);
+  if (readData.private && ownerId !== userId) return res.sendStatus(403);
+  return res.status(200).json(readData);
 });
 
 app.get('/user/:userId/recipes', async (req, res) => {
@@ -97,9 +97,14 @@ app.get('/user', async (req, res) => {
   return res.sendStatus(404);
 });
 
+app.get('/error', (req, res, next) => {
+  next(new Error('testing error route'));
+});
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  res.send(err.message);
+  /* express global error handler */
+  res.status(500).send(err.message);
 });
 
 export default app;
