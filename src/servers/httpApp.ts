@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import User, { RecipeData, CreateRecipeData } from '../models/User';
 
 const app = express();
@@ -97,8 +97,10 @@ app.get('/user', async (req, res) => {
   return res.sendStatus(404);
 });
 
-// handle not found recipes
-// handling error
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.send(err.message);
+});
 
 export default app;
 export { User };
