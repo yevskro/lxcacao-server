@@ -14,6 +14,7 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
     const authorized = await User.isAuthorized(ownerId, userId);
     if (!authorized) return res.sendStatus(403);
     const readData = await User.readRecipe(recipeId, { all: true });
+    if (!readData) return res.sendStatus(404);
     if (readData.private && ownerId !== userId) return res.sendStatus(403);
     return res.status(200).json(readData);
   } catch (err) {
@@ -31,6 +32,8 @@ app.get('/user/:userId/recipes', async (req, res) => {
   let readData = await User.readAllRecipes(userId, {
     all: true,
   });
+
+  if (!readData) res.sendStatus(404);
 
   if (ownerId !== userId) {
     readData = readData.filter((data: RecipeData) => !data.private);
@@ -93,6 +96,7 @@ app.get('/user', async (req, res) => {
 
   return res.sendStatus(404);
 });
+
 // handle not found recipes
 // handling error
 

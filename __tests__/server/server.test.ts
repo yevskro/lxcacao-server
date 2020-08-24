@@ -226,4 +226,10 @@ describe('/user routes', () => {
     expect(res.status).toBe(400);
     done();
   });
+
+  it('returns a 404 when getting a non existing recipe', async (done) => {
+    const res = await supertest(app).get('/user/1/recipes/23');
+    expect(res.status).toBe(404);
+    done();
+  });
 });
