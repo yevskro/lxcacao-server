@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import { UpdateRecipeData, RecipeData } from 'src/models/User';
+import { UpdateRecipeData, RecipeData, IdData } from 'src/models/User';
 import app, { User } from '../../src/servers/httpApp';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 /* this test is not testing authorized gmail users yet */
@@ -127,15 +127,30 @@ describe('/user routes', () => {
   });
 
   it('private recipes are filtered out for non owners', async (done) => {
+    const idData: IdData = await User.createRecipe({
+      main_user_id: 2,
+      type: 'Dinner',
+      name: 'Beef Stew',
+      origin_user_id: 2,
+      origin_user_full_name: 'Jim Carrey',
+      private: false,
+      time: '1h20m',
+    });
+
     const res = await supertest(app)
       .get('/user/2/recipes')
       .set('Accept', 'application/json');
 
-    const foundRecipe: RecipeData = res.body.find(
+    const foundPrivateRecipe: RecipeData = res.body.find(
       (recipe: RecipeData) => recipe.id === 2
     );
 
-    expect(foundRecipe).toBe(undefined);
+    const foundPublicRecipe: RecipeData = res.body.find(
+      (recipe: RecipeData) => recipe.id === idData.id
+    );
+
+    expect(foundPrivateRecipe).toBe(undefined);
+    expect(foundPublicRecipe).not.toBe(undefined);
     done();
   });
 });
