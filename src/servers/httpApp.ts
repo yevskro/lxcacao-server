@@ -12,9 +12,9 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
 
   try {
     const authorized = await User.isAuthorized(ownerId, userId);
-    if (!authorized) return res.sendStatus(401);
+    if (!authorized) return res.sendStatus(403);
     const readData = await User.readRecipe(recipeId, { all: true });
-    if (readData.private && ownerId !== userId) return res.sendStatus(401);
+    if (readData.private && ownerId !== userId) return res.sendStatus(403);
     return res.status(200).json(readData);
   } catch (err) {
     return res.status(301).json(err);
@@ -26,7 +26,7 @@ app.get('/user/:userId/recipes', async (req, res) => {
   const userId = Number(req.params.userId);
   const authorized = await User.isAuthorized(ownerId, userId);
 
-  if (!authorized) return res.sendStatus(401);
+  if (!authorized) return res.sendStatus(403);
 
   let readData = await User.readAllRecipes(userId, {
     all: true,
@@ -45,7 +45,7 @@ app.patch('/user/:userId/recipes/:recipeId', async (req, res) => {
   const recipeId = Number(req.params.recipeId);
   const authorized = ownerId === userId;
 
-  if (!authorized) return res.sendStatus(401);
+  if (!authorized) return res.sendStatus(403);
 
   await User.updateRecipe(recipeId, req.body);
 
@@ -58,7 +58,7 @@ app.post('/user/:userId/recipes', async (req, res) => {
   const createRecipeData: CreateRecipeData = req.body;
   const authorized = ownerId === userId;
 
-  if (!authorized) return res.sendStatus(401);
+  if (!authorized) return res.sendStatus(403);
 
   await User.createRecipe(createRecipeData);
 
@@ -71,12 +71,29 @@ app.delete('/user/:userId/recipes/:recipeId', async (req, res) => {
   const recipeId = Number(req.params.recipeId);
   const authorized = ownerId === userId;
 
-  if (!authorized) return res.sendStatus(401);
+  if (!authorized) return res.sendStatus(403);
   await User.deleteRecipe(recipeId);
 
   return res.sendStatus(204);
 });
-// app.get(/user?gmail='admin@gmail.com')
+
+app.get('/user', async (req, res) => {
+  if (!req.query.gmail) return res.sendStatus(204);
+  const { gmail } = <{ gmail: string }>req.query;
+  const gmailRgx = /([a-zA-Z0-9]+)([.{1}])?([a-zA-Z0-9]+)@gmail([.])com/g;
+  if (!gmailRgx.test(gmail)) return res.sendStatus(400);
+
+  const userData = await User.readUserByGmail(gmail, {
+    gmail: true,
+    first_name: true,
+    last_name: true,
+  });
+
+  if (userData) return res.status(200).json(userData);
+
+  return res.sendStatus(404);
+});
+// handle not found recipes
 // handling error
 
 export default app;
