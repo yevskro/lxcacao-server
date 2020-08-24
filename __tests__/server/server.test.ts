@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import { UpdateRecipeData } from 'src/models/User';
+import { UpdateRecipeData, RecipeData } from 'src/models/User';
 import app, { User } from '../../src/servers/httpApp';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 /* this test is not testing authorized gmail users yet */
@@ -87,7 +87,6 @@ describe('/user routes', () => {
   it('can edit owners recipe', async (done) => {
     const updateData: UpdateRecipeData = {
       time: '40m',
-      private: true,
     };
 
     let res = await supertest(app)
@@ -104,7 +103,6 @@ describe('/user routes', () => {
     expect(res.status).toBe(200);
     expect(res.type).toStrictEqual('application/json');
     expect(res.body.time).toStrictEqual('40m');
-    expect(res.body.private).toBe(true);
     done();
   });
 
@@ -117,5 +115,27 @@ describe('/user routes', () => {
     expect(res.status).toBe(401);
     done();
   });
-  // it('can not get a friends private recipe', async () => {});
+
+  it('can not get a friends private recipe', async (done) => {
+    await User.updateRecipe(2, { private: true });
+    const res = await supertest(app)
+      .get('/user/2/recipes/2')
+      .set('Accept', 'application/json');
+
+    expect(res.status).toBe(401);
+    done();
+  });
+
+  it('private recipes are filtered out for non owners', async (done) => {
+    const res = await supertest(app)
+      .get('/user/2/recipes')
+      .set('Accept', 'application/json');
+
+    const foundRecipe: RecipeData = res.body.find(
+      (recipe: RecipeData) => recipe.id === 2
+    );
+
+    expect(foundRecipe).toBe(undefined);
+    done();
+  });
 });

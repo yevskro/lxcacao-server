@@ -1,5 +1,5 @@
 import express from 'express';
-import User from '../models/User';
+import User, { RecipeData } from '../models/User';
 
 const app = express();
 
@@ -12,10 +12,9 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res) => {
 
   try {
     const authorized = await User.isAuthorized(ownerId, userId);
-    if (!authorized) {
-      return res.status(401).json({ authorized: false });
-    }
+    if (!authorized) return res.sendStatus(401);
     const readData = await User.readRecipe(recipeId, { all: true });
+    if (readData.private && ownerId !== userId) return res.sendStatus(401);
     return res.status(200).json(readData);
   } catch (err) {
     return res.status(301).json(err);
@@ -27,13 +26,15 @@ app.get('/user/:userId/recipes', async (req, res) => {
   const userId = Number(req.params.userId);
   const authorized = await User.isAuthorized(ownerId, userId);
 
-  if (!authorized) {
-    return res.status(401).json({ authorized: false });
-  }
+  if (!authorized) return res.sendStatus(401);
 
-  const readData = await User.readAllRecipes(userId, {
+  let readData = await User.readAllRecipes(userId, {
     all: true,
   });
+
+  if (ownerId !== userId) {
+    readData = readData.filter((data: RecipeData) => !data.private);
+  }
 
   return res.status(200).json(readData);
 });
@@ -44,9 +45,7 @@ app.patch('/user/:userId/recipes/:recipeId', async (req, res) => {
   const recipeId = Number(req.params.recipeId);
   const authorized = ownerId === userId;
 
-  if (!authorized) {
-    return res.status(401).contentType('json').json({ authorized: false });
-  }
+  if (!authorized) return res.sendStatus(401);
 
   await User.updateRecipe(recipeId, req.body);
 
