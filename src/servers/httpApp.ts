@@ -30,9 +30,11 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   return res.status(200).json(readData);
 });
 
-app.get('/user/:userId/recipes', async (req, res) => {
+app.get('/user/:userId/recipes', async (req, res, next) => {
   const ownerId = 1;
   const userId = Number(req.params.userId);
+  let error: Error;
+
   const authorized = await User.isAuthorized(ownerId, userId).catch(() => {
     error = new Error('failed to process authorization');
   });
@@ -42,66 +44,90 @@ app.get('/user/:userId/recipes', async (req, res) => {
 
   let readData = await User.readAllRecipes(userId, {
     all: true,
+  }).catch(() => {
+    error = new Error('failed to read recipes');
   });
+  if (error) return next(error);
 
   if (!readData) res.sendStatus(404);
 
   if (ownerId !== userId) {
-    readData = readData.filter((data: RecipeData) => !data.private);
+    readData = (readData as RecipeData[]).filter(
+      (data: RecipeData) => !data.private
+    );
   }
 
   return res.status(200).json(readData);
 });
 
-app.patch('/user/:userId/recipes/:recipeId', async (req, res) => {
+app.patch('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
   const authorized = ownerId === userId;
+  let error: Error;
 
   if (!authorized) return res.sendStatus(403);
 
-  await User.updateRecipe(recipeId, req.body);
+  await User.updateRecipe(recipeId, req.body).catch(() => {
+    error = new Error('failed to update recipe');
+  });
+  if (error) return next(error);
 
   return res.sendStatus(204);
 });
 
-app.post('/user/:userId/recipes', async (req, res) => {
+app.post('/user/:userId/recipes', async (req, res, next) => {
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const createRecipeData: CreateRecipeData = req.body;
   const authorized = ownerId === userId;
+  let error: Error;
 
   if (!authorized) return res.sendStatus(403);
 
-  await User.createRecipe(createRecipeData);
+  await User.createRecipe(createRecipeData).catch(() => {
+    error = new Error('failed to create recipe');
+  });
+  if (error) return next(error);
 
   return res.sendStatus(201);
 });
 
-app.delete('/user/:userId/recipes/:recipeId', async (req, res) => {
+app.delete('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
   const authorized = ownerId === userId;
+  let error: Error;
 
   if (!authorized) return res.sendStatus(403);
-  await User.deleteRecipe(recipeId);
+
+  await User.deleteRecipe(recipeId).catch(() => {
+    error = new Error('failed to delete recipe');
+  });
+  if (error) return next(error);
 
   return res.sendStatus(204);
 });
 
-app.get('/user', async (req, res) => {
+app.get('/user', async (req, res, next) => {
   if (!req.query.gmail) return res.sendStatus(204);
+
   const { gmail } = <{ gmail: string }>req.query;
   const gmailRgx = /([a-zA-Z0-9]+)([.{1}])?([a-zA-Z0-9]+)@gmail([.])com/g;
+  let error: Error;
+
   if (!gmailRgx.test(gmail)) return res.sendStatus(400);
 
   const userData = await User.readUserByGmail(gmail, {
     gmail: true,
     first_name: true,
     last_name: true,
+  }).catch(() => {
+    error = new Error('failed to read recipe');
   });
+  if (error) return next(error);
 
   if (userData) return res.status(200).json(userData);
 
