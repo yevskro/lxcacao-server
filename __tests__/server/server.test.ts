@@ -202,4 +202,10 @@ describe('/user routes', () => {
     expect(res.status).toBe(204);
     done();
   });
+
+  it('cannot delete another users recipe', async (done) => {
+    const res = await supertest(app).delete('/user/1/recipes/1');
+    expect(res.status).toBe(401);
+    done();
+  });
 });
