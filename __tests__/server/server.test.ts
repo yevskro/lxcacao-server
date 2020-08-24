@@ -9,7 +9,7 @@ import app, { User } from '../../src/servers/httpApp';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 /* this test is not testing authorized gmail users yet */
 
-describe('/user routes', () => {
+describe('/users routes', () => {
   afterAll(async (done) => {
     await User.poolEnd();
     done();
@@ -25,7 +25,7 @@ describe('/user routes', () => {
     await User.createFriend({ main_user_id: 2, peer_user_id: 1 });
 
     const res = await supertest(app)
-      .get('/user/2/recipes/1')
+      .get('/users/2/recipes/1')
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(200);
@@ -43,7 +43,7 @@ describe('/user routes', () => {
     await User.deleteFriendByMainPeerId(2, 1);
 
     const res = await supertest(app)
-      .get('/user/2/recipes/1')
+      .get('/users/2/recipes/1')
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(403);
@@ -57,7 +57,7 @@ describe('/user routes', () => {
     await User.createBlock({ main_user_id: 1, peer_user_id: 2 });
 
     const res = await supertest(app)
-      .get('/user/2/recipes/1')
+      .get('/users/2/recipes/1')
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(403);
@@ -78,7 +78,7 @@ describe('/user routes', () => {
 
     expect(typeof idData.id).toBe('number');
     const res = await supertest(app)
-      .get('/user/2/recipes')
+      .get('/users/2/recipes')
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(200);
@@ -95,14 +95,14 @@ describe('/user routes', () => {
     };
 
     let res = await supertest(app)
-      .patch('/user/2/recipes/2')
+      .patch('/users/2/recipes/2')
       .send(updateData)
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(204);
 
     res = await supertest(app)
-      .get('/user/2/recipes/2')
+      .get('/users/2/recipes/2')
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(200);
@@ -113,7 +113,7 @@ describe('/user routes', () => {
 
   it('can not edit not owned recipe', async (done) => {
     const res = await supertest(app)
-      .patch('/user/1/recipes/1')
+      .patch('/users/1/recipes/1')
       .send({ time: '40m' })
       .set('Accept', 'application/json');
 
@@ -124,7 +124,7 @@ describe('/user routes', () => {
   it('can not get a friends private recipe', async (done) => {
     await User.updateRecipe(2, { private: true });
     const res = await supertest(app)
-      .get('/user/2/recipes/2')
+      .get('/users/2/recipes/2')
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(403);
@@ -143,7 +143,7 @@ describe('/user routes', () => {
     });
 
     const res = await supertest(app)
-      .get('/user/2/recipes')
+      .get('/users/2/recipes')
       .set('Accept', 'application/json');
 
     const foundPrivateRecipe: RecipeData = res.body.find(
@@ -171,7 +171,7 @@ describe('/user routes', () => {
     };
 
     const res = await supertest(app)
-      .post('/user/2/recipes')
+      .post('/users/2/recipes')
       .send(createRecipeData);
 
     expect(res.status).toBe(201);
@@ -190,7 +190,7 @@ describe('/user routes', () => {
     };
 
     const res = await supertest(app)
-      .post('/user/1/recipes')
+      .post('/users/1/recipes')
       .send(createRecipeData);
 
     expect(res.status).toBe(403);
@@ -198,37 +198,37 @@ describe('/user routes', () => {
   });
 
   it('can delete an owners recipe', async (done) => {
-    const res = await supertest(app).delete('/user/2/recipes/2');
+    const res = await supertest(app).delete('/users/2/recipes/2');
     expect(res.status).toBe(204);
     done();
   });
 
   it('cannot delete another users recipe', async (done) => {
-    const res = await supertest(app).delete('/user/1/recipes/1');
+    const res = await supertest(app).delete('/users/1/recipes/1');
     expect(res.status).toBe(403);
     done();
   });
 
   it('can find a user by gmail', async (done) => {
-    const res = await supertest(app).get('/user?gmail=admin@gmail.com');
+    const res = await supertest(app).get('/users?gmail=admin@gmail.com');
     expect(res.status).toBe(200);
     done();
   });
 
   it('returns a 404 when cannot find by gmail', async (done) => {
-    const res = await supertest(app).get('/user?gmail=admin10@gmail.com');
+    const res = await supertest(app).get('/users?gmail=admin10@gmail.com');
     expect(res.status).toBe(404);
     done();
   });
 
   it('returns a 400 when its not a valid gmail', async (done) => {
-    const res = await supertest(app).get('/user?gmail=admin10@admin.com');
+    const res = await supertest(app).get('/users?gmail=admin10@admin.com');
     expect(res.status).toBe(400);
     done();
   });
 
   it('returns a 404 when getting a non existing recipe', async (done) => {
-    const res = await supertest(app).get('/user/1/recipes/23');
+    const res = await supertest(app).get('/users/1/recipes/23');
     expect(res.status).toBe(404);
     done();
   });

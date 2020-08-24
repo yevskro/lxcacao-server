@@ -5,7 +5,9 @@ const app = express();
 
 app.use(express.json());
 
-app.get('/user/:userId/recipes/:recipeId', async (req, res, next) => {
+app.get('/users/:userId/recipes/:recipeId', async (req, res, next) => {
+  /* get the recipe that belongs to a user, the recipeId is also
+  the rowId in users_recipes table */
   const ownerId = 1;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
@@ -25,12 +27,15 @@ app.get('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   });
   if (error) return next(error);
 
+  /* if no recipe was found undefined is returned */
   if (!readData) return res.sendStatus(404);
+  /* if the recipe is private only the owner can see it */
   if (readData.private && ownerId !== userId) return res.sendStatus(403);
   return res.status(200).json(readData);
 });
 
-app.get('/user/:userId/recipes', async (req, res, next) => {
+app.get('/users/:userId/recipes', async (req, res, next) => {
+  /* get all the recipes that belong to a user with the user id */
   const ownerId = 1;
   const userId = Number(req.params.userId);
   let error: Error;
@@ -49,6 +54,7 @@ app.get('/user/:userId/recipes', async (req, res, next) => {
   });
   if (error) return next(error);
 
+  /* if readData is undefined non were found */
   if (!readData) res.sendStatus(404);
 
   if (ownerId !== userId) {
@@ -60,7 +66,8 @@ app.get('/user/:userId/recipes', async (req, res, next) => {
   return res.status(200).json(readData);
 });
 
-app.patch('/user/:userId/recipes/:recipeId', async (req, res, next) => {
+app.patch('/users/:userId/recipes/:recipeId', async (req, res, next) => {
+  /* edit fields of a recipe that belongs to the user */
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
@@ -77,7 +84,8 @@ app.patch('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   return res.sendStatus(204);
 });
 
-app.post('/user/:userId/recipes', async (req, res, next) => {
+app.post('/users/:userId/recipes', async (req, res, next) => {
+  /* create a recipe that will belong to user with the userId */
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const createRecipeData: CreateRecipeData = req.body;
@@ -94,7 +102,8 @@ app.post('/user/:userId/recipes', async (req, res, next) => {
   return res.sendStatus(201);
 });
 
-app.delete('/user/:userId/recipes/:recipeId', async (req, res, next) => {
+app.delete('/users/:userId/recipes/:recipeId', async (req, res, next) => {
+  /* delete a recipe that belongs to the user */
   const ownerId = 2;
   const userId = Number(req.params.userId);
   const recipeId = Number(req.params.recipeId);
@@ -111,7 +120,9 @@ app.delete('/user/:userId/recipes/:recipeId', async (req, res, next) => {
   return res.sendStatus(204);
 });
 
-app.get('/user', async (req, res, next) => {
+app.get('/users', async (req, res, next) => {
+  /* route created to search for a user with a
+   gmail */
   if (!req.query.gmail) return res.sendStatus(204);
 
   const { gmail } = <{ gmail: string }>req.query;
@@ -135,6 +146,7 @@ app.get('/user', async (req, res, next) => {
 });
 
 app.get('/error', (req, res, next) => {
+  /* testing error route */
   next(new Error('testing error route'));
 });
 
