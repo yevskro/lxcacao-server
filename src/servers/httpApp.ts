@@ -65,7 +65,20 @@ app.post('/user/:userId/recipes', async (req, res) => {
   return res.sendStatus(201);
 });
 
-app.delete('/user/:userId/recipes/:id', (_, res) => res.send('delete recipe'));
+app.delete('/user/:userId/recipes/:recipeId', async (req, res) => {
+  const ownerId = 2;
+  const userId = Number(req.params.userId);
+  const recipeId = Number(req.params.recipeId);
+  const authorized = ownerId === userId;
+
+  if (!authorized) return res.sendStatus(401);
+
+  await User.deleteRecipe(recipeId);
+
+  return res.sendStatus(204);
+});
+// app.get(/user?gmail='admin@gmail.com')
+// handling error
 
 export default app;
 export { User };
