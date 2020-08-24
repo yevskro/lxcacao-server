@@ -177,4 +177,23 @@ describe('/user routes', () => {
     expect(res.status).toBe(201);
     done();
   });
+
+  it('can not create a recipe for another user', async (done) => {
+    const createRecipeData: CreateRecipeData = {
+      name: 'Eggs',
+      origin_user_full_name: 'Jim Carrey',
+      time: '15m',
+      private: false,
+      origin_user_id: 2,
+      main_user_id: 2,
+      type: 'Breakfast',
+    };
+
+    const res = await supertest(app)
+      .post('/user/1/recipes')
+      .send(createRecipeData);
+
+    expect(res.status).toBe(401);
+    done();
+  });
 });

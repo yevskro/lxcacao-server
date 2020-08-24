@@ -60,7 +60,6 @@ app.post('/user/:userId/recipes', async (req, res) => {
 
   if (!authorized) return res.sendStatus(401);
 
-  console.log({ createRecipeData });
   await User.createRecipe(createRecipeData);
 
   return res.sendStatus(201);
