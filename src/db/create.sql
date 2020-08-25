@@ -1,6 +1,4 @@
-/* prettier-ignore */
 DROP TABLE IF EXISTS users_messages_queue;
-DROP TABLE IF EXISTS users_chats;
 DROP TABLE IF EXISTS recipes;
 DROP TABLE IF EXISTS users_requests;
 DROP TABLE IF EXISTS users_blocks;
@@ -58,15 +56,6 @@ CREATE TABLE recipes
     origin_user_full_name TEXT NOT NULL CHECK (origin_user_full_name <> ''),
     img_file_name TEXT NOT NULL DEFAULT '',
     create_date TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE users_chats
-(
-    id SERIAL PRIMARY KEY,
-    main_user_id INTEGER NOT NULL REFERENCES users(id),
-    peer_user_id INTEGER NOT NULL REFERENCES users(id),
-    messages TEXT[] NOT NULL DEFAULT '{}',
-    last_chat_update TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users_messages_queue 
