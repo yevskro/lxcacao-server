@@ -21,7 +21,7 @@
 */
 
 import { Pool } from 'pg';
-import User, { UserData, SQLNow } from '../../src/models/User';
+import User, { UserData } from '../../src/models/User';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 
 describe('users model test suite', (): void => {

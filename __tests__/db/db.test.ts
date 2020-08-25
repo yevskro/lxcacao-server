@@ -22,7 +22,6 @@ import usersFriendsTest from './tables/usersFriends.test';
 import usersBlocksTest from './tables/usersBlocks.test';
 import usersRequestsTest from './tables/usersRequests.test';
 import recipesTest from './tables/recipes.test';
-import usersChatsTest from './tables/usersChats.test';
 import usersMessagesQueue from './tables/usersMessagesQueue.test';
 
 describe('database test suite', (): void => {
@@ -51,5 +50,4 @@ describe('database test suite', (): void => {
   describe('users_requests', usersRequestsTest);
   describe('recipes table', recipesTest);
   describe('users_messages_queue', usersMessagesQueue);
-  describe('users_chats table', usersChatsTest);
 });
