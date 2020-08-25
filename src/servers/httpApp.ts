@@ -234,7 +234,10 @@ class HttpApp {
     next: NextFunction
   ) {
     /* express global error handler */
-    res.status(500).send(err.message);
+    /* delegate to default error handler when error in the 
+    middle of writing a response */
+    if (res.headersSent) return next(err);
+    return res.status(500).send(err.message);
   }
 }
 
