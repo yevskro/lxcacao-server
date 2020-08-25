@@ -7,6 +7,12 @@
   with express router. Index.ts is creating the http server
   and the websocket server. Supertest is loading the express
   app into its own environment. 
+
+  You will notice that some code has catch() on awaited promises
+  this is due to have granular control on the error message
+  and not respond with any information that an attacker could
+  use. This is open source tho.. lol but eh. Best to slow em
+  down.
 */
 
 import express, { NextFunction, Request, Response } from 'express';
@@ -18,7 +24,9 @@ class HttpApp {
 
   constructor() {
     this.app = express();
+    /* basic middleware setup */
     this.app.use(express.json());
+    /* express routes setup */
     this.app.get('/users/:userId/recipes/:recipeId', HttpApp.getUsersRecipe);
     this.app.get('/users/:userId/recipes', HttpApp.getUsersRecipes);
     this.app.patch('/users/:userId/recipes/:recipeId', HttpApp.editUsersRecipe);
@@ -215,7 +223,7 @@ class HttpApp {
 
   private static getErrorTest(req: Request, res: Response, next: NextFunction) {
     /* testing error route */
-    next(new Error('testing error route'));
+    throw new Error('testing error route');
   }
 
   private static globalErrorHandler(
