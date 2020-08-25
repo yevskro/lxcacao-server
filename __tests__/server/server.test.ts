@@ -7,16 +7,24 @@
 */
 
 import supertest from 'supertest';
-import {
+import express from 'express';
+import User, {
   UpdateRecipeData,
   RecipeData,
   IdData,
   CreateRecipeData,
-} from 'src/models/User';
-import app, { User } from '../../src/servers/httpApp';
+} from '../../src/models/User';
+import HttpApp from '../../src/servers/httpApp';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 
 describe('/users routes', () => {
+  let app: express.Application;
+
+  beforeAll(async (done) => {
+    app = new HttpApp().getApp();
+    done();
+  });
+
   afterAll(async (done) => {
     /* kill pool connection otherwise the test 
     will hang at the end */
