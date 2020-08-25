@@ -1,3 +1,14 @@
+/* 
+  Author: Yevgeniy Skroznikov
+  Date: August 25 2020
+  Description:
+  This is the http express application. Since, the 
+  handling of one route means there is no need to modularize
+  with express router. Index.ts is creating the http server
+  and the websocket server. Supertest is loading the express
+  app into its own environment. 
+*/
+
 import express, { NextFunction, Request, Response } from 'express';
 import User, { RecipeData, CreateRecipeData } from '../models/User';
 

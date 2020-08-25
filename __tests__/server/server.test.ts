@@ -1,3 +1,11 @@
+/*
+  Author: Yevgeniy Skroznikov
+  Date: August 25 2020
+  Description:
+  This module tests the http server compound routes
+  for the user and recipe resource.
+*/
+
 import supertest from 'supertest';
 import {
   UpdateRecipeData,
@@ -7,10 +15,11 @@ import {
 } from 'src/models/User';
 import app, { User } from '../../src/servers/httpApp';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
-/* this test is not testing authorized gmail users yet */
 
 describe('/users routes', () => {
   afterAll(async (done) => {
+    /* kill pool connection otherwise the test 
+    will hang at the end */
     await User.poolEnd();
     done();
   });
@@ -21,6 +30,7 @@ describe('/users routes', () => {
   });
 
   it('can get a friends recipe', async (done) => {
+    /* setup */
     await User.createFriend({ main_user_id: 1, peer_user_id: 2 });
     await User.createFriend({ main_user_id: 2, peer_user_id: 1 });
 
@@ -36,6 +46,7 @@ describe('/users routes', () => {
   });
 
   it('cannot get a non friends recipe', async (done) => {
+    /* setup */
     await User.createFriend({ main_user_id: 1, peer_user_id: 2 });
     await User.createFriend({ main_user_id: 2, peer_user_id: 1 });
 
@@ -51,6 +62,7 @@ describe('/users routes', () => {
   });
 
   it('cannot get a blocked friends recipe', async (done) => {
+    /* setup */
     await User.createFriend({ main_user_id: 1, peer_user_id: 2 });
     await User.createFriend({ main_user_id: 2, peer_user_id: 1 });
 
@@ -65,6 +77,7 @@ describe('/users routes', () => {
   });
 
   it('can get a nonblocked friends all recipes', async (done) => {
+    /* setup */
     await User.deleteBlockByMainPeerId(1, 2);
     const idData = await User.createRecipe({
       name: 'Apple Split',
@@ -90,18 +103,19 @@ describe('/users routes', () => {
   });
 
   it('can edit owners recipe', async (done) => {
+    /* this will be the payload for the patch http method */
     const updateData: UpdateRecipeData = {
       time: '40m',
     };
 
-    let res = await supertest(app)
+    let res = await supertest(app) // patch it
       .patch('/users/2/recipes/2')
       .send(updateData)
       .set('Accept', 'application/json');
 
     expect(res.status).toBe(204);
 
-    res = await supertest(app)
+    res = await supertest(app) // read it back to make sure
       .get('/users/2/recipes/2')
       .set('Accept', 'application/json');
 
@@ -122,7 +136,8 @@ describe('/users routes', () => {
   });
 
   it('can not get a friends private recipe', async (done) => {
-    await User.updateRecipe(2, { private: true });
+    await User.updateRecipe(2, { private: true }); // setup
+
     const res = await supertest(app)
       .get('/users/2/recipes/2')
       .set('Accept', 'application/json');
@@ -132,6 +147,7 @@ describe('/users routes', () => {
   });
 
   it('private recipes are filtered out for non owners', async (done) => {
+    /* setup, create a recipe with a private flag */
     const idData: IdData = await User.createRecipe({
       main_user_id: 2,
       type: 'Dinner',
@@ -146,10 +162,12 @@ describe('/users routes', () => {
       .get('/users/2/recipes')
       .set('Accept', 'application/json');
 
+    /* get the recipe that was set to private in a test before */
     const foundPrivateRecipe: RecipeData = res.body.find(
       (recipe: RecipeData) => recipe.id === 2
     );
 
+    /* get the recipe we created */
     const foundPublicRecipe: RecipeData = res.body.find(
       (recipe: RecipeData) => recipe.id === idData.id
     );
@@ -160,6 +178,7 @@ describe('/users routes', () => {
   });
 
   it('can create a recipe', async (done) => {
+    /* setup */
     const createRecipeData: CreateRecipeData = {
       name: 'Eggs',
       origin_user_full_name: 'Jim Carrey',
@@ -179,6 +198,7 @@ describe('/users routes', () => {
   });
 
   it('can not create a recipe for another user', async (done) => {
+    /* setup */
     const createRecipeData: CreateRecipeData = {
       name: 'Eggs',
       origin_user_full_name: 'Jim Carrey',
@@ -210,31 +230,31 @@ describe('/users routes', () => {
   });
 
   it('can find a user by gmail', async (done) => {
-    const res = await supertest(app).get('/users?gmail=admin@gmail.com');
+    const res = await supertest(app).get('/users?gmail=admin@gmail.com'); // gmail does exist
     expect(res.status).toBe(200);
     done();
   });
 
   it('returns a 404 when cannot find by gmail', async (done) => {
-    const res = await supertest(app).get('/users?gmail=admin10@gmail.com');
+    const res = await supertest(app).get('/users?gmail=admin10@gmail.com'); // gmail doesn't exist
     expect(res.status).toBe(404);
     done();
   });
 
   it('returns a 400 when its not a valid gmail', async (done) => {
-    const res = await supertest(app).get('/users?gmail=admin10@admin.com');
+    const res = await supertest(app).get('/users?gmail=admin10@admin.com'); // invalid gmail
     expect(res.status).toBe(400);
     done();
   });
 
   it('returns a 404 when getting a non existing recipe', async (done) => {
-    const res = await supertest(app).get('/users/1/recipes/23');
+    const res = await supertest(app).get('/users/1/recipes/23'); // 23 doesn't exist
     expect(res.status).toBe(404);
     done();
   });
 
-  it('can handle globale errors', async (done) => {
-    const res = await supertest(app).get('/error');
+  it('can handle global errors', async (done) => {
+    const res = await supertest(app).get('/error'); // error testing route
     expect(res.status).toBe(500);
     expect(res.text).toStrictEqual('testing error route');
     done();
