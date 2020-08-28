@@ -53,7 +53,7 @@ class HttpApp {
   public listen(port: number): Server {
     return this.app.listen(port, () => {
       // eslint-disable-next-line no-console
-      console.log(`Http Server is up and running.\nListening on port`, port);
+      console.log(`Http Server is listening on port:`, port);
     });
   }
 
@@ -221,7 +221,7 @@ class HttpApp {
     return res.sendStatus(404);
   }
 
-  private static getErrorTest(req: Request, res: Response, next: NextFunction) {
+  private static getErrorTest() {
     /* testing error route */
     throw new Error('testing error route');
   }
