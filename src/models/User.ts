@@ -760,6 +760,18 @@ class User {
     return false;
   }
 
+  static async isFriendRequest(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<boolean> {
+    const query =
+      'SELECT main_user_id FROM users_requests WHERE main_user_id = ($1) AND peer_user_id = ($2);';
+    const data = await User.query(query, [mainUserId, peerUserId]);
+
+    if (data && data.length !== 0) return true;
+    return false;
+  }
+
   static async isBlockedBy(
     mainUserId: number,
     peerUserId: number

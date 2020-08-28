@@ -1,4 +1,5 @@
 import WebSocket from 'ws';
+import User from '../models/User';
 
 interface Session {
   [key: number]: WebSocket;
@@ -6,19 +7,25 @@ interface Session {
 
 interface ClientData {
   token?: string;
-  cmd?: string;
+  command?: string;
   payload?: Payload;
 }
 
 interface Payload {
   id?: string;
-  msg?: string;
+  message?: string;
 }
 
 class WsApp {
   private wsServer: WebSocket.Server;
 
   private sessions: Session[];
+
+  private static addFriend(mainUserId: number, peerUserId: number) {
+    if (User.isFriendRequest(mainUserId, peerUserId)) {
+      User.createFriend({ main_user_id: mainUserId, peer_user_id: peerUserId });
+    }
+  }
 
   public listen(port: number): WebSocket.Server {
     this.wsServer = new WebSocket.Server({ port }, () =>
@@ -34,14 +41,16 @@ class WsApp {
         const cData = data as ClientData;
         if (cData.token) {
           if (!this.sessions[cData.token]) this.sessions[cData.token] = wSocket;
-          switch (cData.cmd) {
+          switch (cData.command) {
             case 'add_friend':
+              break;
+            case 'request_friend':
               break;
             case 'remove_friend':
               break;
             case 'block_friend':
               break;
-            case 'msg_friend':
+            case 'message_friend':
               break;
             default:
           }
