@@ -107,7 +107,7 @@ export interface ReadMainPeerData {
   id?: boolean;
   main_user_id?: boolean;
   peer_user_id?: boolean;
-  create_date?: SQLTimeStamp;
+  create_date?: boolean;
   all?: boolean;
 }
 
@@ -701,6 +701,15 @@ class User {
     /* delete a row from the users_message_queue table */
     const query = 'DELETE FROM users_messages_queue WHERE id = ($1)';
     await User.query(query, [messageRowId]);
+    return undefined;
+  }
+
+  static async deleteAllMessageQueueByMainUserId(
+    mainUserId: number
+  ): Promise<undefined> {
+    /* delete a row from the users_message_queue table */
+    const query = 'DELETE FROM users_messages_queue WHERE main_user_id = ($1)';
+    await User.query(query, [mainUserId]);
     return undefined;
   }
 

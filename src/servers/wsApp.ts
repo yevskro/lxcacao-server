@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import User, { MainPeerData } from '../models/User';
+import User, { MainPeerData, MessageData } from '../models/User';
 
 interface Session {
   [key: number]: WebSocket;
@@ -8,16 +8,21 @@ interface Session {
 interface ClientData {
   token?: string;
   command?: string;
-  payload?: Payload;
+  payload?: ClientPayload;
 }
 
 interface ServerData {
   error?: string;
   command?: string;
-  payload?: Payload | MainPeerData | MainPeerData[];
+  payload?:
+    | ClientPayload
+    | MainPeerData
+    | MainPeerData[]
+    | MessageData
+    | MessageData[];
 }
 
-interface Payload {
+interface ClientPayload {
   // eslint-disable-next-line camelcase
   peer_user_id?: number;
   message?: string;
@@ -104,7 +109,6 @@ class WsApp {
                 }).catch(() => {
                   serverResponse.error = 'could not request';
                 });
-              console.log('end of request_friend');
               break;
             case 'message_friend':
               if (
@@ -119,6 +123,23 @@ class WsApp {
                 }).catch(() => {
                   serverResponse.error = 'could not message';
                 });
+              break;
+            case 'get_messages':
+              serverResponse.payload = (await User.readAllMessagesQueueByMainUserId(
+                mainUserId,
+                {
+                  peer_user_id: true,
+                  create_date: true,
+                }
+              ).catch(() => {
+                serverResponse.error = 'could not get messages';
+              })) as MessageData[];
+
+              await User.deleteAllMessageQueueByMainUserId(mainUserId).catch(
+                () => {
+                  serverResponse.error = 'could not remove message queue';
+                }
+              );
               break;
             case 'block_friend':
               break;
@@ -148,10 +169,7 @@ class WsApp {
 
           if (serverResponse.error)
             wSocket.send(JSON.stringify({ error: serverResponse.error }));
-          else {
-            wSocket.send(JSON.stringify(serverResponse));
-            console.log(cData.command);
-          }
+          else wSocket.send(JSON.stringify(serverResponse));
         }
       });
     });
