@@ -16,6 +16,8 @@ services:
     image: server
     ports:
       - "3000:3000"
+      - "3001:3001"
+      
     volumes: 
       - .:/lxcacao-server
       - node_modules:/lxcacao-server/node_modules
