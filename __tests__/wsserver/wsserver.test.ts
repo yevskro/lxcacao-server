@@ -77,4 +77,18 @@ describe('websocket server', () => {
       })
     );
   });
+
+  it('can remove a friend', (done) => {
+    wsClient.on('message', (data) => {
+      expect(JSON.parse(data as string).error).toBe(undefined);
+      done();
+    });
+    wsClient.send(
+      JSON.stringify({
+        token: '1',
+        command: 'remove_friend',
+        payload: { id: 2 },
+      })
+    );
+  });
 });

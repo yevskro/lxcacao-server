@@ -78,6 +78,17 @@ class WsApp {
                 });
               break;
             case 'remove_friend':
+              if (
+                await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
+                  error = { error: 'not a friend' };
+                })
+              )
+                await User.deleteFriendByMainPeerId(
+                  mainUserId,
+                  peerUserId
+                ).catch(() => {
+                  error = { error: 'cannot remove friend' };
+                });
               break;
             case 'block_friend':
               break;
