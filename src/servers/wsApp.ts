@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import User from '../models/User';
+import User, { MainPeerData } from '../models/User';
 
 interface Session {
   [key: number]: WebSocket;
@@ -11,8 +11,15 @@ interface ClientData {
   payload?: Payload;
 }
 
+interface ServerData {
+  error?: string;
+  command?: string;
+  payload?: Payload | MainPeerData | MainPeerData[];
+}
+
 interface Payload {
-  id?: number;
+  // eslint-disable-next-line camelcase
+  peer_user_id?: number;
   message?: string;
 }
 
@@ -35,15 +42,20 @@ class WsApp {
         const cData = JSON.parse(data as string) as ClientData;
         if (cData.token) {
           const mainUserId = Number(cData.token);
-          const peerUserId = cData.payload.id;
+          const peerUserId = cData.payload
+            ? cData.payload.peer_user_id
+            : undefined;
           if (!this.sessions[mainUserId]) this.sessions[mainUserId] = wSocket;
-          let error;
+          const serverResponse: ServerData = {
+            command: cData.command,
+            payload: cData.payload,
+          };
           switch (cData.command) {
             case 'add_friend':
               if (
                 await User.hasFriendRequest(peerUserId, mainUserId).catch(
                   () => {
-                    error = { error: 'could not add' };
+                    serverResponse.error = 'could not add';
                   }
                 )
               ) {
@@ -51,36 +63,53 @@ class WsApp {
                   main_user_id: mainUserId,
                   peer_user_id: peerUserId,
                 }).catch(() => {
-                  error = { error: 'could not add' };
+                  serverResponse.error = 'could not add';
                 });
                 await User.createFriend({
                   main_user_id: peerUserId,
                   peer_user_id: mainUserId,
                 }).catch(() => {
-                  error = { error: 'could not add' };
+                  serverResponse.error = 'could not add';
                 });
-              } else error = { error: 'no request found' };
+                await User.deleteFriendRequestByMainPeerId(
+                  peerUserId,
+                  mainUserId
+                ).catch(() => {
+                  serverResponse.error = 'could not add';
+                });
+              } else serverResponse.error = 'no request found';
+              break;
+            case 'get_requests':
+              serverResponse.payload = (await User.readAllFriendRequests(
+                mainUserId,
+                {
+                  peer_user_id: true,
+                }
+              ).catch(() => {
+                serverResponse.error = 'could not get friend requests';
+              })) as MainPeerData[];
               break;
             case 'request_friend':
               if (
                 !(await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-                  error = { error: 'you are friends' };
+                  serverResponse.error = 'you are friends';
                 })) &&
                 !(await User.isBlockedBy(peerUserId, mainUserId).catch(() => {
-                  error = { error: 'could not request' };
+                  serverResponse.error = 'could not request';
                 }))
               )
                 User.createFriendRequest({
                   main_user_id: mainUserId,
                   peer_user_id: peerUserId,
                 }).catch(() => {
-                  error = { error: 'could not request' };
+                  serverResponse.error = 'could not request';
                 });
+              console.log('end of request_friend');
               break;
             case 'message_friend':
               if (
                 await User.isAuthorized(mainUserId, peerUserId).catch(() => {
-                  error = { error: 'not authorized' };
+                  serverResponse.error = 'not authorized';
                 })
               )
                 await User.createMessageQueue({
@@ -88,42 +117,41 @@ class WsApp {
                   peer_user_id: peerUserId,
                   message: cData.payload.message,
                 }).catch(() => {
-                  error = { error: 'could not message' };
+                  serverResponse.error = 'could not message';
                 });
               break;
             case 'block_friend':
               break;
-            case 'get_requests':
-              break;
             case 'remove_friend':
               if (
                 await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-                  error = { error: 'not a friend' };
+                  serverResponse.error = 'not a friend';
                 })
               ) {
                 await User.deleteFriendByMainPeerId(
                   mainUserId,
                   peerUserId
                 ).catch(() => {
-                  error = { error: 'cannot remove friend' };
+                  serverResponse.error = 'cannot remove friend';
                 });
 
                 await User.deleteFriendByMainPeerId(
                   peerUserId,
                   mainUserId
                 ).catch(() => {
-                  error = { error: 'cannot remove friend' };
+                  serverResponse.error = 'cannot remove friend';
                 });
               }
               break;
             default:
           }
 
-          if (error) wSocket.send(JSON.stringify(error));
-          else
-            wSocket.send(
-              JSON.stringify({ success: cData.command, payload: cData.payload })
-            );
+          if (serverResponse.error)
+            wSocket.send(JSON.stringify({ error: serverResponse.error }));
+          else {
+            wSocket.send(JSON.stringify(serverResponse));
+            console.log(cData.command);
+          }
         }
       });
     });

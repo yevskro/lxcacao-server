@@ -229,7 +229,7 @@ describe('users model test suite', (): void => {
       (requestData) => requestData.peer_user_id === 3
     ); // will return the row id and the peer_user_id
 
-    await User.deleteFriendRequest(usersRequest.id); // deleting by the row id
+    await User.deleteFriendRequestByRowId(usersRequest.id); // deleting by the row id
     expect(
       (await User.readAllFriendRequests(2, { main_user_id: true })).length
     ).toBe(ids.length - 1);
