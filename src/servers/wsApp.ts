@@ -12,20 +12,14 @@ interface ClientData {
 }
 
 interface Payload {
-  id?: string;
+  id?: number;
   message?: string;
 }
 
 class WsApp {
   private wsServer: WebSocket.Server;
 
-  private sessions: Session[];
-
-  private static addFriend(mainUserId: number, peerUserId: number) {
-    if (User.isFriendRequest(mainUserId, peerUserId)) {
-      User.createFriend({ main_user_id: mainUserId, peer_user_id: peerUserId });
-    }
-  }
+  private sessions: Session = {};
 
   public listen(port: number): WebSocket.Server {
     this.wsServer = new WebSocket.Server({ port }, () =>
@@ -33,18 +27,55 @@ class WsApp {
       console.log('WebSocket server listening on port:', port)
     );
     this.wsServer.on('connection', (wSocket) => {
-      wSocket.on('message', (data) => {
+      wSocket.on('message', async (data) => {
         if (data === 'ping') {
           wSocket.send('pong');
           return;
         }
-        const cData = data as ClientData;
+        const cData = JSON.parse(data as string) as ClientData;
         if (cData.token) {
-          if (!this.sessions[cData.token]) this.sessions[cData.token] = wSocket;
+          const mainUserId = Number(cData.token);
+          const peerUserId = cData.payload.id;
+          if (!this.sessions[mainUserId]) this.sessions[mainUserId] = wSocket;
+          let error;
           switch (cData.command) {
             case 'add_friend':
+              if (
+                await User.hasFriendRequest(peerUserId, mainUserId).catch(
+                  () => {
+                    error = { error: 'could not add' };
+                  }
+                )
+              ) {
+                await User.createFriend({
+                  main_user_id: mainUserId,
+                  peer_user_id: peerUserId,
+                }).catch(() => {
+                  error = { error: 'could not add' };
+                });
+                await User.createFriend({
+                  main_user_id: peerUserId,
+                  peer_user_id: mainUserId,
+                }).catch(() => {
+                  error = { error: 'could not add' };
+                });
+              } else error = { error: 'no request found' };
               break;
             case 'request_friend':
+              if (
+                !(await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
+                  error = { error: 'you are friends' };
+                })) &&
+                !(await User.isBlockedBy(peerUserId, mainUserId).catch(() => {
+                  error = { error: 'could not request' };
+                }))
+              )
+                User.createFriendRequest({
+                  main_user_id: mainUserId,
+                  peer_user_id: peerUserId,
+                }).catch(() => {
+                  error = { error: 'could not request' };
+                });
               break;
             case 'remove_friend':
               break;
@@ -54,6 +85,12 @@ class WsApp {
               break;
             default:
           }
+
+          if (error) wSocket.send(JSON.stringify(error));
+          else
+            wSocket.send(
+              JSON.stringify({ success: cData.command, payload: cData.payload })
+            );
         }
       });
     });

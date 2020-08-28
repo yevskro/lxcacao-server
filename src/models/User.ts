@@ -760,7 +760,7 @@ class User {
     return false;
   }
 
-  static async isFriendRequest(
+  static async hasFriendRequest(
     mainUserId: number,
     peerUserId: number
   ): Promise<boolean> {
