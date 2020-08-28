@@ -77,22 +77,44 @@ class WsApp {
                   error = { error: 'could not request' };
                 });
               break;
+            case 'message_friend':
+              if (
+                await User.isAuthorized(mainUserId, peerUserId).catch(() => {
+                  error = { error: 'not authorized' };
+                })
+              )
+                await User.createMessageQueue({
+                  main_user_id: mainUserId,
+                  peer_user_id: peerUserId,
+                  message: cData.payload.message,
+                }).catch(() => {
+                  error = { error: 'could not message' };
+                });
+              break;
+            case 'block_friend':
+              break;
+            case 'get_requests':
+              break;
             case 'remove_friend':
               if (
                 await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
                   error = { error: 'not a friend' };
                 })
-              )
+              ) {
                 await User.deleteFriendByMainPeerId(
                   mainUserId,
                   peerUserId
                 ).catch(() => {
                   error = { error: 'cannot remove friend' };
                 });
-              break;
-            case 'block_friend':
-              break;
-            case 'message_friend':
+
+                await User.deleteFriendByMainPeerId(
+                  peerUserId,
+                  mainUserId
+                ).catch(() => {
+                  error = { error: 'cannot remove friend' };
+                });
+              }
               break;
             default:
           }

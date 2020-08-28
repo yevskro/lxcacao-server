@@ -78,6 +78,20 @@ describe('websocket server', () => {
     );
   });
 
+  it('can message a friend', (done) => {
+    wsClient.on('message', (data) => {
+      expect(JSON.parse(data as string).error).toBe(undefined);
+      done();
+    });
+    wsClient.send(
+      JSON.stringify({
+        token: '1',
+        command: 'message_friend',
+        payload: { id: 2, message: 'how are you?' },
+      })
+    );
+  });
+
   it('can remove a friend', (done) => {
     wsClient.on('message', (data) => {
       expect(JSON.parse(data as string).error).toBe(undefined);
