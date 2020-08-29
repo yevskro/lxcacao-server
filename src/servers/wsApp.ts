@@ -33,6 +33,29 @@ class WsApp {
 
   private sessions: Session = {};
 
+  private static async addFriend(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<void> {
+    if (await User.hasFriendRequest(peerUserId, mainUserId)) {
+      await User.createFriend({
+        main_user_id: mainUserId,
+        peer_user_id: peerUserId,
+      });
+      await User.createFriend({
+        main_user_id: peerUserId,
+        peer_user_id: mainUserId,
+      });
+      await User.deleteFriendRequestByMainPeerId(peerUserId, mainUserId);
+    } else throw new Error();
+  }
+
+  private static async getRequests(
+    mainUserId: number
+  ): Promise<MainPeerData[]> {
+    return User.readAllFriendRequests(mainUserId, { peer_user_id: true });
+  }
+
   private static async parseClientData(cData: ClientData): Promise<ServerData> {
     const mainUserId = Number(cData.token);
     const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
@@ -42,37 +65,16 @@ class WsApp {
     };
     switch (cData.command) {
       case 'add_friend':
-        if (
-          await User.hasFriendRequest(peerUserId, mainUserId).catch(() => {
-            serverResponse.error = 'cannot be authorized';
-          })
-        ) {
-          await User.createFriend({
-            main_user_id: mainUserId,
-            peer_user_id: peerUserId,
-          }).catch(() => {
-            serverResponse.error = 'cannot add';
-          });
-          await User.createFriend({
-            main_user_id: peerUserId,
-            peer_user_id: mainUserId,
-          }).catch(() => {
-            serverResponse.error = 'cannot add';
-          });
-          await User.deleteFriendRequestByMainPeerId(
-            peerUserId,
-            mainUserId
-          ).catch(() => {
-            serverResponse.error = 'cannot add';
-          });
-        } else serverResponse.error = 'no request found';
+        await WsApp.addFriend(mainUserId, peerUserId).catch(() => {
+          serverResponse.error = 'could not add friend';
+        });
         break;
       case 'get_requests':
-        serverResponse.payload = (await User.readAllFriendRequests(mainUserId, {
-          peer_user_id: true,
-        }).catch(() => {
-          serverResponse.error = 'cannot get friend requests';
-        })) as MainPeerData[];
+        serverResponse.payload = (await WsApp.getRequests(mainUserId).catch(
+          () => {
+            serverResponse.error = 'could not get friend requests';
+          }
+        )) as MainPeerData[];
         break;
       case 'request_friend':
         if (
@@ -170,6 +172,7 @@ class WsApp {
         break;
       default:
     }
+    console.log({ serverResponse });
     return serverResponse;
   }
 
