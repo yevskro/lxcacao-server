@@ -34,10 +34,10 @@ class WsApp {
   private sessions: Session = {};
 
   public listen(port: number): WebSocket.Server {
-    this.wsServer = new WebSocket.Server({ port }, () =>
+    this.wsServer = new WebSocket.Server({ port }, () => {
       // eslint-disable-next-line no-console
-      console.log('WebSocket server listening on port:', port)
-    );
+      console.log('WebSocket server listening on port:', port);
+    });
     this.wsServer.on('connection', (wSocket) => {
       wSocket.on('message', async (data) => {
         if (data === 'ping') {
@@ -196,7 +196,6 @@ class WsApp {
             default:
           }
 
-          console.log(serverResponse.command);
           if (serverResponse.error)
             wSocket.send(JSON.stringify({ error: serverResponse.error }));
           else wSocket.send(JSON.stringify(serverResponse));
