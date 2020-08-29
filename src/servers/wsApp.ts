@@ -120,6 +120,16 @@ class WsApp {
     else throw new Error();
   }
 
+  private static async removeFriend(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<void> {
+    if (await User.isFriendsWith(mainUserId, peerUserId)) {
+      await User.deleteFriendByMainPeerId(mainUserId, peerUserId);
+      await User.deleteFriendByMainPeerId(peerUserId, mainUserId);
+    } else throw new Error();
+  }
+
   private static async parseClientData(cData: ClientData): Promise<ServerData> {
     const mainUserId = Number(cData.token);
     const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
@@ -172,27 +182,12 @@ class WsApp {
         });
         break;
       case 'remove_friend':
-        if (
-          await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-            serverResponse.error = 'cannot authorize';
-          })
-        ) {
-          await User.deleteFriendByMainPeerId(mainUserId, peerUserId).catch(
-            () => {
-              serverResponse.error = 'cannot remove friend';
-            }
-          );
-          await User.deleteFriendByMainPeerId(peerUserId, mainUserId).catch(
-            () => {
-              serverResponse.error = 'cannot remove friend';
-            }
-          );
-        } else serverResponse.error = 'cannot delete friend';
-
+        await WsApp.removeFriend(mainUserId, peerUserId).catch(() => {
+          serverResponse.error = 'could not remove friend';
+        });
         break;
       default:
     }
-    console.log({ serverResponse });
     return serverResponse;
   }
 
