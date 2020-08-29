@@ -71,6 +71,20 @@ class WsApp {
     else throw new Error();
   }
 
+  private static async messageFriend(
+    mainUserId: number,
+    peerUserId: number,
+    message: string
+  ): Promise<void> {
+    if (await User.isAuthorized(mainUserId, peerUserId))
+      await User.createMessageQueue({
+        main_user_id: mainUserId,
+        peer_user_id: peerUserId,
+        message,
+      });
+    else throw new Error();
+  }
+
   private static async parseClientData(cData: ClientData): Promise<ServerData> {
     const mainUserId = Number(cData.token);
     const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
@@ -97,19 +111,13 @@ class WsApp {
         });
         break;
       case 'message_friend':
-        if (
-          await User.isAuthorized(mainUserId, peerUserId).catch(() => {
-            serverResponse.error = 'cannot be authorized';
-          })
-        )
-          await User.createMessageQueue({
-            main_user_id: mainUserId,
-            peer_user_id: peerUserId,
-            message: cData.payload.message,
-          }).catch(() => {
-            serverResponse.error = 'cannot message';
-          });
-        else serverResponse.error = 'cannot be authorized';
+        await WsApp.messageFriend(
+          mainUserId,
+          peerUserId,
+          cData.payload.message
+        ).catch(() => {
+          serverResponse.error = 'could not message friend';
+        });
         break;
       case 'get_messages':
         serverResponse.payload = (await User.readAllMessagesQueueByPeerUserId(
