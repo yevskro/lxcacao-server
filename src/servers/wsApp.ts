@@ -85,6 +85,20 @@ class WsApp {
     else throw new Error();
   }
 
+  private static async getMessages(mainUserId: number): Promise<MessageData[]> {
+    const messageData = await User.readAllMessagesQueueByPeerUserId(
+      mainUserId,
+      {
+        main_user_id: true,
+        create_date: true,
+        message: true,
+      }
+    );
+
+    await User.deleteAllMessageQueueByMainUserId(mainUserId);
+    return messageData;
+  }
+
   private static async parseClientData(cData: ClientData): Promise<ServerData> {
     const mainUserId = Number(cData.token);
     const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
@@ -120,20 +134,11 @@ class WsApp {
         });
         break;
       case 'get_messages':
-        serverResponse.payload = (await User.readAllMessagesQueueByPeerUserId(
-          mainUserId,
-          {
-            main_user_id: true,
-            create_date: true,
-            message: true,
+        serverResponse.payload = (await WsApp.getMessages(mainUserId).catch(
+          () => {
+            serverResponse.error = 'could not get messages';
           }
-        ).catch(() => {
-          serverResponse.error = 'cannot read all messages';
-        })) as MessageData[];
-
-        await User.deleteAllMessageQueueByMainUserId(mainUserId).catch(() => {
-          serverResponse.error = 'cannot delete all messages';
-        });
+        )) as MessageData[];
         break;
       case 'block_friend':
         if (
