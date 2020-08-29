@@ -33,6 +33,146 @@ class WsApp {
 
   private sessions: Session = {};
 
+  private static async parseClientData(cData: ClientData): Promise<ServerData> {
+    const mainUserId = Number(cData.token);
+    const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
+    const serverResponse: ServerData = {
+      command: cData.command,
+      payload: cData.payload,
+    };
+    switch (cData.command) {
+      case 'add_friend':
+        if (
+          await User.hasFriendRequest(peerUserId, mainUserId).catch(() => {
+            serverResponse.error = 'cannot be authorized';
+          })
+        ) {
+          await User.createFriend({
+            main_user_id: mainUserId,
+            peer_user_id: peerUserId,
+          }).catch(() => {
+            serverResponse.error = 'cannot add';
+          });
+          await User.createFriend({
+            main_user_id: peerUserId,
+            peer_user_id: mainUserId,
+          }).catch(() => {
+            serverResponse.error = 'cannot add';
+          });
+          await User.deleteFriendRequestByMainPeerId(
+            peerUserId,
+            mainUserId
+          ).catch(() => {
+            serverResponse.error = 'cannot add';
+          });
+        } else serverResponse.error = 'no request found';
+        break;
+      case 'get_requests':
+        serverResponse.payload = (await User.readAllFriendRequests(mainUserId, {
+          peer_user_id: true,
+        }).catch(() => {
+          serverResponse.error = 'cannot get friend requests';
+        })) as MainPeerData[];
+        break;
+      case 'request_friend':
+        if (
+          !(await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
+            serverResponse.error = 'cannot be authorized';
+          })) &&
+          !(await User.isBlockedBy(peerUserId, mainUserId).catch(() => {
+            serverResponse.error = 'cannot be authorized';
+          }))
+        )
+          User.createFriendRequest({
+            main_user_id: mainUserId,
+            peer_user_id: peerUserId,
+          }).catch(() => {
+            serverResponse.error = 'cannot request';
+          });
+        else serverResponse.error = 'cannot request';
+        break;
+      case 'message_friend':
+        if (
+          await User.isAuthorized(mainUserId, peerUserId).catch(() => {
+            serverResponse.error = 'cannot be authorized';
+          })
+        )
+          await User.createMessageQueue({
+            main_user_id: mainUserId,
+            peer_user_id: peerUserId,
+            message: cData.payload.message,
+          }).catch(() => {
+            serverResponse.error = 'cannot message';
+          });
+        else serverResponse.error = 'cannot be authorized';
+        break;
+      case 'get_messages':
+        serverResponse.payload = (await User.readAllMessagesQueueByPeerUserId(
+          mainUserId,
+          {
+            main_user_id: true,
+            create_date: true,
+            message: true,
+          }
+        ).catch(() => {
+          serverResponse.error = 'cannot read all messages';
+        })) as MessageData[];
+
+        await User.deleteAllMessageQueueByMainUserId(mainUserId).catch(() => {
+          serverResponse.error = 'cannot delete all messages';
+        });
+        break;
+      case 'block_friend':
+        if (
+          await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
+            serverResponse.error = 'cannot authorize';
+          })
+        )
+          await User.createBlock({
+            main_user_id: mainUserId,
+            peer_user_id: peerUserId,
+          }).catch(() => {
+            serverResponse.error = 'cannot create block';
+          });
+        else serverResponse.error = 'cannot block friend';
+        break;
+      case 'unblock_friend':
+        if (
+          await User.isBlockedBy(mainUserId, peerUserId).catch(() => {
+            serverResponse.error = 'cannot authorize';
+          })
+        )
+          await User.deleteBlockByMainPeerId(mainUserId, peerUserId).catch(
+            () => {
+              serverResponse.error = 'cannot delete block';
+            }
+          );
+        else serverResponse.error = 'cannot block';
+        break;
+      case 'remove_friend':
+        if (
+          await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
+            serverResponse.error = 'cannot authorize';
+          })
+        ) {
+          await User.deleteFriendByMainPeerId(mainUserId, peerUserId).catch(
+            () => {
+              serverResponse.error = 'cannot remove friend';
+            }
+          );
+          await User.deleteFriendByMainPeerId(peerUserId, mainUserId).catch(
+            () => {
+              serverResponse.error = 'cannot remove friend';
+            }
+          );
+        } else serverResponse.error = 'cannot delete friend';
+
+        break;
+      default:
+    }
+    return serverResponse;
+  }
+
   public listen(port: number): WebSocket.Server {
     this.wsServer = new WebSocket.Server({ port }, () => {
       // eslint-disable-next-line no-console
@@ -46,156 +186,8 @@ class WsApp {
         }
         const cData = JSON.parse(data as string) as ClientData;
         if (cData.token) {
-          const mainUserId = Number(cData.token);
-          const peerUserId = cData.payload
-            ? cData.payload.peer_user_id
-            : undefined;
-          if (!this.sessions[mainUserId]) this.sessions[mainUserId] = wSocket;
-          const serverResponse: ServerData = {
-            command: cData.command,
-            payload: cData.payload,
-          };
-          switch (cData.command) {
-            case 'add_friend':
-              if (
-                await User.hasFriendRequest(peerUserId, mainUserId).catch(
-                  () => {
-                    serverResponse.error = 'cannot be authorized';
-                  }
-                )
-              ) {
-                await User.createFriend({
-                  main_user_id: mainUserId,
-                  peer_user_id: peerUserId,
-                }).catch(() => {
-                  serverResponse.error = 'cannot add';
-                });
-                await User.createFriend({
-                  main_user_id: peerUserId,
-                  peer_user_id: mainUserId,
-                }).catch(() => {
-                  serverResponse.error = 'cannot add';
-                });
-                await User.deleteFriendRequestByMainPeerId(
-                  peerUserId,
-                  mainUserId
-                ).catch(() => {
-                  serverResponse.error = 'cannot add';
-                });
-              } else serverResponse.error = 'no request found';
-              break;
-            case 'get_requests':
-              serverResponse.payload = (await User.readAllFriendRequests(
-                mainUserId,
-                {
-                  peer_user_id: true,
-                }
-              ).catch(() => {
-                serverResponse.error = 'cannot get friend requests';
-              })) as MainPeerData[];
-              break;
-            case 'request_friend':
-              if (
-                !(await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-                  serverResponse.error = 'cannot be authorized';
-                })) &&
-                !(await User.isBlockedBy(peerUserId, mainUserId).catch(() => {
-                  serverResponse.error = 'cannot be authorized';
-                }))
-              )
-                User.createFriendRequest({
-                  main_user_id: mainUserId,
-                  peer_user_id: peerUserId,
-                }).catch(() => {
-                  serverResponse.error = 'cannot request';
-                });
-              else serverResponse.error = 'cannot request';
-              break;
-            case 'message_friend':
-              if (
-                await User.isAuthorized(mainUserId, peerUserId).catch(() => {
-                  serverResponse.error = 'cannot be authorized';
-                })
-              )
-                await User.createMessageQueue({
-                  main_user_id: mainUserId,
-                  peer_user_id: peerUserId,
-                  message: cData.payload.message,
-                }).catch(() => {
-                  serverResponse.error = 'cannot message';
-                });
-              else serverResponse.error = 'cannot be authorized';
-              break;
-            case 'get_messages':
-              serverResponse.payload = (await User.readAllMessagesQueueByPeerUserId(
-                mainUserId,
-                {
-                  main_user_id: true,
-                  create_date: true,
-                  message: true,
-                }
-              ).catch(() => {
-                serverResponse.error = 'cannot read all messages';
-              })) as MessageData[];
-
-              await User.deleteAllMessageQueueByMainUserId(mainUserId).catch(
-                () => {
-                  serverResponse.error = 'cannot delete all messages';
-                }
-              );
-              break;
-            case 'block_friend':
-              if (
-                await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-                  serverResponse.error = 'cannot authorize';
-                })
-              )
-                await User.createBlock({
-                  main_user_id: mainUserId,
-                  peer_user_id: peerUserId,
-                }).catch(() => {
-                  serverResponse.error = 'cannot create block';
-                });
-              else serverResponse.error = 'cannot block friend';
-              break;
-            case 'unblock_friend':
-              if (
-                await User.isBlockedBy(mainUserId, peerUserId).catch(() => {
-                  serverResponse.error = 'cannot authorize';
-                })
-              )
-                await User.deleteBlockByMainPeerId(
-                  mainUserId,
-                  peerUserId
-                ).catch(() => {
-                  serverResponse.error = 'cannot delete block';
-                });
-              else serverResponse.error = 'cannot block';
-              break;
-            case 'remove_friend':
-              if (
-                await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-                  serverResponse.error = 'cannot authorize';
-                })
-              ) {
-                await User.deleteFriendByMainPeerId(
-                  mainUserId,
-                  peerUserId
-                ).catch(() => {
-                  serverResponse.error = 'cannot remove friend';
-                });
-                await User.deleteFriendByMainPeerId(
-                  peerUserId,
-                  mainUserId
-                ).catch(() => {
-                  serverResponse.error = 'cannot remove friend';
-                });
-              } else serverResponse.error = 'cannot delete friend';
-
-              break;
-            default:
-          }
-
+          if (!this.sessions[cData.token]) this.sessions[cData.token] = wSocket;
+          const serverResponse = await WsApp.parseClientData(cData);
           if (serverResponse.error)
             wSocket.send(JSON.stringify({ error: serverResponse.error }));
           else wSocket.send(JSON.stringify(serverResponse));

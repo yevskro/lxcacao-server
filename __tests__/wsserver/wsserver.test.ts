@@ -2,28 +2,23 @@ import WebSocket from 'ws';
 import tcpPortUsed from 'tcp-port-used';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
 import WsApp from '../../src/servers/wsApp';
-import User from '../../src/models/User';
 
 describe('websocket server', () => {
   let wsClient: WebSocket;
   let wsServer: WebSocket.Server;
 
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     const portIsFree = !(await tcpPortUsed.check(3001, '127.0.0.1'));
     if (portIsFree) wsServer = new WsApp().listen(3001);
-    done();
   });
 
-  afterAll((done) => {
+  afterAll(() => {
     if (wsServer) wsServer.close();
     wsClient.close();
-    User.poolEnd();
-    done();
   });
 
-  afterEach((done) => {
+  afterEach(() => {
     wsClient.removeAllListeners();
-    done();
   });
 
   it('can connect', (done) => {
@@ -31,9 +26,8 @@ describe('websocket server', () => {
     wsClient.on('open', () => done());
   });
 
-  it('can clear and setup a testdb', async (done) => {
+  it('can clear and setup a testdb', async () => {
     expect(await testSetupDbHelper()).toBe(true);
-    done();
   });
 
   it('can ping pong', (done) => {
