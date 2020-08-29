@@ -56,6 +56,21 @@ class WsApp {
     return User.readAllFriendRequests(mainUserId, { peer_user_id: true });
   }
 
+  private static async requestFriend(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<void> {
+    if (
+      !(await User.isFriendsWith(mainUserId, peerUserId)) &&
+      !(await User.isBlockedBy(peerUserId, mainUserId))
+    )
+      User.createFriendRequest({
+        main_user_id: mainUserId,
+        peer_user_id: peerUserId,
+      });
+    else throw new Error();
+  }
+
   private static async parseClientData(cData: ClientData): Promise<ServerData> {
     const mainUserId = Number(cData.token);
     const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
@@ -77,21 +92,9 @@ class WsApp {
         )) as MainPeerData[];
         break;
       case 'request_friend':
-        if (
-          !(await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-            serverResponse.error = 'cannot be authorized';
-          })) &&
-          !(await User.isBlockedBy(peerUserId, mainUserId).catch(() => {
-            serverResponse.error = 'cannot be authorized';
-          }))
-        )
-          User.createFriendRequest({
-            main_user_id: mainUserId,
-            peer_user_id: peerUserId,
-          }).catch(() => {
-            serverResponse.error = 'cannot request';
-          });
-        else serverResponse.error = 'cannot request';
+        await WsApp.requestFriend(mainUserId, peerUserId).catch(() => {
+          serverResponse.error = 'could not request friend';
+        });
         break;
       case 'message_friend':
         if (
