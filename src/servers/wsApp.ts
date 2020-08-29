@@ -38,6 +38,14 @@ class WsApp {
     peerUserId: number
   ): Promise<void> {
     if (await User.hasFriendRequest(peerUserId, mainUserId)) {
+      if (WsApp.sessions[peerUserId]) {
+        WsApp.sessions[peerUserId].send(
+          JSON.stringify({
+            cmd: 'add_friend',
+            payload: { id: mainUserId },
+          })
+        );
+      }
       await User.createFriend({
         main_user_id: mainUserId,
         peer_user_id: peerUserId,
@@ -63,12 +71,20 @@ class WsApp {
     if (
       !(await User.isFriendsWith(mainUserId, peerUserId)) &&
       !(await User.isBlockedBy(peerUserId, mainUserId))
-    )
+    ) {
+      if (WsApp.sessions[peerUserId]) {
+        WsApp.sessions[peerUserId].send(
+          JSON.stringify({
+            cmd: 'request_friend',
+            payload: { id: mainUserId },
+          })
+        );
+      }
       User.createFriendRequest({
         main_user_id: mainUserId,
         peer_user_id: peerUserId,
       });
-    else throw new Error();
+    } else throw new Error();
   }
 
   private static async messageFriend(
@@ -78,10 +94,12 @@ class WsApp {
   ): Promise<void> {
     if (await User.isAuthorized(mainUserId, peerUserId))
       if (WsApp.sessions[peerUserId]) {
-        WsApp.sessions[peerUserId].send({
-          cmd: 'message',
-          payload: { message, id: mainUserId },
-        });
+        WsApp.sessions[peerUserId].send(
+          JSON.stringify({
+            cmd: 'message',
+            payload: { message, id: mainUserId },
+          })
+        );
       } else
         await User.createMessageQueue({
           main_user_id: mainUserId,
