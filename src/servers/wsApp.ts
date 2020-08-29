@@ -99,6 +99,27 @@ class WsApp {
     return messageData;
   }
 
+  private static async blockFriend(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<void> {
+    if (await User.isFriendsWith(mainUserId, peerUserId))
+      await User.createBlock({
+        main_user_id: mainUserId,
+        peer_user_id: peerUserId,
+      });
+    else throw new Error();
+  }
+
+  private static async unblockFriend(
+    mainUserId: number,
+    peerUserId: number
+  ): Promise<void> {
+    if (await User.isBlockedBy(mainUserId, peerUserId))
+      await User.deleteBlockByMainPeerId(mainUserId, peerUserId);
+    else throw new Error();
+  }
+
   private static async parseClientData(cData: ClientData): Promise<ServerData> {
     const mainUserId = Number(cData.token);
     const peerUserId = cData.payload ? cData.payload.peer_user_id : undefined;
@@ -141,31 +162,14 @@ class WsApp {
         )) as MessageData[];
         break;
       case 'block_friend':
-        if (
-          await User.isFriendsWith(mainUserId, peerUserId).catch(() => {
-            serverResponse.error = 'cannot authorize';
-          })
-        )
-          await User.createBlock({
-            main_user_id: mainUserId,
-            peer_user_id: peerUserId,
-          }).catch(() => {
-            serverResponse.error = 'cannot create block';
-          });
-        else serverResponse.error = 'cannot block friend';
+        await WsApp.blockFriend(mainUserId, peerUserId).catch(() => {
+          serverResponse.error = 'could not block';
+        });
         break;
       case 'unblock_friend':
-        if (
-          await User.isBlockedBy(mainUserId, peerUserId).catch(() => {
-            serverResponse.error = 'cannot authorize';
-          })
-        )
-          await User.deleteBlockByMainPeerId(mainUserId, peerUserId).catch(
-            () => {
-              serverResponse.error = 'cannot delete block';
-            }
-          );
-        else serverResponse.error = 'cannot block';
+        await WsApp.unblockFriend(mainUserId, peerUserId).catch(() => {
+          serverResponse.error = 'could not unblock';
+        });
         break;
       case 'remove_friend':
         if (
