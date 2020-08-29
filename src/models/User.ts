@@ -130,7 +130,7 @@ export interface UserData {
   login_ip?: string;
   secure_key?: string;
   img_file_name?: string; // file name of the users profile image
-  last_update?: SQLTimeStamp;
+  last_cache_update?: SQLTimeStamp;
   create_date?: SQLTimeStamp;
 }
 
@@ -143,7 +143,7 @@ export interface ReadUserData {
   login_ip?: boolean;
   secure_key?: boolean;
   img_file_name?: boolean;
-  last_update?: boolean;
+  last_cache_update?: boolean;
   create_date?: boolean;
   all?: boolean;
 }
@@ -155,7 +155,7 @@ export interface UpdateUserData {
   login_ip?: string;
   secure_key?: string;
   img_file_name?: string; // file name of the users profile image
-  last_update?: SQLNow;
+  last_cache_update?: SQLNow;
 }
 
 export interface CreateRecipeData {
@@ -831,6 +831,12 @@ class User {
     if (!isFriends) return false;
 
     return true;
+  }
+
+  static async updateLastCacheUpdate(id: number): Promise<QueryResultRow> {
+    const query =
+      'UPDATE users SET last_cache_update = NOW() WHERE id = ($1) RETURNING last_cache_update;';
+    return (await User.query(query, [id]))[0];
   }
   /* * * * * * * * * * * * * * * * * * */
 }

@@ -391,4 +391,17 @@ describe('users model test suite', (): void => {
     await User.createBlock({ main_user_id: 1, peer_user_id: 2 });
     expect(await User.isBlockedBy(1, 2)).toBe(true);
   });
+
+  it('can update the last cache and return the time', async (): Promise<
+    void
+  > => {
+    const data = await User.readUserByGmail('root@gmail.com', {
+      id: true,
+      last_cache_update: true,
+    });
+    const newCache = (await User.updateLastCacheUpdate(data.id))
+      .last_cache_update;
+    expect(newCache).not.toBe(undefined);
+    expect(newCache).not.toStrictEqual(data.last_cache_update);
+  });
 });
