@@ -31,7 +31,7 @@ interface ClientPayload {
 class WsApp {
   private wsServer: WebSocket.Server;
 
-  private sessions: Session = {};
+  private static sessions: Session = {};
 
   private static async addFriend(
     mainUserId: number,
@@ -77,11 +77,17 @@ class WsApp {
     message: string
   ): Promise<void> {
     if (await User.isAuthorized(mainUserId, peerUserId))
-      await User.createMessageQueue({
-        main_user_id: mainUserId,
-        peer_user_id: peerUserId,
-        message,
-      });
+      if (WsApp.sessions[peerUserId]) {
+        WsApp.sessions[peerUserId].send({
+          cmd: 'message',
+          payload: { message, id: mainUserId },
+        });
+      } else
+        await User.createMessageQueue({
+          main_user_id: mainUserId,
+          peer_user_id: peerUserId,
+          message,
+        });
     else throw new Error();
   }
 
@@ -204,11 +210,12 @@ class WsApp {
         }
         const cData = JSON.parse(data as string) as ClientData;
         if (cData.token) {
-          if (!this.sessions[cData.token]) this.sessions[cData.token] = wSocket;
+          if (!WsApp.sessions[cData.token])
+            WsApp.sessions[cData.token] = wSocket;
           const serverResponse = await WsApp.parseClientData(cData);
-          if (serverResponse.error)
+          if (serverResponse.error) {
             wSocket.send(JSON.stringify({ error: serverResponse.error }));
-          else wSocket.send(JSON.stringify(serverResponse));
+          } else wSocket.send(JSON.stringify(serverResponse));
         }
       });
     });
