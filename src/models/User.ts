@@ -713,6 +713,15 @@ class User {
     return undefined;
   }
 
+  static async deleteAllMessageQueueByPeerUserId(
+    peerUserId: number
+  ): Promise<undefined> {
+    /* delete a row from the users_message_queue table */
+    const query = 'DELETE FROM users_messages_queue WHERE peer_user_id = ($1)';
+    await User.query(query, [peerUserId]);
+    return undefined;
+  }
+
   static async readAllMessagesQueueByMainUserId(
     mainUserId: number,
     readData: ReadMessageData
@@ -729,7 +738,7 @@ class User {
   ): Promise<MessageData[] | NothingFound> {
     /* read all messages that are in queue for the reciever */
     const query = `SELECT ${User.genFieldsFromData(readData).join(', ')} FROM 
-    users_messages_queue WHERE main_user_id = ($1);`;
+    users_messages_queue WHERE peer_user_id = ($1);`;
     return User.query(query, [peerUserId]);
   }
 

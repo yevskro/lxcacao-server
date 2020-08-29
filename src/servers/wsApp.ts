@@ -125,11 +125,12 @@ class WsApp {
                 });
               break;
             case 'get_messages':
-              serverResponse.payload = (await User.readAllMessagesQueueByMainUserId(
+              serverResponse.payload = (await User.readAllMessagesQueueByPeerUserId(
                 mainUserId,
                 {
-                  peer_user_id: true,
+                  main_user_id: true,
                   create_date: true,
+                  message: true,
                 }
               ).catch(() => {
                 serverResponse.error = 'could not get messages';
@@ -167,6 +168,7 @@ class WsApp {
             default:
           }
 
+          console.log(serverResponse.command);
           if (serverResponse.error)
             wSocket.send(JSON.stringify({ error: serverResponse.error }));
           else wSocket.send(JSON.stringify(serverResponse));

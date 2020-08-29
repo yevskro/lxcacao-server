@@ -107,6 +107,22 @@ describe('websocket server', () => {
     );
   });
 
+  it('can get all messages of a user', (done) => {
+    wsClient.on('message', (data) => {
+      const clientData = JSON.parse(data as string);
+      expect(clientData.error).toBe(undefined);
+      expect(Array.isArray(clientData.payload)).toBe(true);
+      expect(clientData.payload[0].message).toStrictEqual('how are you?');
+      done();
+    });
+    wsClient.send(
+      JSON.stringify({
+        token: '2',
+        command: 'get_messages',
+      })
+    );
+  });
+
   it('can remove a friend', (done) => {
     wsClient.on('message', (data) => {
       expect(JSON.parse(data as string).error).toBe(undefined);
