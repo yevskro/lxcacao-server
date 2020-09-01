@@ -17,9 +17,10 @@ describe('websocket server', () => {
     wsClient.close();
   });
 
-  afterEach(() => {
+  afterEach((done) => {
     wsClient.removeAllListeners();
-  });
+    done();
+  }, 1500);
 
   it('can connect', (done) => {
     wsClient = new WebSocket('ws://localhost:3001');
@@ -54,7 +55,7 @@ describe('websocket server', () => {
     );
   });
 
-  xit('can request a friend', (done) => {
+  it('can request a friend', (done) => {
     wsClient.on('message', (data) => {
       expect(JSON.parse(data as string).error).toBe(undefined);
       done();
@@ -68,13 +69,15 @@ describe('websocket server', () => {
     );
   });
 
-  xit('can get all requests of an user', (done) => {
+  it('can get all requests of an user', (done) => {
     wsClient.on('message', (data) => {
       const clientData = JSON.parse(data as string);
-      expect(clientData.error).toBe(undefined);
-      expect(Array.isArray(clientData.payload)).toBe(true);
-      expect(clientData.payload[0].peer_user_id).toBe(1);
-      done();
+      if (clientData.command === 'get_requests') {
+        expect(clientData.error).toBe(undefined);
+        expect(Array.isArray(clientData.payload)).toBe(true);
+        expect(clientData.payload[0].peer_user_id).toBe(1);
+        done();
+      }
     });
 
     wsClient.send(
@@ -85,7 +88,7 @@ describe('websocket server', () => {
     );
   });
 
-  xit('can add a friend', (done) => {
+  it('can add a friend', (done) => {
     wsClient.on('message', (data) => {
       expect(JSON.parse(data as string).error).toBe(undefined);
       done();
@@ -101,6 +104,7 @@ describe('websocket server', () => {
 
   xit('can message a friend', (done) => {
     wsClient.on('message', (data) => {
+      console.log({ data });
       expect(JSON.parse(data as string).error).toBe(undefined);
       done();
     });
@@ -116,10 +120,13 @@ describe('websocket server', () => {
   xit('can get all messages of a user', (done) => {
     wsClient.on('message', (data) => {
       const clientData = JSON.parse(data as string);
-      expect(clientData.error).toBe(undefined);
-      expect(Array.isArray(clientData.payload)).toBe(true);
-      expect(clientData.payload[0].message).toStrictEqual('how are you?');
-      done();
+      if (clientData.command === 'get_messages') {
+        expect(clientData.error).toBe(undefined);
+        expect(Array.isArray(clientData.payload)).toBe(true);
+        console.log({ clientData });
+        expect(clientData.payload[0].message).toStrictEqual('how are you?');
+        done();
+      }
     });
     wsClient.send(
       JSON.stringify({
@@ -131,8 +138,11 @@ describe('websocket server', () => {
 
   xit('can remove a friend', (done) => {
     wsClient.on('message', (data) => {
-      expect(JSON.parse(data as string).error).toBe(undefined);
-      done();
+      const clientData = JSON.parse(data as string);
+      if (clientData.command === 'remove_friend') {
+        expect(JSON.parse(data as string).error).toBe(undefined);
+        done();
+      }
     });
     wsClient.send(
       JSON.stringify({

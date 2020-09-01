@@ -554,7 +554,6 @@ class User {
     */
     const query = `SELECT ${User.genFieldsFromData(readData).join(', ')} FROM 
     users_requests WHERE main_user_id = ($1)`;
-
     return User.query(query, [mainUserId]);
   }
 
@@ -833,10 +832,12 @@ class User {
     return true;
   }
 
-  static async updateLastCacheUpdate(id: number): Promise<QueryResultRow> {
+  static async updateLastCacheUpdateByUserRowId(
+    userRowId: number
+  ): Promise<QueryResultRow> {
     const query =
       'UPDATE users SET last_cache_update = NOW() WHERE id = ($1) RETURNING last_cache_update;';
-    return (await User.query(query, [id]))[0];
+    return (await User.query(query, [userRowId]))[0];
   }
   /* * * * * * * * * * * * * * * * * * */
 }

@@ -41,7 +41,7 @@ class WsApp {
       if (WsApp.sessions[peerUserId]) {
         WsApp.sessions[peerUserId].send(
           JSON.stringify({
-            cmd: 'add_friend',
+            command: 'add_friend',
             payload: { id: mainUserId },
           })
         );
@@ -75,7 +75,7 @@ class WsApp {
       if (WsApp.sessions[peerUserId]) {
         WsApp.sessions[peerUserId].send(
           JSON.stringify({
-            cmd: 'request_friend',
+            command: 'request_friend',
             payload: { id: mainUserId },
           })
         );
@@ -96,16 +96,17 @@ class WsApp {
       if (WsApp.sessions[peerUserId]) {
         WsApp.sessions[peerUserId].send(
           JSON.stringify({
-            cmd: 'message',
+            command: 'message',
             payload: { message, id: mainUserId },
           })
         );
-      } else
+      } else {
         await User.createMessageQueue({
           main_user_id: mainUserId,
           peer_user_id: peerUserId,
           message,
         });
+      }
     else throw new Error();
   }
 
@@ -210,6 +211,9 @@ class WsApp {
           serverResponse.error = 'could not remove friend';
         });
         break;
+      case 'sign_out':
+        WsApp.sessions[mainUserId].close();
+        break;
       default:
     }
     return serverResponse;
@@ -221,6 +225,7 @@ class WsApp {
       console.log('WebSocket server listening on port:', port);
     });
     this.wsServer.on('connection', (wSocket) => {
+      let cachedUserId;
       wSocket.on('message', async (data) => {
         if (data === 'ping') {
           wSocket.send('pong');
@@ -228,13 +233,18 @@ class WsApp {
         }
         const cData = JSON.parse(data as string) as ClientData;
         if (cData.token) {
-          if (!WsApp.sessions[cData.token])
+          if (!WsApp.sessions[cData.token]) {
             WsApp.sessions[cData.token] = wSocket;
+            cachedUserId = cData.token;
+          }
           const serverResponse = await WsApp.parseClientData(cData);
           if (serverResponse.error) {
             wSocket.send(JSON.stringify({ error: serverResponse.error }));
           } else wSocket.send(JSON.stringify(serverResponse));
         }
+      });
+      wSocket.on('close', () => {
+        if (cachedUserId) delete WsApp.sessions[cachedUserId];
       });
     });
     return Object.freeze(this.wsServer);

@@ -145,7 +145,8 @@ class HttpApp {
     });
     if (error) return next(error);
 
-    return res.sendStatus(204);
+    const newCacheUpdate = await User.updateLastCacheUpdateByUserRowId(userId);
+    return res.status(204).json(newCacheUpdate);
   }
 
   private static async createUserRecipe(

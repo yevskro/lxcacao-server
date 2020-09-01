@@ -399,7 +399,7 @@ describe('users model test suite', (): void => {
       id: true,
       last_cache_update: true,
     });
-    const newCache = (await User.updateLastCacheUpdate(data.id))
+    const newCache = (await User.updateLastCacheUpdateByUserRowId(data.id))
       .last_cache_update;
     expect(newCache).not.toBe(undefined);
     expect(newCache).not.toStrictEqual(data.last_cache_update);
