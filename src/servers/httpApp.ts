@@ -47,7 +47,7 @@ class HttpApp {
   public getApp(): express.Application {
     /* get app for testing purposes, freeze it 
     to protect it from being misused */
-    return Object.freeze(this.app);
+    return this.app;
   }
 
   public listen(port: number): Server {

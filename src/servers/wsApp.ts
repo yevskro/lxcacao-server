@@ -1,5 +1,13 @@
 import WebSocket from 'ws';
+import expressWs, { Instance } from 'express-ws';
+import express from 'express';
+import { Server } from 'http';
 import User, { MainPeerData, MessageData } from '../models/User';
+import HttpApp from './httpApp';
+
+export interface appWs extends express.Application {
+  ws(route: string, ...cb): express.Application;
+}
 
 interface Session {
   [key: number]: WebSocket;
@@ -29,7 +37,9 @@ interface ClientPayload {
 }
 
 class WsApp {
-  private wsServer: WebSocket.Server;
+  private wsServer: Instance;
+
+  private httpApp: HttpApp;
 
   private static sessions: Session = {};
 
@@ -219,35 +229,44 @@ class WsApp {
     return serverResponse;
   }
 
-  public listen(port: number): WebSocket.Server {
-    this.wsServer = new WebSocket.Server({ port }, () => {
-      // eslint-disable-next-line no-console
-      console.log('WebSocket server listening on port:', port);
-    });
-    this.wsServer.on('connection', (wSocket) => {
+  public listen(port: number, httpApp: HttpApp): Server {
+    const app = httpApp.getApp() as appWs;
+    this.wsServer = expressWs(httpApp.getApp());
+
+    app.ws('/', (ws, req) => {
       let cachedUserId;
-      wSocket.on('message', async (data) => {
+      ws.on('message', async (data) => {
+        console.log({ data });
         if (data === 'ping') {
-          wSocket.send('pong');
+          ws.send('pong');
           return;
         }
         const cData = JSON.parse(data as string) as ClientData;
         if (cData.token) {
           if (!WsApp.sessions[cData.token]) {
-            WsApp.sessions[cData.token] = wSocket;
+            WsApp.sessions[cData.token] = ws;
             cachedUserId = cData.token;
           }
           const serverResponse = await WsApp.parseClientData(cData);
-          if (serverResponse.error) {
-            wSocket.send(JSON.stringify({ error: serverResponse.error }));
-          } else wSocket.send(JSON.stringify(serverResponse));
+          if (
+            ws.readyState !== WebSocket.CLOSED &&
+            ws.readyState !== WebSocket.CLOSING
+          ) {
+            if (serverResponse.error) {
+              ws.send(JSON.stringify({ error: serverResponse.error }));
+            } else ws.send(JSON.stringify(serverResponse));
+          }
         }
       });
-      wSocket.on('close', () => {
+      ws.on('close', () => {
+        console.log('close');
         if (cachedUserId) delete WsApp.sessions[cachedUserId];
       });
     });
-    return Object.freeze(this.wsServer);
+    return app.listen({ port }, () => {
+      // eslint-disable-next-line no-console
+      console.log('WebSocket/HTTP server listening on port:', port);
+    });
   }
 }
 

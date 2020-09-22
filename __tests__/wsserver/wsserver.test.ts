@@ -1,15 +1,19 @@
 import WebSocket from 'ws';
 import tcpPortUsed from 'tcp-port-used';
+import { Server } from 'http';
 import testSetupDbHelper from '../helpers/testSetupDbHelper';
+import HttpApp from '../../src/servers/httpApp';
 import WsApp from '../../src/servers/wsApp';
 
 describe('websocket server', () => {
   let wsClient: WebSocket;
-  let wsServer: WebSocket.Server;
+  let wsServer: Server;
 
   beforeAll(async () => {
-    const portIsFree = !(await tcpPortUsed.check(3001, '127.0.0.1'));
-    if (portIsFree) wsServer = new WsApp().listen(3001);
+    const portIsFree = !(await tcpPortUsed.check(3000, '127.0.0.1'));
+    if (portIsFree) {
+      wsServer = new WsApp().listen(3000, new HttpApp());
+    }
   });
 
   afterAll(() => {
@@ -23,7 +27,7 @@ describe('websocket server', () => {
   }, 1500);
 
   it('can connect', (done) => {
-    wsClient = new WebSocket('ws://localhost:3001');
+    wsClient = new WebSocket('ws://localhost/');
     wsClient.on('open', () => done());
   });
 
