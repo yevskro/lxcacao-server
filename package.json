@@ -23,7 +23,7 @@
     "pg-error-enum": "^0.4.0",
     "supertest": "^4.0.2",
     "tcp-port-used": "^1.0.1",
-    "ws": "^7.3.1"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
