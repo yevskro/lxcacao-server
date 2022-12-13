@@ -15,7 +15,7 @@
     "test": "jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-ws": "^4.0.0",
     "jest-websocket-mock": "^2.1.0",
     "nodemon": "^2.0.4",
